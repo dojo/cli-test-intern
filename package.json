@@ -1,0 +1,52 @@
+{
+  "name": "dojo-cli-test-intern",
+  "version": "2.0.0-pre",
+  "description": "build a dojo 2 application",
+  "private": true,
+  "homepage": "http://dojotoolkit.org",
+  "bugs": {
+    "url": "https://github.com/maier49/cli-test-intern/issues"
+  },
+  "license": "BSD-3-Clause",
+  "main": "main.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/maier49/cli-test-intern.git"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "devDependencies": {
+    "codecov.io": "0.1.6",
+    "@types/node": "^6.0.49",
+    "@types/chalk": "^0.4.31",
+    "@types/ejs": "^2.3.33",
+    "@types/chai": "^3.4.34",
+    "@types/fs-extra": "0.0.34",
+    "@types/glob": "^5.0.30",
+    "@types/grunt": "~0.4.0",
+    "@types/mockery": "^1.4.29",
+    "@types/sinon": "^1.16.32",
+    "dojo-cli": "^2.0.0-alpha.3",
+    "dojo-loader": ">=2.0.0-beta.7",
+    "dts-generator": "~1.7.0",
+    "glob": "^7.0.3",
+    "grunt": "~1.0.1",
+    "grunt-tslint": "^3.0.0",
+    "grunt-dojo2": "^2.0.0-beta.18",
+    "intern": "~3.3.2",
+    "istanbul": "^0.4.3",
+    "mockery": "^1.7.0",
+    "remap-istanbul": "^0.6.4",
+    "sinon": "^1.17.5",
+    "tslint": "^3.15.1",
+    "typescript": "~2.1.4",
+    "yargs": "^5.0.0"
+  },
+  "dependencies": {
+    "ora": "^0.3.0",
+    "chalk": "^1.1.3",
+    "cross-spawn": "^4.0.0",
+    "pkg-dir": "^1.0.0"
+  }
+}
