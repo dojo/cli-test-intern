@@ -1,17 +1,17 @@
 {
   "name": "dojo-cli-test-intern",
   "version": "2.0.0-pre",
-  "description": "test a dojo 2 application",
+  "description": "Test a Dojo 2 application",
   "private": true,
   "homepage": "http://dojotoolkit.org",
   "bugs": {
-    "url": "https://github.com/maier49/cli-test-intern/issues"
+    "url": "https://github.com/dojo/cli-test-intern/issues"
   },
   "license": "BSD-3-Clause",
   "main": "main.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/maier49/cli-test-intern.git"
+    "url": "https://github.com/dojo/cli-test-intern.git"
   },
   "scripts": {
     "test": "grunt test"

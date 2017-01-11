@@ -6,7 +6,7 @@
 [![npm version](https://badge.fury.io/js/dojo-cli-test-intern.svg)](http://badge.fury.io/js/dojo-cli-test-intern)
 -->
 
-The official dojo 2 test command.
+The official Dojo 2 test command.
 
 ## Features
 
@@ -25,7 +25,7 @@ Contributing Guidelines and Style Guide.
 
 Test cases MUST be written using [Intern](https://theintern.github.io) using the Object test interface and Assert assertion interface.
 
-90% branch coverage MUST be provided for all code submitted to this repository, as reported by istanbul’s combined coverage results for all supported platforms.
+90% branch coverage MUST be provided for all code submitted to this repository, as reported by Istanbul’s combined coverage results for all supported platforms.
 
 To test locally in node run:
 
@@ -33,9 +33,18 @@ To test locally in node run:
 
 ## Licensing information
 
-TODO: If third-party code was used to write this library, make a list of project names and licenses here
+* [ora](https://github.com/sindresorhus/ora) ([MIT](https://opensource.org/licenses/MIT))
+* [Chalk](https://github.com/chalk/chalk)([MIT](https://opensource.org/licenses/MIT))
+* [cross-spawn](https://github.com/IndigoUnited/node-cross-spawn)([MIT](https://opensource.org/licenses/MIT))
+* [pkg-dir](https://github.com/sindresorhus/pkg-dir)([MIT](https://opensource.org/licenses/MIT))
+* [Istanbul](https://github.com/gotwarlost/istanbul)([New BSD](http://opensource.org/licenses/BSD-3-Clause))
+* [Mockery](https://github.com/mfncooper/mockery)([MIT](https://opensource.org/licenses/MIT))
+* [codecov.io](https://github.com/cainus/codecov.io)([MIT](https://opensource.org/licenses/MIT))
+* [Glob](https://github.com/isaacs/node-glob)([ISC](https://opensource.org/licenses/ISC))
+* [grunt-tslint](https://github.com/palantir/grunt-tslint)([Apache 2.0](https://opensource.org/licenses/Apache-2.0))
+* [Sinon.JS](https://github.com/sinonjs/sinon)([New BSD](http://opensource.org/licenses/BSD-3-Clause))
+* [TSLint](https://github.com/palantir/tslint)([Apache 2.0](https://opensource.org/licenses/Apache-2.0))
+* [yargs](https://github.com/yargs/yargs)([MIT](https://opensource.org/licenses/MIT))
 
-* [Third-party lib one](https//github.com/foo/bar) ([New BSD](http://opensource.org/licenses/BSD-3-Clause))
-
-© 2004–2016 Dojo Foundation & contributors. [New BSD](http://opensource.org/licenses/BSD-3-Clause) license.
+© 2004–2017 JS Foundation & contributors. [New BSD](LICENSE) license.
 
