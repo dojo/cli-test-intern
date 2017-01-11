@@ -17,16 +17,8 @@
     "test": "grunt test"
   },
   "devDependencies": {
-    "codecov.io": "0.1.6",
-    "@types/node": "^6.0.49",
     "@types/chalk": "^0.4.31",
-    "@types/ejs": "^2.3.33",
-    "@types/chai": "^3.4.34",
-    "@types/fs-extra": "0.0.34",
-    "@types/glob": "^5.0.30",
-    "@types/grunt": "~0.4.0",
-    "@types/mockery": "^1.4.29",
-    "@types/sinon": "^1.16.32",
+    "codecov.io": "0.1.6",
     "dojo-cli": "^2.0.0-alpha.3",
     "dojo-loader": ">=2.0.0-beta.7",
     "dts-generator": "~1.7.0",

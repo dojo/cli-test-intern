@@ -20,7 +20,7 @@ const command: Command = {
 			type: 'string'
 		});
 
-		helper.yargs.options('e', {
+		helper.yargs.option('e', {
 			alias: 'environments',
 			describe: 'Comma separated list of browsers to run tests in',
 			type: 'string'
@@ -54,8 +54,11 @@ const command: Command = {
 			if (!helper.command.exists('build')) {
 				reject(Error('Required command: \'build\', does not exist'));
 			}
-			helper.command.run('build', '', <any> { withTests: true }).then(
-				() => runTests(args).then(resolve, reject),
+			const result = helper.command.run('build', '', <any> { withTests: true });
+			result.then(
+				() => {
+					runTests(args).then(resolve, reject);
+				},
 				reject
 			);
 		});

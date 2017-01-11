@@ -8,7 +8,7 @@ const ora: any = require('ora');
 const pkgDir: any = require('pkg-dir');
 const packagePath = pkgDir.sync(dirname);
 
-function parseArguments({ unit, functional, environments, config, coverage, reporters }: TestArgs) {
+export function parseArguments({ unit, functional, environments, config, coverage, reporters }: TestArgs) {
 	config = config ? `-${config}` : '';
 	const args = [ `config=${path.relative('.', path.join(packagePath, 'intern', 'intern' + config))}` ];
 	if (unit) {
