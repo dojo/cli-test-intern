@@ -1,7 +1,7 @@
 {
   "name": "dojo-cli-test-intern",
   "version": "2.0.0-pre",
-  "description": "build a dojo 2 application",
+  "description": "test a dojo 2 application",
   "private": true,
   "homepage": "http://dojotoolkit.org",
   "bugs": {
