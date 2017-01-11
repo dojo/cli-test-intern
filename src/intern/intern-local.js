@@ -1,7 +1,7 @@
 define([
 	'./intern'
 ], function (intern) {
-	intern.tunnel = 'NullTunnel';
+	intern.tunnel = 'SeleniumTunnel';
 	intern.tunnelOptions = {
 		hostname: 'localhost',
 		port: '4444'
