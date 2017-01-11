@@ -9,6 +9,9 @@ export interface TestArgs extends Argv {
 	functional: boolean;
 	reporters: string;
 	coverage: boolean;
+	testingKey: string;
+	secret: string;
+	userName: string;
 }
 
 const command: Command = {
@@ -45,6 +48,24 @@ const command: Command = {
 		helper.yargs.option('cov', {
 			alias: 'coverage',
 			describe: 'If specified coverage will be included. This is the same as adding the LcovHtml reporter'
+		});
+
+		helper.yargs.option('k', {
+			alias: 'testingKey',
+			describe: 'API key for testingbot or crossbrowsertesting or accesskey for saucelabs or browserstack',
+			type: 'string'
+		});
+
+		helper.yargs.option('n', {
+			alias: 'userName',
+			describe: 'User name for testing platform',
+			type: 'string'
+		});
+
+		helper.yargs.option('s', {
+			alias: 'secret',
+			describe: 'API secret for testingbot',
+			type: 'string'
 		});
 
 		return helper.yargs;

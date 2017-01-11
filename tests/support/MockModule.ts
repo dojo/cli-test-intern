@@ -1,5 +1,6 @@
 import * as mockery from 'mockery';
 import * as sinon from 'sinon';
+import { IRootRequire } from 'dojo/loader'; declare const require: IRootRequire;
 
 const dojoNodePlugin = 'intern/dojo/node';
 

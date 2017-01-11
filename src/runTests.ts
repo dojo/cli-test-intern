@@ -8,9 +8,9 @@ const ora: any = require('ora');
 const pkgDir: any = require('pkg-dir');
 const packagePath = pkgDir.sync(dirname);
 
-export function parseArguments({ unit, functional, environments, config, coverage, reporters }: TestArgs) {
-	config = config ? `-${config}` : '';
-	const args = [ `config=${path.relative('.', path.join(packagePath, 'intern', 'intern' + config))}` ];
+export function parseArguments({ unit, functional, environments, config, coverage, reporters, testingKey, secret, userName }: TestArgs) {
+	const configArg = config ? `-${config}` : '';
+	const args = [ `config=${path.relative('.', path.join(packagePath, 'intern', 'intern' + configArg))}` ];
 	if (unit) {
 		args.push('functionalSuites=');
 	}
@@ -26,6 +26,15 @@ export function parseArguments({ unit, functional, environments, config, coverag
 	if (coverage && reporterArgs.every((reporter) => reporter.indexOf('LcovHtml') < 0)) {
 		reporterArgs.push('reporters=LcovHtml');
 	}
+
+	if (config === 'testingbot' && testingKey && secret) {
+		args.push(`tunnelOptions={ "verbose": "true", "apiKey": "${testingKey}", "apiSecret": "${secret}" }`);
+		args.push(`webdriver={ "host": "http://hub.testingbot.com/wd/hub", "username": "${testingKey}", "accessKey": "${secret}" }`);
+	}
+	else if (userName && testingKey) {
+		args.push(`tunnelOptions={ "username": "${userName}", "accessKey": "${testingKey}" }`);
+	}
+
 	return [ ...args, ...environmentArgs, ...reporterArgs ];
 }
 

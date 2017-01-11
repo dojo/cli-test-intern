@@ -26,7 +26,7 @@
     "grunt": "~1.0.1",
     "grunt-tslint": "^3.0.0",
     "grunt-dojo2": "^2.0.0-beta.18",
-    "intern": "~3.3.2",
+    "intern": "~3.4.2",
     "istanbul": "^0.4.3",
     "mockery": "^1.7.0",
     "remap-istanbul": "^0.6.4",
