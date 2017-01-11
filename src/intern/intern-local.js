@@ -1,15 +1,15 @@
 define([
 	'./intern'
 ], function (intern) {
-    intern.tunnel = 'NullTunnel';
-    intern.tunnelOptions = {
-        hostname: 'localhost',
-        port: '4444'
-    };
+	intern.tunnel = 'NullTunnel';
+	intern.tunnelOptions = {
+		hostname: 'localhost',
+		port: '4444'
+	};
 
-    intern.environments = [
-        { browserName: 'chrome' }
-    ];
+	intern.environments = [
+		{ browserName: 'chrome' }
+	];
 
-    return intern;
+	return intern;
 });
