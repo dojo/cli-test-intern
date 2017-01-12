@@ -118,5 +118,23 @@ describe('runTests', () => {
 			assert.equal('reporters=LcovHtml', args[1]);
 			assert.equal(2, args.length);
 		});
+
+		it('Should set testingbot tunnel config if provided', () => {
+			const args = runTests.parseArguments({
+				config: 'testingbot',
+				testingKey: 'key',
+				secret: 'secret'
+			});
+			assert.equal('tunnelOptions={ "verbose": "true", "apiKey": "key", "apiSecret": "secret" }', args[1]);
+
+			assert.equal('webdriver={ "host": "http://hub.testingbot.com/wd/hub", "username": "key", "accessKey": "secret" }', args[2]);
+		});
+
+		it('Should set normal tunnel config if provided', () => {
+			assert.equal('tunnelOptions={ "username": "user", "accessKey": "key" }', runTests.parseArguments({
+				testingKey: 'key',
+				userName: 'user'
+			})[1]);
+		});
 	});
 });

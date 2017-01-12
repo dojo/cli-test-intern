@@ -19,7 +19,7 @@ const command: Command = {
 	register(helper: Helper) {
 		helper.yargs.option('c', {
 			alias: 'config',
-			describe: 'Specifies what configuration to test with: browserstack(default), \'saucelabs\', or \'local\'ly.',
+			describe: 'Specifies what configuration to test with: browserstack(default), \'testingbot\',  \'saucelabs\', or \'local\'ly.',
 			type: 'string'
 		});
 
@@ -52,7 +52,7 @@ const command: Command = {
 
 		helper.yargs.option('k', {
 			alias: 'testingKey',
-			describe: 'API key for testingbot or crossbrowsertesting or accesskey for saucelabs or browserstack',
+			describe: 'API key for testingbot or accesskey for saucelabs or browserstack',
 			type: 'string'
 		});
 

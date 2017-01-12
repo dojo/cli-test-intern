@@ -33,7 +33,7 @@ describe('main', () => {
 		moduleUnderTest.register(helper);
 		assert.deepEqual(
 			helper.yargs.option.firstCall.args,
-			[ 'c', { alias: 'config', describe: 'Specifies what configuration to test with: browserstack(default), \'saucelabs\', or \'local\'ly.', type: 'string' } ],
+			[ 'c', { alias: 'config', describe: 'Specifies what configuration to test with: browserstack(default), \'testingbot\',  \'saucelabs\', or \'local\'ly.', type: 'string' } ],
 			'First argument'
 		);
 		assert.deepEqual(
@@ -64,6 +64,24 @@ describe('main', () => {
 			helper.yargs.option.getCall(5).args,
 			[ 'cov', { alias: 'coverage', describe: 'If specified coverage will be included. This is the same as adding the LcovHtml reporter' }],
 			'Sixth argument'
+		);
+
+		assert.deepEqual(
+			helper.yargs.option.getCall(6).args,
+			[ 'k', { alias: 'testingKey', describe: 'API key for testingbot or accesskey for saucelabs or browserstack', type: 'string' }],
+			'Seventh Argument'
+		);
+
+		assert.deepEqual(
+			helper.yargs.option.getCall(7).args,
+			[ 'n', { alias: 'userName', describe: 'User name for testing platform', type: 'string' }],
+			'Eigth Argument'
+		);
+
+		assert.deepEqual(
+			helper.yargs.option.getCall(8).args,
+			[ 's', { alias: 'secret', describe: 'API secret for testingbot', type: 'string' }],
+			'Ninth Argument'
 		);
 	});
 
