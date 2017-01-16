@@ -1,6 +1,7 @@
 import { before, beforeEach, after, afterEach, describe, it } from 'intern!bdd';
 import * as assert from 'intern/chai!assert';
 import * as mockery from 'mockery';
+import * as path from 'path';
 
 import { stub, SinonStub } from 'sinon';
 const cs: any = require('cross-spawn');
@@ -74,11 +75,11 @@ describe('runTests', () => {
 
 	describe('Should parse arguments', () => {
 		it('Should use config to set intern file if provided', () => {
-			assert.equal('config=intern\\intern-test', runTests.parseArguments({config: 'test'})[0]);
+			assert.equal(path.join('config=intern', 'intern-test'), runTests.parseArguments({config: 'test'})[0]);
 		});
 
 		it('Should have a default for intern config', () => {
-			assert.equal('config=intern\\intern', runTests.parseArguments({})[0]);
+			assert.equal(path.join('config=intern', 'intern'), runTests.parseArguments({})[0]);
 		});
 
 		it('Should push an empty functionalSuites arg if unit is provided', () => {
