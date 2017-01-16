@@ -44,8 +44,8 @@ define({
 	// The desired AMD loader to use when running unit tests (client.html/client.js). Omit to use the default Dojo
 	// loader
 	loaders: {
-		'host-browser': 'node_modules/dojo-loader/loader.js',
-		'host-node': 'dojo-loader'
+		'host-browser': 'node_modules/@dojo/loader/loader.js',
+		'host-node': '@dojo/loader'
 	},
 
 	// Configuration options for the module loader; any AMD configuration options supported by the specified AMD loader
@@ -56,9 +56,8 @@ define({
 			{ name: 'src', location: '_build/src' },
 			{ name: 'tests', location: '_build/tests' },
 			{ name: 'dojo', location: 'node_modules/intern/browser_modules/dojo' },
-			{ name: 'dojo-has', location: 'node_modules/dojo-has' },
-			{ name: 'dojo-shim', location: 'node_modules/dojo-shim' },
-			{ name: 'sinon', location: 'node_modules/sinon/pkg', main: 'sinon' }
+			{ name: 'sinon', location: 'node_modules/sinon/pkg', main: 'sinon' },
+			{ name: '@dojo', location: 'node_modules/@dojo' }
 		]
 	},
 
