@@ -1,4 +1,4 @@
-import { Command, Helper } from 'dojo-cli/interfaces';
+import { Command, Helper } from '@dojo/cli/interfaces';
 import { Argv } from 'yargs';
 import runTests from './runTests';
 
