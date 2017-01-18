@@ -10,11 +10,14 @@ The official Dojo 2 test command.
 
 ## Features
 
-TODO: Add sections on features of this package
+Builds and runs test cases for a Dojo 2 application. This module assumes that your project is structured
+as it would be if created by `dojo create`. Specifically, `src` and `tests` should be in the root of the project directory,
+and `tests` should have `functional` and `unit` folders with `all.ts` files in each that import other tests.
 
 ## How do I use this package?
 
-TODO: Add appropriate usage and instruction guidelines
+To build and run tests locally, just execute `dojo test` in your project. There are several configuration options, to see what
+options are available run `dojo test -h`
 
 ## How do I contribute?
 
