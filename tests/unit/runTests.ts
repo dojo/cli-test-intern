@@ -66,7 +66,7 @@ describe('runTests', () => {
 			assert.fail(null, null, 'Should not get here');
 		}
 		catch (error) {
-			assert.equal(errorMessage, error.message);
+			assert.equal(error.message, errorMessage);
 			assert.isTrue(stopAndPersistStub.calledOnce, 'Should stop the spinner');
 			assert.isTrue(stopAndPersistStub.firstCall.calledWithMatch('failed'),
 				'Should persis the failed message');
@@ -75,27 +75,27 @@ describe('runTests', () => {
 
 	describe('Should parse arguments', () => {
 		it('Should use config to set intern file if provided', () => {
-			assert.equal(path.join('config=intern', 'intern-test'), runTests.parseArguments({config: 'test'})[0]);
+			assert.equal(runTests.parseArguments({config: 'test'})[0], path.join('config=intern', 'intern-test'));
 		});
 
 		it('Should have a default for intern config', () => {
-			assert.equal(path.join('config=intern', 'intern'), runTests.parseArguments({})[0]);
+			assert.equal(runTests.parseArguments({})[0], path.join('config=intern', 'intern'));
 		});
 
 		it('Should push an empty functionalSuites arg if unit is provided', () => {
-			assert.equal('functionalSuites=', runTests.parseArguments({ unit: true })[1]);
+			assert.equal(runTests.parseArguments({ unit: true })[1], 'functionalSuites=');
 		});
 
 		it('Should push an empty suites arg if functional is provided', () => {
-			assert.equal('suites=', runTests.parseArguments({ functional: true })[1]);
+			assert.equal(runTests.parseArguments({ functional: true })[1], 'suites=');
 		});
 
 		it('Should add environments if provided', () => {
 			const args = runTests.parseArguments({
 				environments: 'one,two'
 			});
-			assert.equal('environments={ "browserName": "one" }', args[1]);
-			assert.equal('environments={ "browserName": "two" }', args[2]);
+			assert.equal(args[1], 'environments={ "browserName": "one" }');
+			assert.equal(args[2], 'environments={ "browserName": "two" }');
 		});
 
 		it('Should add reporters if provided', () => {
@@ -103,12 +103,12 @@ describe('runTests', () => {
 				reporters: 'one,two'
 			});
 
-			assert.equal('reporters=one', args[1]);
-			assert.equal('reporters=two', args[2]);
+			assert.equal(args[1], 'reporters=one');
+			assert.equal(args[2], 'reporters=two');
 		});
 
 		it('Should add LcovHtml reporter if coverage argument is provided', () => {
-			assert.equal('reporters=LcovHtml', runTests.parseArguments({ coverage: true })[1]);
+			assert.equal(runTests.parseArguments({ coverage: true })[1], 'reporters=LcovHtml');
 		});
 
 		it('Should not duplicate the LcovHtml reporter', () => {
@@ -116,8 +116,8 @@ describe('runTests', () => {
 				reporters: 'LcovHtml',
 				coverage: true
 			});
-			assert.equal('reporters=LcovHtml', args[1]);
-			assert.equal(3, args.length);
+			assert.equal(args[1], 'reporters=LcovHtml');
+			assert.equal(args.length, 3);
 		});
 
 		it('Should set testingbot tunnel config if provided', () => {
@@ -126,16 +126,21 @@ describe('runTests', () => {
 				testingKey: 'key',
 				secret: 'secret'
 			});
-			assert.equal('tunnelOptions={ "verbose": "true", "apiKey": "key", "apiSecret": "secret" }', args[1]);
+			assert.equal(args[1], 'tunnelOptions={ "verbose": "true", "apiKey": "key", "apiSecret": "secret" }');
 
-			assert.equal('webdriver={ "host": "http://hub.testingbot.com/wd/hub", "username": "key", "accessKey": "secret" }', args[2]);
+			assert.equal(
+				args[2],
+				'webdriver={ "host": "http://hub.testingbot.com/wd/hub", "username": "key", "accessKey": "secret" }'
+			);
 		});
 
 		it('Should set normal tunnel config if provided', () => {
-			assert.equal('tunnelOptions={ "username": "user", "accessKey": "key" }', runTests.parseArguments({
-				testingKey: 'key',
-				userName: 'user'
-			})[1]);
+			assert.equal(
+				runTests.parseArguments({
+					testingKey: 'key',
+					userName: 'user'
+				})[1],
+				'tunnelOptions={ "username": "user", "accessKey": "key" }');
 		});
 
 		it('Should set capabilities based on project name and according to config', () => {
