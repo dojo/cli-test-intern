@@ -7,6 +7,7 @@ const cs: any = require('cross-spawn');
 const ora: any = require('ora');
 const pkgDir: any = require('pkg-dir');
 const packagePath = pkgDir.sync(dirname);
+const projectName = require(path.join(packagePath, 'package.json')).name;
 
 export function parseArguments({ unit, functional, environments, config, coverage, reporters, testingKey, secret, userName }: TestArgs) {
 	const configArg = config ? `-${config}` : '';
@@ -18,13 +19,13 @@ export function parseArguments({ unit, functional, environments, config, coverag
 		args.push('suites=');
 	}
 
-	const environmentArgs = environments ? environments.split(',').map(
-			(environment) => `environments={ "browserName": "${environment}" }`
-		) : [];
+	args.push(...(environments ? environments.split(',').map(
+		(environment) => `environments={ "browserName": "${environment}" }`
+	) : []));
 
-	const reporterArgs = reporters ? reporters.split(',').map((reporter) => `reporters=${reporter}`) : [];
-	if (coverage && reporterArgs.every((reporter) => reporter.indexOf('LcovHtml') < 0)) {
-		reporterArgs.push('reporters=LcovHtml');
+	args.push(...(reporters ? reporters.split(',').map((reporter) => `reporters=${reporter}`) : []));
+	if (coverage && args.every((reporter) => reporter.indexOf('LcovHtml') < 0)) {
+		args.push('reporters=LcovHtml');
 	}
 
 	if (config === 'testingbot' && testingKey && secret) {
@@ -35,7 +36,17 @@ export function parseArguments({ unit, functional, environments, config, coverag
 		args.push(`tunnelOptions={ "username": "${userName}", "accessKey": "${testingKey}" }`);
 	}
 
-	return [ ...args, ...environmentArgs, ...reporterArgs ];
+	const capabilitiesBase = `capabilities={ "name": "${projectName}", "project": "${projectName}"`;
+	if (config === 'browserstack') {
+		args.push(capabilitiesBase + ', "fixSessionCapabilities": "false", "browserstack.debug": "false" }');
+	}
+	else if (config === 'saucelabs') {
+		args.push(capabilitiesBase + ', "fixSessionCapabilities": "false" }');
+	}
+	else {
+		args.push(capabilitiesBase + ' }');
+	}
+	return [ ...args ];
 }
 
 export default async function (testArgs: TestArgs) {

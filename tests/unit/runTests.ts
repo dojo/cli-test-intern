@@ -117,7 +117,7 @@ describe('runTests', () => {
 				coverage: true
 			});
 			assert.equal('reporters=LcovHtml', args[1]);
-			assert.equal(2, args.length);
+			assert.equal(3, args.length);
 		});
 
 		it('Should set testingbot tunnel config if provided', () => {
@@ -136,6 +136,33 @@ describe('runTests', () => {
 				testingKey: 'key',
 				userName: 'user'
 			})[1]);
+		});
+
+		it('Should set capabilities based on project name and according to config', () => {
+			const capabilitiesBase = 'capabilities={ "name": "@dojo/cli-test-intern", "project": "@dojo/cli-test-intern"';
+			assert.equal(
+				capabilitiesBase + ', "fixSessionCapabilities": "false", "browserstack.debug": "false" }',
+				runTests.parseArguments({
+					config: 'browserstack'
+				})[1],
+				'Didn\'t add browserstack config'
+			);
+
+			assert.equal(
+				capabilitiesBase + ', "fixSessionCapabilities": "false" }',
+				runTests.parseArguments({
+					config: 'saucelabs'
+				})[1],
+				'Didn\'t add saucelabs config'
+			);
+
+			assert.equal(
+				capabilitiesBase + ' }',
+				runTests.parseArguments({
+					config: 'anything else'
+				})[1],
+				'Didn\'t add default config config'
+			);
 		});
 	});
 });

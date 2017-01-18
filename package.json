@@ -1,5 +1,5 @@
 {
-  "name": "dojo-cli-test-intern",
+  "name": "@dojo/cli-test-intern",
   "version": "2.0.0-pre",
   "description": "Test a Dojo 2 application",
   "private": true,

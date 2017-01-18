@@ -19,7 +19,7 @@ const command: Command = {
 	register(helper: Helper) {
 		helper.yargs.option('c', {
 			alias: 'config',
-			describe: 'Specifies what configuration to test with: browserstack(default), \'testingbot\',  \'saucelabs\', or \'local\'ly.',
+			describe: 'Specifies what configuration to test with: \'local\'(default), \'browserstack\', \'testingbot\', or \'saucelabs\'.',
 			type: 'string'
 		});
 
@@ -73,7 +73,7 @@ const command: Command = {
 	run(helper: Helper, args: TestArgs) {
 		return new Promise((resolve, reject) => {
 			if (!helper.command.exists('build')) {
-				reject(Error('Required command: \'build\', does not exist'));
+				reject(Error('Required command: \'build\', does not exist. Have you run npm install @dojo/cli-build?'));
 			}
 			const result = helper.command.run('build', '', <any> { withTests: true });
 			result.then(

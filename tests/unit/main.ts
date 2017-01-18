@@ -33,7 +33,7 @@ describe('main', () => {
 		moduleUnderTest.register(helper);
 		assert.deepEqual(
 			helper.yargs.option.firstCall.args,
-			[ 'c', { alias: 'config', describe: 'Specifies what configuration to test with: browserstack(default), \'testingbot\',  \'saucelabs\', or \'local\'ly.', type: 'string' } ],
+			[ 'c', { alias: 'config', describe: 'Specifies what configuration to test with: \'local\'(default), \'browserstack\', \'testingbot\', or \'saucelabs\'.', type: 'string' } ],
 			'First argument'
 		);
 		assert.deepEqual(
@@ -95,7 +95,7 @@ describe('main', () => {
 			throwImmediatly,
 			(e: Error) => {
 				assert.isTrue(helper.command.exists.calledOnce);
-				assert.equal(e.message, 'Required command: \'build\', does not exist');
+				assert.equal(e.message, 'Required command: \'build\', does not exist. Have you run npm install @dojo/cli-build?');
 			}
 		);
 	});

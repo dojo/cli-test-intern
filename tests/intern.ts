@@ -11,7 +11,7 @@ export const proxyUrl = 'http://localhost:9000/';
 // automatically
 export const capabilities = {
 	project: 'Dojo 2',
-	name: 'dojo-cli-test-intern'
+	name: '@dojo/cli-test-intern'
 };
 
 // Support running unit tests from a web server that isn't the intern proxy
@@ -43,4 +43,4 @@ export const loaderOptions = {
 export const suites = [ 'tests/unit/all' ];
 
 // A regular expression matching URLs to files that should not be included in code coverage analysis
-export const excludeInstrumentation = /(?:node_modules|bower_components|tests)[\/\\]|intern\.js|intern-local\.js|intern-saucelabs\.js|intern-testingbot\.js|dirname/;
+export const excludeInstrumentation = /(?:node_modules|bower_components|tests)[\/\\]|intern\.js|intern-browserstack\.js|intern-saucelabs\.js|intern-testingbot\.js|dirname/;

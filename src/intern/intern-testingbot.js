@@ -2,11 +2,6 @@ define([
 	'./intern'
 ], function (intern) {
 
-	intern.capabilities = {
-		project: '<%- appName %>',
-		name: '<%- appName %>'
-	};
-
 	intern.environments = [
 		{ browserName: 'internet explorer', version: [ '10', '11' ], platform: 'WIN8' },
 		// { browserName: 'microsoftedge', platform: 'WIN10' },

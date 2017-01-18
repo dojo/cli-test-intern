@@ -2,12 +2,6 @@ define([
 	'./intern'
 ], function (intern) {
 
-	intern.capabilities = {
-		project: '<%- appName %>',
-		name: '<%- appName %>',
-		fixSessionCapabilities: false
-	};
-
 	intern.environments = [
 		{ browserName: 'internet explorer', version: [ '10.0', '11.0' ], platform: 'Windows 7' },
 		// { browserName: 'microsoftedge', platform: 'Windows 10' },
@@ -29,6 +23,7 @@ define([
 	intern.defaultTimeout = 10000;
 
 	intern.tunnel = 'SauceLabsTunnel';
+    intern.tunnelOptions = {};
 
 	return intern;
 });
