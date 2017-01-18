@@ -36,50 +36,45 @@ describe('main', () => {
 			[ 'c', { alias: 'config', describe: 'Specifies what configuration to test with: \'local\'(default), \'browserstack\', \'testingbot\', or \'saucelabs\'.', type: 'string' } ],
 			'First argument'
 		);
-		assert.deepEqual(
-			helper.yargs.option.secondCall.args,
-			[ 'e', { alias: 'environments', describe: 'Comma separated list of browsers to run tests in', type: 'string' }],
-			'Second argument'
-		);
 
 		assert.deepEqual(
-			helper.yargs.option.thirdCall.args,
+			helper.yargs.option.secondCall.args,
 			[ 'r', { alias: 'reporters', describe: 'Comma separated list of reporters to use, defaults to Console', type: 'string' }],
 			'Third argument'
 		);
 
 		assert.deepEqual(
-			helper.yargs.option.getCall(3).args,
+			helper.yargs.option.thirdCall.args,
 			[ 'u', { alias: 'unit', describe: 'Indicates that only unit tests should be run. By default functional tests and unit tests are run' }],
 			'Fourth argument'
 		);
 
 		assert.deepEqual(
-			helper.yargs.option.getCall(4).args,
+			helper.yargs.option.getCall(3).args,
 			[ 'f', { alias: 'functional', describe: 'Indicates that only functional tests should be run. By default functional tests and unit tests are run' }],
 			'Fifth argument'
 		);
 
 		assert.deepEqual(
-			helper.yargs.option.getCall(5).args,
+			helper.yargs.option.getCall(4).args,
 			[ 'cov', { alias: 'coverage', describe: 'If specified coverage will be included. This is the same as adding the LcovHtml reporter' }],
 			'Sixth argument'
 		);
 
 		assert.deepEqual(
-			helper.yargs.option.getCall(6).args,
+			helper.yargs.option.getCall(5).args,
 			[ 'k', { alias: 'testingKey', describe: 'API key for testingbot or accesskey for saucelabs or browserstack', type: 'string' }],
 			'Seventh Argument'
 		);
 
 		assert.deepEqual(
-			helper.yargs.option.getCall(7).args,
+			helper.yargs.option.getCall(6).args,
 			[ 'n', { alias: 'userName', describe: 'User name for testing platform', type: 'string' }],
 			'Eigth Argument'
 		);
 
 		assert.deepEqual(
-			helper.yargs.option.getCall(8).args,
+			helper.yargs.option.getCall(7).args,
 			[ 's', { alias: 'secret', describe: 'API secret for testingbot', type: 'string' }],
 			'Ninth Argument'
 		);

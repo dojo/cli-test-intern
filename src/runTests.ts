@@ -10,7 +10,7 @@ const packagePath = pkgDir.sync(dirname);
 const process = require('process');
 const projectName = require(path.join(process.cwd(), './package.json')).name;
 
-export function parseArguments({ unit, functional, environments, config, coverage, reporters, testingKey, secret, userName }: TestArgs) {
+export function parseArguments({ unit, functional, config, coverage, reporters, testingKey, secret, userName }: TestArgs) {
 	const configArg = config ? `-${config}` : '';
 	const args = [ `config=${path.relative('.', path.join(packagePath, 'intern', 'intern' + configArg))}` ];
 	if (unit) {
@@ -19,10 +19,6 @@ export function parseArguments({ unit, functional, environments, config, coverag
 	else if (functional) {
 		args.push('suites=');
 	}
-
-	args.push(...(environments ? environments.split(',').map(
-		(environment) => `environments={ "browserName": "${environment}" }`
-	) : []));
 
 	args.push(...(reporters ? reporters.split(',').map((reporter) => `reporters=${reporter}`) : []));
 	if (coverage && args.every((reporter) => reporter.indexOf('LcovHtml') < 0)) {

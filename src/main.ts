@@ -3,7 +3,6 @@ import { Argv } from 'yargs';
 import runTests from './runTests';
 
 export interface TestArgs extends Argv {
-	environments: string;
 	config: string;
 	unit: boolean;
 	functional: boolean;
@@ -20,12 +19,6 @@ const command: Command = {
 		helper.yargs.option('c', {
 			alias: 'config',
 			describe: 'Specifies what configuration to test with: \'local\'(default), \'browserstack\', \'testingbot\', or \'saucelabs\'.',
-			type: 'string'
-		});
-
-		helper.yargs.option('e', {
-			alias: 'environments',
-			describe: 'Comma separated list of browsers to run tests in',
 			type: 'string'
 		});
 

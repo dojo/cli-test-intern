@@ -90,14 +90,6 @@ describe('runTests', () => {
 			assert.equal(runTests.parseArguments({ functional: true })[1], 'suites=');
 		});
 
-		it('Should add environments if provided', () => {
-			const args = runTests.parseArguments({
-				environments: 'one,two'
-			});
-			assert.equal(args[1], 'environments={ "browserName": "one" }');
-			assert.equal(args[2], 'environments={ "browserName": "two" }');
-		});
-
 		it('Should add reporters if provided', () => {
 			const args = runTests.parseArguments({
 				reporters: 'one,two'
