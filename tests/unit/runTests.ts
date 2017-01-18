@@ -141,18 +141,18 @@ describe('runTests', () => {
 		it('Should set capabilities based on project name and according to config', () => {
 			const capabilitiesBase = 'capabilities={ "name": "@dojo/cli-test-intern", "project": "@dojo/cli-test-intern"';
 			assert.equal(
-				capabilitiesBase + ', "fixSessionCapabilities": "false", "browserstack.debug": "false" }',
 				runTests.parseArguments({
 					config: 'browserstack'
 				})[1],
+				capabilitiesBase + ', "fixSessionCapabilities": "false", "browserstack.debug": "false" }',
 				'Didn\'t add browserstack config'
 			);
 
 			assert.equal(
-				capabilitiesBase + ', "fixSessionCapabilities": "false" }',
 				runTests.parseArguments({
 					config: 'saucelabs'
 				})[1],
+				capabilitiesBase + ', "fixSessionCapabilities": "false" }',
 				'Didn\'t add saucelabs config'
 			);
 

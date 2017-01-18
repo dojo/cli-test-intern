@@ -7,7 +7,8 @@ const cs: any = require('cross-spawn');
 const ora: any = require('ora');
 const pkgDir: any = require('pkg-dir');
 const packagePath = pkgDir.sync(dirname);
-const projectName = require(path.join(packagePath, 'package.json')).name;
+const process = require('process');
+const projectName = require(path.join(process.cwd(), './package.json')).name;
 
 export function parseArguments({ unit, functional, environments, config, coverage, reporters, testingKey, secret, userName }: TestArgs) {
 	const configArg = config ? `-${config}` : '';
