@@ -1,0 +1,44 @@
+{
+  "name": "@dojo/cli-test-intern",
+  "version": "2.0.0-pre",
+  "description": "Test a Dojo 2 application",
+  "private": true,
+  "homepage": "http://dojotoolkit.org",
+  "bugs": {
+    "url": "https://github.com/dojo/cli-test-intern/issues"
+  },
+  "license": "BSD-3-Clause",
+  "main": "main.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dojo/cli-test-intern.git"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "devDependencies": {
+    "@types/chalk": "^0.4.31",
+    "codecov.io": "0.1.6",
+    "@dojo/cli": "2.0.0-alpha.8",
+    "@dojo/loader": "2.0.0-beta.9",
+    "dts-generator": "~1.7.0",
+    "glob": "^7.0.3",
+    "grunt": "~1.0.1",
+    "grunt-tslint": "^3.0.0",
+    "grunt-dojo2": "2.0.0-beta.23",
+    "intern": "~3.4.2",
+    "istanbul": "^0.4.3",
+    "mockery": "^1.7.0",
+    "remap-istanbul": "^0.6.4",
+    "sinon": "^1.17.5",
+    "tslint": "^3.15.1",
+    "typescript": "~2.1.4",
+    "yargs": "^5.0.0"
+  },
+  "dependencies": {
+    "ora": "^0.3.0",
+    "chalk": "^1.1.3",
+    "cross-spawn": "^4.0.0",
+    "pkg-dir": "^1.0.0"
+  }
+}
