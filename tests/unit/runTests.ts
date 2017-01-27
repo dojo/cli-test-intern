@@ -99,8 +99,9 @@ describe('runTests', () => {
 			assert.equal(args[2], 'reporters=two');
 		});
 
-		it('Should add LcovHtml reporter if coverage argument is provided', () => {
-			assert.equal(runTests.parseArguments({ coverage: true })[1], 'reporters=LcovHtml');
+		it('Should add LcovHtml reporter and console reporter if coverage argument is provided', () => {
+			assert.equal(runTests.parseArguments({ coverage: true })[1], 'reporters=Runner');
+			assert.equal(runTests.parseArguments({ coverage: true })[2], 'reporters=LcovHtml');
 		});
 
 		it('Should not duplicate the LcovHtml reporter', () => {
@@ -110,6 +111,17 @@ describe('runTests', () => {
 			});
 			assert.equal(args[1], 'reporters=LcovHtml');
 			assert.equal(args.length, 3);
+		});
+
+		it('Should not add Runner reporter if other reporters are specified', () => {
+			const args = runTests.parseArguments({
+				reporters: 'Pretty',
+				coverage: true
+			});
+			assert.equal(args[1], 'reporters=Pretty');
+			assert.equal(args[2], 'reporters=LcovHtml');
+			assert.notInclude('reporters=Runner', args);
+			assert.equal(args.length, 4);
 		});
 
 		it('Should set testingbot tunnel config if provided', () => {

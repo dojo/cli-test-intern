@@ -21,8 +21,13 @@ export function parseArguments({ unit, functional, config, coverage, reporters, 
 	}
 
 	args.push(...(reporters ? reporters.split(',').map((reporter) => `reporters=${reporter}`) : []));
-	if (coverage && args.every((reporter) => reporter.indexOf('LcovHtml') < 0)) {
-		args.push('reporters=LcovHtml');
+	if (coverage) {
+		if (args.every((reporter) => reporter.indexOf('reporters=') < 0)) {
+			args.push('reporters=Runner');
+		}
+		if (args.every((reporter) => reporter.indexOf('reporters=LcovHtml') < 0)) {
+			args.push('reporters=LcovHtml');
+		}
 	}
 
 	if (config === 'testingbot' && testingKey && secret) {
