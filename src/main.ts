@@ -1,4 +1,4 @@
-import { Command, Helper } from '@dojo/cli/interfaces';
+import { Command, Helper, OptionsHelper } from '@dojo/cli/interfaces';
 import { Argv } from 'yargs';
 import runTests from './runTests';
 
@@ -15,53 +15,51 @@ export interface TestArgs extends Argv {
 
 const command: Command = {
 	description: 'test your application',
-	register(helper: Helper) {
-		helper.yargs.option('c', {
+	register(options: OptionsHelper) {
+		options('c', {
 			alias: 'config',
 			describe: 'Specifies what configuration to test with: \'local\'(default), \'browserstack\', \'testingbot\', or \'saucelabs\'.',
 			type: 'string'
 		});
 
-		helper.yargs.option('r', {
+		options('r', {
 			alias: 'reporters',
 			describe: 'Comma separated list of reporters to use, defaults to Console',
 			type: 'string'
 		});
 
-		helper.yargs.option('u', {
+		options('u', {
 			alias: 'unit',
 			describe: 'Indicates that only unit tests should be run. By default functional tests and unit tests are run'
 		});
 
-		helper.yargs.option('f', {
+		options('f', {
 			alias: 'functional',
 			describe: 'Indicates that only functional tests should be run. By default functional tests and unit tests are run'
 		});
 
-		helper.yargs.option('cov', {
+		options('cov', {
 			alias: 'coverage',
 			describe: 'If specified coverage will be included. This is the same as adding the LcovHtml reporter'
 		});
 
-		helper.yargs.option('k', {
+		options('k', {
 			alias: 'testingKey',
 			describe: 'API key for testingbot or accesskey for saucelabs or browserstack',
 			type: 'string'
 		});
 
-		helper.yargs.option('n', {
+		options('n', {
 			alias: 'userName',
 			describe: 'User name for testing platform',
 			type: 'string'
 		});
 
-		helper.yargs.option('s', {
+		options('s', {
 			alias: 'secret',
 			describe: 'API secret for testingbot',
 			type: 'string'
 		});
-
-		return helper.yargs;
 	},
 	run(helper: Helper, args: TestArgs) {
 		return new Promise((resolve, reject) => {
