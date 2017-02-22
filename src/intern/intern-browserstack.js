@@ -6,7 +6,7 @@ define([
 	intern.maxConcurrency = 2;
 
 	intern.environments = [
-		{ browserName: 'internet explorer', version: [ '10', '11' ], platform: 'WINDOWS' },
+		{ browserName: 'internet explorer', version: [ '11' ], platform: 'WINDOWS' },
 		{ browserName: 'firefox', platform: 'WINDOWS' },
 		{ browserName: 'chrome', platform: 'WINDOWS' }
 	];
