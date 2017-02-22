@@ -3,7 +3,7 @@ define([
 ], function (intern) {
 
 	intern.environments = [
-		{ browserName: 'internet explorer', version: [ '10.0', '11.0' ], platform: 'Windows 7' },
+		{ browserName: 'internet explorer', version: [ '11.0' ], platform: 'Windows 7' },
 		{ browserName: 'firefox', version: '49', platform: 'Windows 10' },
 		{ browserName: 'chrome', platform: 'Windows 10' }
 	];
