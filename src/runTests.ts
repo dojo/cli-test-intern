@@ -58,14 +58,31 @@ export default async function (testArgs: TestArgs) {
 			color: 'white',
 			text: 'Running tests'
 		}).start();
+
+		function succeed() {
+			spinner.stopAndPersist(green.bold(' completed'));
+			resolve();
+		}
+
+		function fail(err: string) {
+			spinner.stopAndPersist(red.bold(' failed'));
+			reject({
+				message: err,
+				exitCode: 1
+			});
+		}
+
 		cs.spawn(path.resolve('node_modules/.bin/intern-runner'), parseArguments(testArgs), { stdio: 'inherit' })
-			.on('close', () => {
-				spinner.stopAndPersist(green.bold(' completed'));
-				resolve();
+			.on('close', (exitCode: number) => {
+				if (exitCode) {
+					fail('Tests did not complete successfully');
+				}
+				else {
+					succeed();
+				}
 			})
 			.on('error', (err: Error) => {
-				spinner.stopAndPersist(red.bold(' failed'));
-				reject(err);
+				fail(err.message);
 			});
 	});
 }
