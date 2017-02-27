@@ -72,6 +72,19 @@ describe('runTests', () => {
 				'Should persis the failed message');
 		}
 	});
+	it('Should reject with an error when spawn exits cleanly with a non-zero status code', async () => {
+		spawnOnStub.onFirstCall().callsArgWith(1, 1);
+		try {
+			await runTests.default({});
+			assert.fail(null, null, 'Should not get here');
+		}
+		catch (error) {
+			assert.isTrue(stopAndPersistStub.calledOnce, 'Should stop the spinner');
+			assert.isTrue(stopAndPersistStub.firstCall.calledWithMatch('failed'),
+				'Should persis the failed message');
+			assert.strictEqual(error.exitCode, 1);
+		}
+	});
 
 	describe('Should parse arguments', () => {
 		it('Should use config to set intern file if provided', () => {
