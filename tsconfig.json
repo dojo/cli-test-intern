@@ -1,5 +1,4 @@
 {
-	"version": "2.1.4",
 	"compilerOptions": {
 		"declaration": false,
 		"module": "umd",
