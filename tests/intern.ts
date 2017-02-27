@@ -35,6 +35,7 @@ export const loaderOptions = {
 	packages: [
 		{ name: 'src', location: '_build/src' },
 		{ name: 'tests', location: '_build/tests' },
+		{ name: 'grunt-dojo2', location: 'node_modules/grunt-dojo2'},
 		{ name: '@dojo', location: 'node_modules/@dojo' }
 	]
 };
