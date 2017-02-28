@@ -77,33 +77,17 @@ export default async function (testArgs: TestArgs) {
 			});
 		}
 
-		if (shouldRunInBrowser(testArgs)) {
-			cs.spawn(path.resolve('node_modules/.bin/intern-runner'), parseArguments(testArgs), { stdio: 'inherit' })
-				.on('close', (exitCode: number) => {
-					if (exitCode) {
-						fail('Tests did not complete successfully');
-					}
-					else {
-						succeed();
-					}
-				})
-				.on('error', (err: Error) => {
-					fail(err.message);
-				});
-		}
-		else {
-			cs.spawn(path.resolve('node_modules/.bin/intern-client'), parseArguments(testArgs), { stdio: 'inherit' })
-				.on('close', (exitCode: number) => {
-					if (exitCode) {
-						fail('Tests did not complete successfully');
-					}
-					else {
-						succeed();
-					}
-				})
-				.on('error', (err: Error) => {
-					fail(err.message);
-				});
-		}
+		cs.spawn(path.resolve(`node_modules/.bin/${shouldRunInBrowser(testArgs) ? 'intern-runner' : 'intern-client'}`), parseArguments(testArgs), { stdio: 'inherit' })
+			.on('close', (exitCode: number) => {
+				if (exitCode) {
+					fail('Tests did not complete successfully');
+				}
+				else {
+					succeed();
+				}
+			})
+			.on('error', (err: Error) => {
+				fail(err.message);
+			});
 	});
 }
