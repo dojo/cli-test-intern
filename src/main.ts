@@ -74,6 +74,28 @@ const command: Command = {
 				reject
 			);
 		});
+	},
+	eject(helper: Helper) {
+		return {
+			npm: {
+				devDependencies: {
+					'intern': '~3.4.2',
+					'istanbul': '^0.4.3',
+					'mockery': '^1.7.0',
+					'remap-istanbul': '^0.6.4',
+					'sinon': '^1.17.5'
+				}
+			},
+			copy: {
+				path: __dirname + '/intern',
+				files: [
+					'./intern.js',
+					'./intern-browserstack.js',
+					'./intern-saucelabs.js',
+					'./intern-testingbot.js'
+				]
+			}
+		};
 	}
 };
 export default command;

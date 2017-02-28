@@ -1,9 +1,9 @@
 import { beforeEach, afterEach, describe, it } from 'intern!bdd';
 import * as assert from 'intern/chai!assert';
 import * as mockery from 'mockery';
+import * as sinon from 'sinon';
 import MockModule from '../support/MockModule';
 import { throwImmediatly } from '../support/util';
-import * as sinon from 'sinon';
 
 describe('main', () => {
 
@@ -128,5 +128,13 @@ describe('main', () => {
 			}
 		);
 
+	});
+
+	it('should support eject', () => {
+		const result = moduleUnderTest.eject();
+
+		assert.isTrue('npm' in result, 'Should have returned npm dependencies');
+		assert.isTrue('copy' in result, 'Should have returned a list of files to copy');
+		assert.isTrue('files' in result.copy, 'Should have returned a list of files to copy');
 	});
 });
