@@ -20,7 +20,7 @@ const command: Command = {
 	register(options: OptionsHelper) {
 		options('a', {
 			alias: 'all',
-			describe: 'Indicates that all tests (both unit and functional) should be fun. By default, only unit tests are run.',
+			describe: 'Indicates that all tests (both unit and functional) should be run. By default, only unit tests are run.',
 			default: false
 		});
 
