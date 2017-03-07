@@ -50,6 +50,18 @@ describe('runTests', () => {
 		await runTests.default({});
 		assert.isTrue(spawnStub.calledOnce);
 	});
+	it('Should run intern-client by default', async () => {
+		spawnOnStub.onFirstCall().callsArg(1);
+		await runTests.default({});
+		assert.include(spawnStub.firstCall.args[ 0 ], 'intern-client');
+	});
+	it('Should run intern-runner if running in browser', async () => {
+		spawnOnStub.onFirstCall().callsArg(1);
+		await runTests.default({
+			browser: true
+		});
+		assert.include(spawnStub.firstCall.args[ 0 ], 'intern-runner');
+	});
 	it('Should use a loading spinner', async () => {
 		spawnOnStub.onFirstCall().callsArg(1);
 		await runTests.default({});
@@ -58,7 +70,7 @@ describe('runTests', () => {
 		assert.isTrue(stopAndPersistStub.firstCall.calledWithMatch('completed'),
 			'Should persist completed message');
 	});
-	it('Should reject with an error when spawn throws an error', async () => {
+	it('Should reject with an error when spawn throws an error in node', async () => {
 		const errorMessage = 'test error message';
 		spawnOnStub.onSecondCall().callsArgWith(1, new Error(errorMessage));
 		try {
@@ -72,10 +84,42 @@ describe('runTests', () => {
 				'Should persis the failed message');
 		}
 	});
-	it('Should reject with an error when spawn exits cleanly with a non-zero status code', async () => {
+	it('Should reject with an error when spawn exits cleanly with a non-zero status code in node', async () => {
 		spawnOnStub.onFirstCall().callsArgWith(1, 1);
 		try {
 			await runTests.default({});
+			assert.fail(null, null, 'Should not get here');
+		}
+		catch (error) {
+			assert.isTrue(stopAndPersistStub.calledOnce, 'Should stop the spinner');
+			assert.isTrue(stopAndPersistStub.firstCall.calledWithMatch('failed'),
+				'Should persis the failed message');
+			assert.strictEqual(error.exitCode, 1);
+		}
+	});
+
+	it('Should reject with an error when spawn throws an error in a browser', async () => {
+		const errorMessage = 'test error message';
+		spawnOnStub.onSecondCall().callsArgWith(1, new Error(errorMessage));
+		try {
+			await runTests.default({
+				browser: true
+			});
+			assert.fail(null, null, 'Should not get here');
+		}
+		catch (error) {
+			assert.equal(error.message, errorMessage);
+			assert.isTrue(stopAndPersistStub.calledOnce, 'Should stop the spinner');
+			assert.isTrue(stopAndPersistStub.firstCall.calledWithMatch('failed'),
+				'Should persis the failed message');
+		}
+	});
+	it('Should reject with an error when spawn exits cleanly with a non-zero status code in a browser', async () => {
+		spawnOnStub.onFirstCall().callsArgWith(1, 1);
+		try {
+			await runTests.default({
+				browser: true
+			});
 			assert.fail(null, null, 'Should not get here');
 		}
 		catch (error) {

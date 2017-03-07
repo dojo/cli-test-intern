@@ -10,10 +10,11 @@ const packagePath = pkgDir.sync(dirname);
 const process = require('process');
 const projectName = require(path.join(process.cwd(), './package.json')).name;
 
-export function parseArguments({ unit, functional, config, coverage, reporters, testingKey, secret, userName }: TestArgs) {
+export function parseArguments({ all, unit, functional, config, coverage, reporters, testingKey, secret, userName }: TestArgs) {
 	const configArg = config ? `-${config}` : '';
 	const args = [ `config=${path.relative('.', path.join(packagePath, 'intern', 'intern' + configArg))}` ];
-	if (unit) {
+
+	if (!all && unit) {
 		args.push('functionalSuites=');
 	}
 	else if (functional) {
@@ -51,6 +52,10 @@ export function parseArguments({ unit, functional, config, coverage, reporters, 
 	return [ ...args ];
 }
 
+function shouldRunInBrowser(args: TestArgs) {
+	return args.browser || args.functional || args.all;
+}
+
 export default async function (testArgs: TestArgs) {
 	return new Promise((resolve, reject) => {
 		const spinner = ora({
@@ -72,7 +77,7 @@ export default async function (testArgs: TestArgs) {
 			});
 		}
 
-		cs.spawn(path.resolve('node_modules/.bin/intern-runner'), parseArguments(testArgs), { stdio: 'inherit' })
+		cs.spawn(path.resolve(`node_modules/.bin/${shouldRunInBrowser(testArgs) ? 'intern-runner' : 'intern-client'}`), parseArguments(testArgs), { stdio: 'inherit' })
 			.on('close', (exitCode: number) => {
 				if (exitCode) {
 					fail('Tests did not complete successfully');
