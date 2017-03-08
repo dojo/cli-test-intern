@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import { beforeEach, afterEach, describe, it } from 'intern!bdd';
 import * as assert from 'intern/chai!assert';
 import * as mockery from 'mockery';
@@ -11,6 +12,7 @@ describe('main', () => {
 	let mockModule: MockModule;
 	let mockRunTests: any;
 	let sandbox: sinon.SinonSandbox;
+	let mockReadFile: any;
 
 	beforeEach(() => {
 		sandbox = sinon.sandbox.create();
@@ -21,6 +23,7 @@ describe('main', () => {
 		mockery.registerMock('./runTests', mockRunTests);
 		moduleUnderTest = mockModule.getModuleUnderTest().default;
 		sandbox.stub(console, 'log');
+		mockReadFile = sandbox.stub(fs, 'readFileSync');
 	});
 
 	afterEach(() => {
@@ -108,9 +111,24 @@ describe('main', () => {
 	});
 
 	it('should support eject', () => {
-		const result = moduleUnderTest.eject();
+		mockReadFile.returns(`{
+				"name": "@dojo/cli-test-intern",
+				"version": "test-version",
+				"dependencies": {
+					"dep1": "dep1v",
+					"dep2": "dep2v"
+				}
+			}`);
 
-		assert.isTrue('npm' in result, 'Should have returned npm dependencies');
+		const result = moduleUnderTest.eject({});
+
+		assert.isTrue('npm' in result, 'expecting npm property');
+		assert.isTrue('devDependencies' in result.npm, 'expecting a devDependencies property');
+		assert.deepEqual(result.npm.devDependencies, {
+			'dep1': 'dep1v',
+			'dep2': 'dep2v'
+		});
+
 		assert.isTrue('copy' in result, 'Should have returned a list of files to copy');
 		assert.isTrue('files' in result.copy, 'Should have returned a list of files to copy');
 	});

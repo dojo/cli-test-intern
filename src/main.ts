@@ -1,6 +1,8 @@
 import { Command, Helper, OptionsHelper } from '@dojo/cli/interfaces';
+import * as path from 'path';
 import { Argv } from 'yargs';
 import runTests from './runTests';
+const pkgDir = require('pkg-dir');
 
 export interface TestArgs extends Argv {
 	all: boolean;
@@ -13,6 +15,19 @@ export interface TestArgs extends Argv {
 	testingKey: string;
 	secret: string;
 	userName: string;
+}
+
+function buildNpmDependencies(): any {
+	try {
+		const packagePath = pkgDir.sync(__dirname);
+		const packageJsonFilePath = path.join(packagePath, 'package.json');
+		const packageJson = <any> require(packageJsonFilePath);
+
+		return packageJson.dependencies;
+	}
+	catch (e) {
+		throw new Error('Failed reading dependencies from package.json - ' + e.message);
+	}
 }
 
 const command: Command = {
@@ -95,11 +110,7 @@ const command: Command = {
 		return {
 			npm: {
 				devDependencies: {
-					'intern': '~3.4.2',
-					'istanbul': '^0.4.3',
-					'mockery': '^1.7.0',
-					'remap-istanbul': '^0.6.4',
-					'sinon': '^1.17.5'
+					...buildNpmDependencies()
 				}
 			},
 			copy: {
