@@ -106,4 +106,12 @@ describe('main', () => {
 		);
 
 	});
+
+	it('should support eject', () => {
+		const result = moduleUnderTest.eject();
+
+		assert.isTrue('npm' in result, 'Should have returned npm dependencies');
+		assert.isTrue('copy' in result, 'Should have returned a list of files to copy');
+		assert.isTrue('files' in result.copy, 'Should have returned a list of files to copy');
+	});
 });
