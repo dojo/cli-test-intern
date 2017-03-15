@@ -132,4 +132,16 @@ describe('main', () => {
 		assert.isTrue('copy' in result, 'Should have returned a list of files to copy');
 		assert.isTrue('files' in result.copy, 'Should have returned a list of files to copy');
 	});
+
+	it('should fail if package.json fails to be read', () => {
+		mockReadFile.throws(new Error('test error'));
+
+		try {
+			moduleUnderTest.eject({});
+			assert.fail('Should not have succeeded');
+		}
+		catch (e) {
+			assert.equal(e.message, 'Failed reading dependencies from package.json - test error');
+		}
+	});
 });
