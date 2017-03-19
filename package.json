@@ -26,9 +26,7 @@
     "@types/sinon": "^1.16.35",
     "glob": "^7.0.3",
     "grunt": "~1.0.1",
-    "grunt-dojo2": ">=2.0.0-beta.30",
-    "grunt-tslint": "^3.0.0",
-    "tslint": "^3.15.1",
+    "grunt-dojo2": ">=2.0.0-beta.36",
     "yargs": "^5.0.0"
   },
   "dependencies": {
