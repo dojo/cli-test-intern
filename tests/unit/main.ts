@@ -85,9 +85,24 @@ describe('main', () => {
 		const runTestArgs = { testArg: 'value' };
 		return moduleUnderTest.run(helper, runTestArgs).then(() => {
 			assert.isTrue(helper.command.run.calledOnce, 'Should have called run');
-			assert.deepEqual(helper.command.run.firstCall.args, [ 'build', '', { withTests: true } ], 'Didn\'t call with proper arguments');
+			assert.deepEqual(helper.command.run.firstCall.args, [ 'build', '', { withTests: true, target: 'node' } ],
+				'Didn\'t call with proper arguments');
 			assert.isTrue(mockRunTests.default.calledOnce, 'Should have called the runTests module');
 			assert.deepEqual(mockRunTests.default.firstCall.args, [ runTestArgs ], 'Didn\'t run tests with provided arguments');
+		});
+	});
+
+	it('should run the build command with web target', () => {
+		const helper = {
+			command: {
+				exists: sandbox.stub().returns(true),
+				run: sandbox.stub().returns(Promise.resolve())
+			}
+		};
+		const runTestArgs = { testArg: 'value', browser: true };
+		return moduleUnderTest.run(helper, runTestArgs).then(() => {
+			assert.deepEqual(helper.command.run.firstCall.args, [ 'build', '', { withTests: true, target: 'web' } ],
+				'Didn\'t call with proper arguments');
 		});
 	});
 
@@ -103,7 +118,8 @@ describe('main', () => {
 			throwImmediatly,
 			(error: any) => {
 				assert.isTrue(helper.command.run.calledOnce, 'Should have called run');
-				assert.deepEqual(helper.command.run.firstCall.args, [ 'build', '', { withTests: true } ], 'Didn\'t call with proper arguments');
+				assert.deepEqual(helper.command.run.firstCall.args, [ 'build', '', { withTests: true, target: 'node' } ],
+					'Didn\'t call with proper arguments');
 				assert.equal('Failed to build', error.message, 'Wrong error message');
 			}
 		);
