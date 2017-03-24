@@ -97,7 +97,7 @@ const command: Command = {
 			if (!helper.command.exists('build')) {
 				reject(Error('Required command: \'build\', does not exist. Have you run npm install @dojo/cli-build?'));
 			}
-			const result = helper.command.run('build', '', <any> { withTests: true });
+			const result = helper.command.run('build', '', <any> { withTests: true, target: args.browser ? 'web' : 'node' });
 			result.then(
 				() => {
 					runTests(args).then(resolve, reject);
