@@ -40,7 +40,7 @@
     "mockery": "^1.7.0",
     "ora": "^0.3.0",
     "pkg-dir": "^1.0.0",
-    "remap-istanbul": "^0.9.1",
+    "remap-istanbul": "^0.9.3",
     "sinon": "^1.17.5",
     "typescript": "~2.2.1"
   }
