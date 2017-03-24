@@ -1,20 +1,24 @@
 import { Command, Helper, OptionsHelper } from '@dojo/cli/interfaces';
+import { blue } from 'chalk';
 import * as path from 'path';
 import { Argv } from 'yargs';
 import runTests from './runTests';
 const pkgDir = require('pkg-dir');
+const projectName = require(path.join(process.cwd(), './package.json')).name;
 
 export interface TestArgs extends Argv {
 	all: boolean;
 	browser: boolean;
 	config: string;
-	unit: boolean;
-	functional: boolean;
-	reporters: string;
 	coverage: boolean;
+	debug: boolean;
+	functional: boolean;
+	output: string;
+	reporters: string;
 	testingKey: string;
 	secret: string;
 	userName: string;
+	unit: boolean;
 }
 
 function buildNpmDependencies(): any {
@@ -31,7 +35,7 @@ function buildNpmDependencies(): any {
 }
 
 const command: Command = {
-	description: 'test your application',
+	description: 'this command will implicitly build your application and then run tests against that build',
 	register(options: OptionsHelper) {
 		options('a', {
 			alias: 'all',
@@ -56,6 +60,12 @@ const command: Command = {
 			describe: 'If specified coverage will be included. This is the same as adding the LcovHtml reporter'
 		});
 
+		options('d', {
+			alias: 'debug',
+			describe: 'Produce diagnostic messages to the console.',
+			default: false
+		});
+
 		options('f', {
 			alias: 'functional',
 			describe: 'Indicates that only functional tests should be run. By default only unit tests are run',
@@ -72,6 +82,13 @@ const command: Command = {
 			alias: 'userName',
 			describe: 'User name for testing platform',
 			type: 'string'
+		});
+
+		options('o', {
+			alias: 'output',
+			describe: 'The path to output any test output to (e.g. coverage information). Defaults to "./output/tests"',
+			type: 'string',
+			default: './output/tests'
 		});
 
 		options('r', {
@@ -97,6 +114,7 @@ const command: Command = {
 			if (!helper.command.exists('build')) {
 				reject(Error('Required command: \'build\', does not exist. Have you run npm install @dojo/cli-build?'));
 			}
+			console.log(blue.bgWhite.bold(`\n Building "${projectName}":`) + `\n`);
 			const result = helper.command.run('build', '', <any> { withTests: true });
 			result.then(
 				() => {

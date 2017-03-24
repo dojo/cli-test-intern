@@ -1,16 +1,18 @@
-import { red, green } from 'chalk';
 import * as path from 'path';
+import { green, red, blue } from 'chalk';
 import dirname from './dirname';
 import { TestArgs } from './main';
+import * as process from 'process';
+import remapCoverage from './remapCoverage';
 
 const cs: any = require('cross-spawn');
-const ora: any = require('ora');
 const pkgDir: any = require('pkg-dir');
 const packagePath = pkgDir.sync(dirname);
-const process = require('process');
 const projectName = require(path.join(process.cwd(), './package.json')).name;
+/* Custom reporter used for reporting */
+const internReporter = path.join(packagePath, 'reporters', 'Reporter');
 
-export function parseArguments({ all, unit, functional, config, coverage, reporters, testingKey, secret, userName }: TestArgs) {
+export function parseArguments({ all, unit, functional, config, reporters, testingKey, secret, userName }: TestArgs) {
 	const configArg = config ? `-${config}` : '';
 	const args = [ `config=${path.relative('.', path.join(packagePath, 'intern', 'intern' + configArg))}` ];
 
@@ -21,15 +23,7 @@ export function parseArguments({ all, unit, functional, config, coverage, report
 		args.push('suites=');
 	}
 
-	args.push(...(reporters ? reporters.split(',').map((reporter) => `reporters=${reporter}`) : []));
-	if (coverage) {
-		if (args.every((reporter) => reporter.indexOf('reporters=') < 0)) {
-			args.push('reporters=Runner');
-		}
-		if (args.every((reporter) => reporter.indexOf('reporters=LcovHtml') < 0)) {
-			args.push('reporters=LcovHtml');
-		}
-	}
+	args.push(...(reporters ? reporters.split(',').map((reporter) => `reporters=${reporter}`) : [ `reporters=${internReporter}` ]));
 
 	if (config === 'testingbot' && testingKey && secret) {
 		args.push(`tunnelOptions={ "verbose": "true", "apiKey": "${testingKey}", "apiSecret": "${secret}" }`);
@@ -58,23 +52,28 @@ function shouldRunInBrowser(args: TestArgs) {
 
 export default async function (testArgs: TestArgs) {
 	return new Promise((resolve, reject) => {
-		const spinner = ora({
-			spinner: 'dots',
-			color: 'white',
-			text: 'Running tests'
-		}).start();
 
-		function succeed() {
-			spinner.stopAndPersist(green.bold(' completed'));
+		async function succeed() {
+			console.log(green.bgWhite.bold('\n Testing completed successfully.'));
+			await remapCoverage(testArgs);
 			resolve();
 		}
 
-		function fail(err: string) {
-			spinner.stopAndPersist(red.bold(' failed'));
+		async function fail(err: string) {
+			console.log(red.bgWhite.bold('\n Testing failed.'));
+			await remapCoverage(testArgs);
 			reject({
 				message: err,
 				exitCode: 1
 			});
+		}
+
+		console.log(blue.bgWhite.bold(`\n Testing "${projectName}":`) + `\n`);
+
+		if (testArgs.debug) {
+			console.log(`${blue.bold('Parsed arguments for intern:')}`);
+			console.log(blue(String(parseArguments(testArgs).join('\n'))));
+			console.log(`\n${blue.bold('Should run in browser:')} ${blue(shouldRunInBrowser(testArgs).toString())}\n`);
 		}
 
 		cs.spawn(path.resolve(`node_modules/.bin/${shouldRunInBrowser(testArgs) ? 'intern-runner' : 'intern-client'}`), parseArguments(testArgs), { stdio: 'inherit' })
