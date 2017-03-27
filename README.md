@@ -8,6 +8,8 @@
 
 The official Dojo 2 test command.
 
+**WARNING** This is _beta_ software. While we do not anticipate significant changes to the API at this stage, we may feel the need to do so. This is not yet production ready, so you should use at your own risk.
+
 ## Features
 
 Builds and runs test cases for a Dojo 2 application. This module assumes that your project is structured

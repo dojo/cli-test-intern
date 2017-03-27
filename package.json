@@ -9,6 +9,10 @@
   },
   "license": "BSD-3-Clause",
   "main": "main.js",
+  "engines": {
+    "node": ">=6",
+    "npm": ">=3"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/dojo/cli-test-intern.git"
@@ -17,8 +21,8 @@
     "test": "grunt test"
   },
   "devDependencies": {
-    "@dojo/cli": "2.0.0-alpha.9",
-    "@dojo/loader": "2.0.0-beta.9",
+    "@dojo/cli": "^2.0.0-alpha.9",
+    "@dojo/loader": "^2.0.0-beta.9",
     "@types/chalk": "^0.4.31",
     "@types/charm": "^1.0.0",
     "@types/glob": "^5.0.30",
