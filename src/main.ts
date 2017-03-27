@@ -8,16 +8,17 @@ const projectName = require(path.join(process.cwd(), './package.json')).name;
 
 export interface TestArgs extends Argv {
 	all: boolean;
-	browser: boolean;
-	config: string;
-	coverage: boolean;
+	browser?: boolean;
+	config?: string;
+	coverage?: boolean;
 	debug: boolean;
 	functional: boolean;
+	internConfig?: string;
 	output: string;
-	reporters: string;
-	testingKey: string;
-	secret: string;
-	userName: string;
+	reporters?: string;
+	testingKey?: string;
+	secret?: string;
+	userName?: string;
 	unit: boolean;
 }
 
@@ -51,13 +52,13 @@ const command: Command = {
 
 		options('c', {
 			alias: 'config',
-			describe: 'Specifies what configuration to test with: \'local\'(default), \'browserstack\', \'testingbot\', or \'saucelabs\'.',
+			describe: `Specifies what configuration to test with: 'local'(default), 'browserstack', 'testingbot', or 'saucelabs'.`,
 			type: 'string'
 		});
 
 		options('cov', {
 			alias: 'coverage',
-			describe: 'If specified coverage will be included. This is the same as adding the LcovHtml reporter'
+			describe: `If specified, additional coverage reports will be written.  The will be output to the path specified in argument '-o'/'--output'.`
 		});
 
 		options('d', {
@@ -70,6 +71,12 @@ const command: Command = {
 			alias: 'functional',
 			describe: 'Indicates that only functional tests should be run. By default only unit tests are run',
 			default: false
+		});
+
+		options('i', {
+			alias: 'internConfig',
+			description: 'Override the built in intern configs by specifying a path to custom intern configuration.',
+			type: 'string'
 		});
 
 		options('k', {
@@ -86,7 +93,7 @@ const command: Command = {
 
 		options('o', {
 			alias: 'output',
-			describe: 'The path to output any test output to (e.g. coverage information). Defaults to "./output/tests"',
+			describe: `The path to output any test output to (e.g. coverage information). Defaults to './output/tests'`,
 			type: 'string',
 			default: './output/tests'
 		});
@@ -110,9 +117,16 @@ const command: Command = {
 		});
 	},
 	run(helper: Helper, args: TestArgs) {
+		function unhandledRejection(reason: any) {
+			console.log('Unhandled Promise Rejection: ');
+			console.log(reason);
+		}
+
+		process.on('unhandledRejection', unhandledRejection);
+
 		return new Promise((resolve, reject) => {
 			if (!helper.command.exists('build')) {
-				reject(Error('Required command: \'build\', does not exist. Have you run npm install @dojo/cli-build?'));
+				reject(Error('Required command: \'build\', does not exist. Have you run npm install @dojo/cli-build-webpack?'));
 			}
 			console.log(blue.bgWhite.bold(`\n Building "${projectName}":`) + `\n`);
 			const result = helper.command.run('build', '', <any> { withTests: true });

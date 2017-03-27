@@ -7,6 +7,7 @@ declare module 'remap-istanbul/lib/main' {
 		export interface RemapOptions {
 			[option: string]: any;
 			exclude?: string | RegExp | ((filename: string) => boolean);
+			mapFileName?: (filename: string) => string;
 			warn?: (...args: any[]) => void;
 		}
 

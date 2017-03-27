@@ -1,5 +1,6 @@
 import 'istanbul'; /* import for side-effects */
 
+import { accessSync, constants, readFileSync } from 'fs';
 import { red, green, grey, white, bold } from 'chalk';
 import * as intern from 'intern';
 import * as Suite from 'intern/lib/Suite';
@@ -10,6 +11,8 @@ import * as Collector from 'istanbul/lib/collector';
 import * as JsonReporter from 'istanbul/lib/report/json';
 import * as nodeUtil from 'util';
 
+const DEFAULT_COVERAGE_FILENAME = 'coverage-final.json';
+
 class Reporter extends Runner {
 	private _collector = new Collector();
 	private _errors: { [sessionId: string ]: any[] } = {};
@@ -18,7 +21,7 @@ class Reporter extends Runner {
 	constructor(config: any = {}) {
 		super(config);
 
-		this._filename = config.file || 'coverage-final.json';
+		this._filename = config.file || DEFAULT_COVERAGE_FILENAME;
 
 		this.reporter = new JsonReporter({
 			file: this._filename,
@@ -28,6 +31,22 @@ class Reporter extends Runner {
 	}
 
 	private _writeCoverage(): void {
+
+		function checkCoverageFinal() {
+			try {
+				accessSync(DEFAULT_COVERAGE_FILENAME, constants.R_OK);
+			}
+			catch (e) {
+				return false;
+			}
+			return true;
+		}
+
+		if (checkCoverageFinal()) {
+			/* There is already coverage collected from a previous run */
+			this._collector.add(JSON.parse(readFileSync(this._filename, { encoding: 'utf8' })));
+		}
+
 		this.reporter.writeReport(this._collector, true);
 	}
 
@@ -55,15 +74,17 @@ class Reporter extends Runner {
 
 		console.log();
 
-		if (intern.mode === 'client') {
-			for (let sid in this._errors) {
-				this._errors[sid].forEach((test) => {
-					console.log(red(`x ${test.id}`) +
-						white(` ( ${test.timeElapsed / 1000}s\n`) +
-						red(test.error),
-						'\n');
-				});
-			}
+		if (numFailedTests > 0) {
+			console.log(red.bold(`\nReported Test Errors:\n`));
+		}
+		for (let sid in this._errors) {
+			this._errors[sid].forEach((test) => {
+				console.log(red('x ') +
+					white.bold(test.id) +
+					white(` (${test.timeElapsed / 1000}s)\n`) +
+					red(test.error),
+					'\n');
+			});
 		}
 
 		let message = bold('\nTOTAL') + `: tested ${numEnvironments} platforms, ${numFailedTests}/${numTests} failed`;
@@ -103,12 +124,13 @@ class Reporter extends Runner {
 
 			console.log('\n');
 
-			if (this._errors[suite.sessionId]) {
-				this._errors[suite.sessionId].forEach((test) => {
-					console.log(red(`× ${test.id}`) + ` (${test.timeElapsed / 1000}s`);
-					console.log(red(test.error));
-				});
-			}
+			// if (this._errors[suite.sessionId]) {
+			// 	console.log(red.bold(`\n Reported Test Errors:\n`));
+			// 	this._errors[suite.sessionId].forEach((test) => {
+			// 		console.log(red.bold('× ') + bold(test.id) + ` (${test.timeElapsed / 1000}s )`);
+			// 		console.log(red(test.error));
+			// 	});
+			// }
 
 			const name = suite.name;
 			const hasError = (function hasError(suite: any) {

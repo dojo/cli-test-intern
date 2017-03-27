@@ -1,4 +1,4 @@
-import { red, blue, green } from 'chalk';
+import { red, blue, green, yellow } from 'chalk';
 import { accessSync, constants, unlinkSync } from 'fs';
 import * as path from 'path';
 import * as MemoryStore from 'istanbul/lib/store/memory';
@@ -7,9 +7,15 @@ import { TestArgs } from './main';
 
 const projectName = require(path.join(process.cwd(), './package.json')).name;
 
-const REMAP_EXCLUDE_PATTERN = /^webpack:[\/]{1,3}((node_modules|tests|~|\(?webpack\)?)\/|external\s)/;
+/**
+ * Returns true for files that should be remapped.
+ *
+ * Matches files that don't start with `webpack:/` and end in `.js` (likely bundles)
+ * Or matches files that start with `webpack:///src/` but don't have an extension like `.css?`
+ */
+const REMAP_INCLUDE_PATTERN = /^(?:(?!webpack:\/).*\.js|webpack:\/{3}src\/(?!.*\.css\?))/;
 
-export default async function remapCoverage(testArgs: TestArgs): Promise<void[]> {
+export default async function remapCoverage(testArgs: TestArgs) {
 
 	function checkCoverageFinal() {
 		try {
@@ -23,7 +29,7 @@ export default async function remapCoverage(testArgs: TestArgs): Promise<void[]>
 
 	if (testArgs.debug) {
 		console.log(blue.bold('\nRemapping coverage...\n'));
-		console.log(blue('Exclude Pattern: ' + REMAP_EXCLUDE_PATTERN));
+		console.log(blue('Include Pattern: ' + REMAP_INCLUDE_PATTERN));
 		console.log(blue('Coverage File Accessible: ' + checkCoverageFinal()));
 		if (testArgs.coverage) {
 			console.log(blue('Outputting Extra Coverage Files'));
@@ -36,17 +42,32 @@ export default async function remapCoverage(testArgs: TestArgs): Promise<void[]>
 	if (checkCoverageFinal()) {
 		const sources = new MemoryStore();
 		const collector = remap(loadCoverage('coverage-final.json'), {
-			exclude(filename: string) {
+			exclude(filename) {
 				if (testArgs.debug) {
-					console.log(blue(`${REMAP_EXCLUDE_PATTERN.test(filename) ? red('Exclude') : green('Include') }: ${filename}`));
+					console.log(blue(`${!REMAP_INCLUDE_PATTERN.test(filename) ? red.bold('Exclude') : green.bold('Include') }: ${filename}`));
 				}
-				return REMAP_EXCLUDE_PATTERN.test(filename);
+				return !REMAP_INCLUDE_PATTERN.test(filename);
+			},
+
+			mapFileName(filename) {
+				const mappedFileName = filename
+					.replace(/\?\S+$/, '')
+					.replace(/^webpack:\/{3}/, '');
+				if (testArgs.debug) {
+					console.log(blue.bold(`Mapping:`) + blue(`"${filename}" -> "${mappedFileName}"`));
+				}
+				return mappedFileName;
 			},
 
 			sources,
 
-			warn(message, ...args: any[]) {
-				console.warn(message, ...args);
+			warn(message, ...args) {
+				if (message instanceof Error && message.message.includes('Could not find source map for')) {
+					console.log(yellow.bold(`WARN: `) + yellow(message.message));
+				}
+				else {
+					console.warn(message, ...args);
+				}
 			}
 		});
 

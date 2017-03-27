@@ -12,9 +12,13 @@ const projectName = require(path.join(process.cwd(), './package.json')).name;
 /* Custom reporter used for reporting */
 const internReporter = path.join(packagePath, 'reporters', 'Reporter');
 
-export function parseArguments({ all, unit, functional, config, reporters, testingKey, secret, userName }: TestArgs) {
+export function parseArguments({ all, config, functional, internConfig, reporters, secret, testingKey, unit, userName }: TestArgs) {
 	const configArg = config ? `-${config}` : '';
-	const args = [ `config=${path.relative('.', path.join(packagePath, 'intern', 'intern' + configArg))}` ];
+	const args = [
+		internConfig
+			? `config=${path.relative(process.cwd(), internConfig)}`
+			: `config=${path.relative(process.cwd(), path.join(packagePath, 'intern', 'intern' + configArg))}`
+	];
 
 	if (!all && unit) {
 		args.push('functionalSuites=');
@@ -55,13 +59,15 @@ export default async function (testArgs: TestArgs) {
 
 		async function succeed() {
 			console.log(green.bgWhite.bold('\n Testing completed successfully.'));
-			await remapCoverage(testArgs);
+			await remapCoverage(testArgs)
+				.catch((reason) => { throw reason; });
 			resolve();
 		}
 
 		async function fail(err: string) {
 			console.log(red.bgWhite.bold('\n Testing failed.'));
-			await remapCoverage(testArgs);
+			await remapCoverage(testArgs)
+				.catch((reason) => { throw reason; });
 			reject({
 				message: err,
 				exitCode: 1
