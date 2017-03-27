@@ -2,7 +2,6 @@ import * as path from 'path';
 import { green, red, blue } from 'chalk';
 import dirname from './dirname';
 import { TestArgs } from './main';
-import * as process from 'process';
 import remapCoverage from './remapCoverage';
 
 const cs: any = require('cross-spawn');
@@ -11,6 +10,8 @@ const packagePath = pkgDir.sync(dirname);
 const projectName = require(path.join(process.cwd(), './package.json')).name;
 /* Custom reporter used for reporting */
 const internReporter = path.join(packagePath, 'reporters', 'Reporter');
+
+let logger = console.log;
 
 export function parseArguments({ all, config, functional, internConfig, reporters, secret, testingKey, unit, userName }: TestArgs) {
 	const configArg = config ? `-${config}` : '';
@@ -50,36 +51,36 @@ export function parseArguments({ all, config, functional, internConfig, reporter
 	return [ ...args ];
 }
 
+export function setLogger(value: (message: any, ...optionalParams: any[]) => void) {
+	logger = value;
+};
+
 function shouldRunInBrowser(args: TestArgs) {
-	return args.browser || args.functional || args.all;
+	return Boolean(args.browser || args.functional || args.all);
 }
 
 export default async function (testArgs: TestArgs) {
-	return new Promise((resolve, reject) => {
+	const testRunPromise = new Promise((resolve, reject) => {
 
-		async function succeed() {
-			console.log(green.bold('\n▶ Testing completed successfully.'));
-			await remapCoverage(testArgs)
-				.catch((reason) => { throw reason; });
+		function succeed() {
+			logger(green.bold('\n▶ Testing completed successfully.'));
 			resolve();
 		}
 
-		async function fail(err: string) {
-			console.log(red.bold('\n▶ Testing failed.'));
-			await remapCoverage(testArgs)
-				.catch((reason) => { throw reason; });
+		function fail(err: string) {
+			logger(red.bold('\n▶ Testing failed.'));
 			reject({
 				message: err,
 				exitCode: 1
 			});
 		}
 
-		console.log(blue.bold(`\n▶ Testing "${projectName}":`) + `\n`);
+		logger(blue.bold(`\n▶ Testing "${projectName}":`) + `\n`);
 
 		if (testArgs.debug) {
-			console.log(`${blue.bold('Parsed arguments for intern:')}`);
-			console.log(blue(String(parseArguments(testArgs).join('\n'))));
-			console.log(`\n${blue.bold('Should run in browser:')} ${blue(shouldRunInBrowser(testArgs).toString())}\n`);
+			logger(`${blue.bold('Parsed arguments for intern:')}`);
+			logger(blue(String(parseArguments(testArgs).join('\n'))));
+			logger(`\n${blue.bold('Should run in browser:')} ${blue(shouldRunInBrowser(testArgs).toString())}\n`);
 		}
 
 		cs.spawn(path.resolve(`node_modules/.bin/${shouldRunInBrowser(testArgs) ? 'intern-runner' : 'intern-client'}`), parseArguments(testArgs), { stdio: 'inherit' })
@@ -95,4 +96,15 @@ export default async function (testArgs: TestArgs) {
 				fail(err.message);
 			});
 	});
+
+	return testRunPromise
+		.then(
+			() => remapCoverage(testArgs),
+			(reason) => {
+				return remapCoverage(testArgs)
+					.then(() => {
+						throw reason;
+					});
+			}
+		);
 }

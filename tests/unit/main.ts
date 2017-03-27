@@ -5,14 +5,16 @@ import * as mockery from 'mockery';
 import * as sinon from 'sinon';
 import MockModule from '../support/MockModule';
 import { throwImmediatly } from '../support/util';
+import { Command } from '@dojo/cli/interfaces';
 
 describe('main', () => {
 
-	let moduleUnderTest: any;
+	let moduleUnderTest: Command;
 	let mockModule: MockModule;
 	let mockRunTests: any;
 	let sandbox: sinon.SinonSandbox;
-	let mockReadFile: any;
+	let consoleStub: sinon.SinonStub;
+	let mockReadFile: sinon.SinonStub;
 
 	beforeEach(() => {
 		sandbox = sinon.sandbox.create();
@@ -22,7 +24,7 @@ describe('main', () => {
 		};
 		mockery.registerMock('./runTests', mockRunTests);
 		moduleUnderTest = mockModule.getModuleUnderTest().default;
-		sandbox.stub(console, 'log');
+		consoleStub = sandbox.stub(console, 'log');
 		mockReadFile = sandbox.stub(fs, 'readFileSync');
 	});
 
@@ -33,16 +35,19 @@ describe('main', () => {
 
 	it('should register supported arguments', () => {
 		const options = sandbox.stub();
-		moduleUnderTest.register(options);
+		moduleUnderTest.register(options, <any> undefined);
 
 		let untestedArguments: { [key: string]: string } = {
 			'a': 'all',
 			'b': 'browser',
 			'c': 'config',
 			'cov': 'coverage',
+			'd': 'debug',
 			'f': 'functional',
+			'i': 'internConfig',
 			'k': 'testingKey',
 			'n': 'userName',
+			'o': 'output',
 			'r': 'reporters',
 			's': 'secret',
 			'u': 'unit'
@@ -51,7 +56,7 @@ describe('main', () => {
 		for (let i = 0; i < options.callCount; i++) {
 			const call = options.getCall(i);
 
-			assert.isTrue(call.args[ 0 ] in untestedArguments);
+			assert.isTrue(call.args[ 0 ] in untestedArguments, `Argument "${call.args[ 0 ]}" should be in untestedArguments`);
 			assert.strictEqual(call.args[ 1 ].alias, untestedArguments[ call.args[ 0 ] ]);
 
 			delete untestedArguments[ call.args[ 0 ] ];
@@ -66,16 +71,21 @@ describe('main', () => {
 				exists: sandbox.stub().returns(false)
 			}
 		};
-		return moduleUnderTest.run(helper, {}).then(
+		return moduleUnderTest.run(<any> helper, <any> {}).then(
 			throwImmediatly,
 			(e: Error) => {
 				assert.isTrue(helper.command.exists.calledOnce);
-				assert.equal(e.message, 'Required command: \'build\', does not exist. Have you run npm install @dojo/cli-build?');
+				assert.include(e.message, `Required command: 'build', does not exist.`);
 			}
 		);
 	});
 
 	it('should run the build command with appropriate arguments', () => {
+		mockReadFile.returns(`{
+				"name": "@dojo/cli-test-intern",
+				"version": "test-version"
+			}`);
+
 		const helper = {
 			command: {
 				exists: sandbox.stub().returns(true),
@@ -83,7 +93,7 @@ describe('main', () => {
 			}
 		};
 		const runTestArgs = { testArg: 'value' };
-		return moduleUnderTest.run(helper, runTestArgs).then(() => {
+		return moduleUnderTest.run(<any> helper, <any> runTestArgs).then(() => {
 			assert.isTrue(helper.command.run.calledOnce, 'Should have called run');
 			assert.deepEqual(helper.command.run.firstCall.args, [ 'build', '', { withTests: true, disableLazyWidgetDetection: true } ], 'Didn\'t call with proper arguments');
 			assert.isTrue(mockRunTests.default.calledOnce, 'Should have called the runTests module');
@@ -99,7 +109,7 @@ describe('main', () => {
 				run: sandbox.stub().throws(buildError)
 			}
 		};
-		return moduleUnderTest.run(helper, {}).then(
+		return moduleUnderTest.run(<any> helper, <any> {}).then(
 			throwImmediatly,
 			(error: any) => {
 				assert.isTrue(helper.command.run.calledOnce, 'Should have called run');
@@ -120,7 +130,7 @@ describe('main', () => {
 				}
 			}`);
 
-		const result = moduleUnderTest.eject({});
+		const result = (<any> moduleUnderTest).eject({});
 
 		assert.isTrue('npm' in result, 'expecting npm property');
 		assert.isTrue('devDependencies' in result.npm, 'expecting a devDependencies property');
@@ -137,7 +147,7 @@ describe('main', () => {
 		mockReadFile.throws(new Error('test error'));
 
 		try {
-			moduleUnderTest.eject({});
+			(<any> moduleUnderTest).eject({});
 			assert.fail('Should not have succeeded');
 		}
 		catch (e) {

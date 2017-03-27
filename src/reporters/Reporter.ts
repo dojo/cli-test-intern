@@ -13,6 +13,8 @@ import * as nodeUtil from 'util';
 
 const DEFAULT_COVERAGE_FILENAME = 'coverage-final.json';
 
+module Reporter { }
+
 class Reporter extends Runner {
 	private _collector = new Collector();
 	private _errors: { [sessionId: string ]: any[] } = {};

@@ -5,6 +5,7 @@ import * as MemoryStore from 'istanbul/lib/store/memory';
 import { loadCoverage, remap, writeReport } from 'remap-istanbul/lib/main';
 import { TestArgs } from './main';
 
+const process: NodeJS.Process = require('process');
 const projectName = require(path.join(process.cwd(), './package.json')).name;
 
 /**

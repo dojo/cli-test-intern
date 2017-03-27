@@ -3,8 +3,10 @@ import { blue } from 'chalk';
 import * as path from 'path';
 import { Argv } from 'yargs';
 import runTests from './runTests';
+
 const pkgDir = require('pkg-dir');
-const projectName = require(path.join(process.cwd(), './package.json')).name;
+
+const CLI_BUILD_PACKAGE = '@dojo/cli-build-webpack';
 
 export interface TestArgs extends Argv {
 	all: boolean;
@@ -117,6 +119,7 @@ const command: Command = {
 		});
 	},
 	run(helper: Helper, args: TestArgs) {
+		/* istanbul ignore next */
 		function unhandledRejection(reason: any) {
 			console.log('Unhandled Promise Rejection: ');
 			console.log(reason);
@@ -126,9 +129,15 @@ const command: Command = {
 
 		return new Promise((resolve, reject) => {
 			if (!helper.command.exists('build')) {
-				reject(Error('Required command: \'build\', does not exist. Have you run npm install @dojo/cli-build-webpack?'));
+				reject(Error(`Required command: 'build', does not exist. Have you run 'npm install ${CLI_BUILD_PACKAGE}'?`));
 			}
-			console.log(blue.bold(`\n▶ Building "${projectName}":`) + `\n`);
+			try {
+				const projectName = require(path.join(process.cwd(), './package.json')).name;
+				console.log(blue.bold(`\n▶ Building "${projectName}":`) + `\n`);
+			}
+			catch (e) {
+				console.log(blue.bold(`\n▶ Building project:`) + `\n`);
+			}
 			const result = helper.command.run('build', '', <any> { withTests: true, disableLazyWidgetDetection: true });
 			result.then(
 				() => {
