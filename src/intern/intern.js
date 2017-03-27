@@ -55,7 +55,7 @@ define({
 	functionalSuites: [ 'tests/functional/all' ],
 
 	// A regular expression matching URLs to files that should not be included in code coverage analysis
-	excludeInstrumentation: /(?:node_modules)[\/]/,
+	excludeInstrumentation: /(?:node_modules|_build\/src)[\/]/,
 
 	defaultTimeout: 5000
 });
