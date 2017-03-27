@@ -58,14 +58,14 @@ export default async function (testArgs: TestArgs) {
 	return new Promise((resolve, reject) => {
 
 		async function succeed() {
-			console.log(green.bgWhite.bold('\n Testing completed successfully.'));
+			console.log(green.bold('\n▶ Testing completed successfully.'));
 			await remapCoverage(testArgs)
 				.catch((reason) => { throw reason; });
 			resolve();
 		}
 
 		async function fail(err: string) {
-			console.log(red.bgWhite.bold('\n Testing failed.'));
+			console.log(red.bold('\n▶ Testing failed.'));
 			await remapCoverage(testArgs)
 				.catch((reason) => { throw reason; });
 			reject({
@@ -74,7 +74,7 @@ export default async function (testArgs: TestArgs) {
 			});
 		}
 
-		console.log(blue.bgWhite.bold(`\n Testing "${projectName}":`) + `\n`);
+		console.log(blue.bold(`\n▶ Testing "${projectName}":`) + `\n`);
 
 		if (testArgs.debug) {
 			console.log(`${blue.bold('Parsed arguments for intern:')}`);

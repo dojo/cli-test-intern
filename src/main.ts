@@ -128,7 +128,7 @@ const command: Command = {
 			if (!helper.command.exists('build')) {
 				reject(Error('Required command: \'build\', does not exist. Have you run npm install @dojo/cli-build-webpack?'));
 			}
-			console.log(blue.bgWhite.bold(`\n Building "${projectName}":`) + `\n`);
+			console.log(blue.bold(`\n▶ Building "${projectName}":`) + `\n`);
 			const result = helper.command.run('build', '', <any> { withTests: true });
 			result.then(
 				() => {

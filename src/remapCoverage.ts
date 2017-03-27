@@ -74,7 +74,7 @@ export default async function remapCoverage(testArgs: TestArgs) {
 		unlinkSync('coverage-final.json');
 
 		const reports = [ (() => {
-			console.log(blue.bgWhite.bold(`\n Code coverage for "${projectName}":`) + '\n');
+			console.log(blue.bold(`\n▶ Code coverage for "${projectName}":`) + '\n');
 			return writeReport(collector, 'text', {}, null, sources);
 		})() ];
 
