@@ -83,7 +83,7 @@ export default async function remapCoverage(testArgs: TestArgs) {
 			console.log(blue.bold('Additional coverage reports written to: ') + blue(testArgs.output) + '\n');
 			reports.push(writeReport(collector, 'html', {}, path.join(process.cwd(), testArgs.output, 'html-report'), sources));
 			reports.push(writeReport(collector, 'json', {}, path.join(process.cwd(), testArgs.output, 'coverage-final.json'), sources));
-			reports.push(writeReport(collector, 'lcovonly', {}, path.join(process.cwd(), testArgs.output, 'coverage-final.lcov'), sources));
+			reports.push(writeReport(collector, 'lcovonly', {}, path.join(process.cwd(), testArgs.output, 'lcov.info'), sources));
 		}
 
 		return Promise.all(reports);
