@@ -32,13 +32,7 @@ class Reporter extends Runner {
 			watermarks: config.watermarks
 		});
 
-		/* istanbul ignore else */
-		if (config.output) {
-			this._output = config.output;
-		}
-		else {
-			this._output = process.stdout;
-		}
+		this._output = config.output;
 
 		this._mode = config.mode || intern.mode;
 	}
