@@ -89,7 +89,7 @@ registerSuite({
 		mockery.disable();
 	},
 
-	'no arguments to constructor'() {
+	'standard options'() {
 		const reporter = new Reporter(reporterOptions);
 		assert.instanceOf(reporter, Reporter);
 	},
