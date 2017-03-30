@@ -8,11 +8,11 @@ declare module 'intern/lib/reporters/Runner' {
 
 	class Runner {
 		protected sessions: { [sessionId: string]: any };
-		protected hasErrors: boolean;
 		protected proxyOnly: boolean;
 		protected reporter: Reporter;
 		protected detailedReporter: DetailedReporter;
-		protected charm: charm.CharmInstance;
+		charm: charm.CharmInstance;
+		hasErrors: boolean;
 
 		constructor(config?: object);
 

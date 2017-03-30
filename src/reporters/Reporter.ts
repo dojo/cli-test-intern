@@ -19,6 +19,8 @@ class Reporter extends Runner {
 	private _collector = new Collector();
 	private _errors: { [sessionId: string ]: any[] } = {};
 	private _filename: string;
+	private _output: NodeJS.WritableStream;
+	private _mode: string;
 
 	constructor(config: any = {}) {
 		super(config);
@@ -30,6 +32,10 @@ class Reporter extends Runner {
 			watermarks: config.watermarks
 		});
 
+		/* istanbul ignore next */
+		this._output = config.output || process.stdout;
+
+		this._mode = config.mode || intern.mode;
 	}
 
 	private _writeCoverage(): void {
@@ -53,7 +59,7 @@ class Reporter extends Runner {
 	}
 
 	coverage(sessionId: string, coverage: any) {
-		if (intern.mode === 'client' || sessionId) {
+		if (this._mode === 'client' || sessionId) {
 			const session = this.sessions[sessionId || ''];
 			session.coverage = true;
 			this._collector.add(coverage);
@@ -113,46 +119,30 @@ class Reporter extends Runner {
 	}
 
 	suiteEnd(suite: Suite): void {
-		if (!suite.parent) {
-			// runEnd will report all of this information, so do not repeat it
-			if (intern.mode === 'client') {
-				return;
-			}
-
-			// Runner mode test with no sessionId was some failed test, not a bug
-			if (!suite.sessionId) {
-				return;
-			}
-
-			console.log('\n');
-
-			// if (this._errors[suite.sessionId]) {
-			// 	console.log(red.bold(`\n Reported Test Errors:\n`));
-			// 	this._errors[suite.sessionId].forEach((test) => {
-			// 		console.log(red.bold('× ') + bold(test.id) + ` (${test.timeElapsed / 1000}s )`);
-			// 		console.log(red(test.error));
-			// 	});
-			// }
-
-			const name = suite.name;
-			const hasError = (function hasError(suite: any) {
-				return suite.tests ? (suite.error || suite.tests.some(hasError)) : false;
-			})(suite);
-			const numFailedTests = suite.numFailedTests;
-			const numTests = suite.numTests;
-			const numSkippedTests = suite.numSkippedTests;
-
-			let summary = nodeUtil.format('%s: %d/%d tests failed', name, numFailedTests, numTests);
-			if (numSkippedTests) {
-				summary += ' (' + numSkippedTests + ' skipped)';
-			}
-
-			if (hasError) {
-				summary += '; fatal error occurred';
-			}
-
-			console.log((numFailedTests || hasError > 0 ? red : green)(summary) + '\n');
+		if (suite.parent || this._mode === 'client' || !suite.sessionId) {
+			return;
 		}
+
+		console.log('\n');
+
+		const name = suite.name;
+		const hasError = (function hasError(suite: any) {
+			return suite.tests ? (suite.error || suite.tests.some(hasError)) : false;
+		})(suite);
+		const numFailedTests = suite.numFailedTests;
+		const numTests = suite.numTests;
+		const numSkippedTests = suite.numSkippedTests;
+
+		let summary = nodeUtil.format('%s: %d/%d tests failed', name, numFailedTests, numTests);
+		if (numSkippedTests) {
+			summary += ' (' + numSkippedTests + ' skipped)';
+		}
+
+		if (hasError) {
+			summary += '; fatal error occurred';
+		}
+
+		console.log((numFailedTests || hasError > 0 ? red : green)(summary) + '\n');
 	}
 
 	testFail(test: Test): void {
@@ -166,15 +156,15 @@ class Reporter extends Runner {
 			error: util.getErrorMessage(test.error)
 		});
 
-		process.stdout.write(red('×'));
+		this._output.write(red('×'));
 	}
 
 	testPass(): void {
-		process.stdout.write(green('✓'));
+		this._output.write(green('✓'));
 	}
 
 	testSkip(): void {
-		process.stdout.write(grey('~'));
+		this._output.write(grey('~'));
 	}
 }
 
