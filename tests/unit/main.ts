@@ -18,13 +18,13 @@ describe('main', () => {
 
 	beforeEach(() => {
 		sandbox = sinon.sandbox.create();
+		consoleStub = sandbox.stub(console, 'log');
 		mockModule = new MockModule('../../src/main');
 		mockRunTests = {
 			default: sandbox.stub().returns(Promise.resolve())
 		};
 		mockery.registerMock('./runTests', mockRunTests);
 		moduleUnderTest = mockModule.getModuleUnderTest().default;
-		consoleStub = sandbox.stub(console, 'log');
 		mockReadFile = sandbox.stub(fs, 'readFileSync');
 	});
 
@@ -42,15 +42,14 @@ describe('main', () => {
 			'b': 'browser',
 			'c': 'config',
 			'cov': 'coverage',
-			'd': 'debug',
 			'f': 'functional',
-			'i': 'internConfig',
 			'k': 'testingKey',
 			'n': 'userName',
 			'o': 'output',
 			'r': 'reporters',
 			's': 'secret',
-			'u': 'unit'
+			'u': 'unit',
+			'v': 'verbose'
 		};
 
 		for (let i = 0; i < options.callCount; i++) {
@@ -62,7 +61,7 @@ describe('main', () => {
 			delete untestedArguments[ call.args[ 0 ] ];
 		}
 
-		assert.isTrue(Object.keys(untestedArguments).length === 0, 'Not all commands are tested');
+		assert.isTrue(Object.keys(untestedArguments).length === 0, `Not all commands are tested: "${Object.keys(untestedArguments).join('", "')}"`);
 	});
 
 	it('should check for build command and fail if it doesn\'t exist', () => {
@@ -153,5 +152,28 @@ describe('main', () => {
 		catch (e) {
 			assert.equal(e.message, 'Failed reading dependencies from package.json - test error');
 		}
+	});
+
+	it('should log unhandled promise rejections', () => {
+		mockReadFile.returns(`{
+				"name": "@dojo/cli-test-intern",
+				"version": "test-version"
+			}`);
+
+		const helper = {
+			command: {
+				exists: sandbox.stub().returns(true),
+				run() {
+					Promise.reject(new Error('foo'));
+					return Promise.resolve();
+				}
+			}
+		};
+
+		const count = consoleStub.callCount;
+
+		return moduleUnderTest.run(<any> helper, <any> {}).then(() => {
+			assert.strictEqual(consoleStub.callCount, count + 1, 'call count');
+		});
 	});
 });

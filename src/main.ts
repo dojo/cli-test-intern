@@ -1,5 +1,5 @@
 import { Command, Helper, OptionsHelper } from '@dojo/cli/interfaces';
-import { blue } from 'chalk';
+import { underline } from 'chalk';
 import * as path from 'path';
 import { Argv } from 'yargs';
 import runTests from './runTests';
@@ -13,15 +13,14 @@ export interface TestArgs extends Argv {
 	browser?: boolean;
 	config?: string;
 	coverage?: boolean;
-	debug: boolean;
 	functional: boolean;
-	internConfig?: string;
 	output: string;
 	reporters?: string;
 	testingKey?: string;
 	secret?: string;
 	userName?: string;
 	unit: boolean;
+	verbose: boolean;
 }
 
 function buildNpmDependencies(): any {
@@ -63,22 +62,10 @@ const command: Command = {
 			describe: `If specified, additional coverage reports will be written.  The will be output to the path specified in argument '-o'/'--output'.`
 		});
 
-		options('d', {
-			alias: 'debug',
-			describe: 'Produce diagnostic messages to the console.',
-			default: false
-		});
-
 		options('f', {
 			alias: 'functional',
 			describe: 'Indicates that only functional tests should be run. By default only unit tests are run',
 			default: false
-		});
-
-		options('i', {
-			alias: 'internConfig',
-			description: 'Override the built in intern configs by specifying a path to custom intern configuration.',
-			type: 'string'
 		});
 
 		options('k', {
@@ -117,9 +104,14 @@ const command: Command = {
 			describe: 'Indicates that only unit tests should be run. This is the default.',
 			default: true
 		});
+
+		options('v', {
+			alias: 'verbose',
+			describe: 'Produce diagnostic messages to the console.',
+			default: false
+		});
 	},
 	run(helper: Helper, args: TestArgs) {
-		/* istanbul ignore next */
 		function unhandledRejection(reason: any) {
 			console.log('Unhandled Promise Rejection: ');
 			console.log(reason);
@@ -127,21 +119,25 @@ const command: Command = {
 
 		process.on('unhandledRejection', unhandledRejection);
 
-		return new Promise((resolve, reject) => {
+		return new Promise<void>((resolve, reject) => {
 			if (!helper.command.exists('build')) {
 				reject(Error(`Required command: 'build', does not exist. Have you run 'npm install ${CLI_BUILD_PACKAGE}'?`));
 			}
 			try {
 				const projectName = require(path.join(process.cwd(), './package.json')).name;
-				console.log(blue.bold(`\n▶ Building "${projectName}":`) + `\n`);
+				console.log('\n' + underline(`building "${projectName}"...`));
 			}
 			catch (e) {
-				console.log(blue.bold(`\n▶ Building project:`) + `\n`);
+				console.log('\n' + underline(`building project...`));
 			}
 			const result = helper.command.run('build', '', <any> { withTests: true, disableLazyWidgetDetection: true });
 			result.then(
 				() => {
-					runTests(args).then(resolve, reject);
+					runTests(args)
+						.then(() => {
+							process.removeListener('unhandledRejection', unhandledRejection);
+						})
+						.then(resolve, reject);
 				},
 				reject
 			);

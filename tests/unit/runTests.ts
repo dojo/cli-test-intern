@@ -43,17 +43,17 @@ describe('runTests', () => {
 	afterEach(() => {
 		spawnStub.restore();
 	});
-	it('Should support logging debug information', async () => {
+	it('Should support logging verbose information', async () => {
 		spawnOnStub.onFirstCall().callsArg(1);
 		await runTests.default({
-			debug: true
+			verbose: true
 		});
 		assert.strictEqual(consoleStub.callCount, 5);
-		assert.include(consoleStub.getCall(0).args[0], '▶ Testing ');
+		assert.include(consoleStub.getCall(0).args[0], 'testing "');
 		assert.include(consoleStub.getCall(1).args[0], 'Parsed arguments for intern:');
 		assert.include(consoleStub.getCall(2).args[0], 'config=intern/intern');
 		assert.include(consoleStub.getCall(3).args[0], 'Should run in browser:');
-		assert.include(consoleStub.getCall(4).args[0], '▶ Testing completed successfully.');
+		assert.include(consoleStub.getCall(4).args[0], ' completed successfully');
 	});
 	it('Should call spawn to run intern', async () => {
 		spawnOnStub.onFirstCall().callsArg(1);

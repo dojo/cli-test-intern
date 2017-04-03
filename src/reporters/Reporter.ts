@@ -1,7 +1,7 @@
 import 'istanbul'; /* import for side-effects */
 
 import { accessSync, constants, readFileSync } from 'fs';
-import { red, green, grey, white, bold } from 'chalk';
+import { red, green, grey, white, bold, yellow } from 'chalk';
 import * as intern from 'intern';
 import * as Suite from 'intern/lib/Suite';
 import * as Test from 'intern/lib/Test';
@@ -79,7 +79,7 @@ class Reporter extends Runner {
 			numSkippedTests += session.suite.numSkippedTests;
 		}
 
-		console.log();
+		console.log(); /* for log spacing benefits */
 
 		if (numFailedTests > 0) {
 			console.log(red.bold(`\nReported Test Errors:\n`));
@@ -94,7 +94,7 @@ class Reporter extends Runner {
 			});
 		}
 
-		let message = bold('\nTOTAL') + `: tested ${numEnvironments} platforms, ${numFailedTests}/${numTests} failed`;
+		let message = bold('\n  TOTAL') + `: tested ${numEnvironments} platforms, ${numFailedTests}/${numTests} failed`;
 
 		if (numSkippedTests) {
 			message += ` (${numSkippedTests} skipped)`;
@@ -112,7 +112,7 @@ class Reporter extends Runner {
 		if (!suite.parent) {
 			this.sessions[suite.sessionId || ''] = { suite: suite };
 			if (suite.sessionId) {
-				console.log(`\n‣ Created session ${suite.name} (${suite.sessionId})`);
+				console.log('\n  ' + yellow('created') + ` session ${suite.name} (${suite.sessionId})...`);
 			}
 		}
 	}
@@ -124,13 +124,17 @@ class Reporter extends Runner {
 
 		console.log('\n');
 
-		const name = suite.name;
+		const {
+			name,
+			numFailedTests,
+			numTests,
+			numSkippedTests
+		} = suite;
+
 		const hasError = (function hasError(suite: any) {
-			return suite.tests ? (suite.error || suite.tests.some(hasError)) : false;
+			const { tests, error } = suite;
+			return tests ? (error || tests.some(hasError)) : false;
 		})(suite);
-		const numFailedTests = suite.numFailedTests;
-		const numTests = suite.numTests;
-		const numSkippedTests = suite.numSkippedTests;
 
 		let summary = nodeUtil.format('%s: %d/%d tests failed', name, numFailedTests, numTests);
 		if (numSkippedTests) {

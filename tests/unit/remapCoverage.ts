@@ -60,23 +60,28 @@ describe('remapCoverage', () => {
 	});
 
 	it('should return a promise that resolves with an array', () => {
-		return remapCoverage({})
+		return remapCoverage({
+				output: 'foo/bar'
+			})
 			.then((result: any) => {
 				assert.isArray(result, 'Result should be of an Array type');
 			});
 	});
 
-	it('should log debug information when debug is passed', () => {
+	it('should log verbose information when verbose is passed', () => {
 		return remapCoverage({
-				debug: true
+				verbose: true,
+				output: 'foo/bar'
 			})
 			.then(() => {
-				assert.strictEqual(consoleLogStub.callCount, 4);
+				assert.strictEqual(consoleLogStub.callCount, 8);
 			});
 	});
 
 	it('should try to load coverage-final.json', () => {
-		return remapCoverage({})
+		return remapCoverage({
+				output: 'foo/bar'
+			})
 			.then((result: any) => {
 				assert.strictEqual(loadCoverageStub.callCount, 1, 'Should have only been called once');
 				assert.strictEqual(loadCoverageStub.lastCall.args.length, 1, 'Should only pass one argument');
@@ -85,7 +90,9 @@ describe('remapCoverage', () => {
 	});
 
 	it('should pass loaded coverage and correct options to remap', () => {
-		return remapCoverage({})
+		return remapCoverage({
+				output: 'foo/bar'
+			})
 			.then((result: any) => {
 				assert.strictEqual(remapStub.callCount, 1, 'Should have only been called once');
 				assert.strictEqual(remapStub.lastCall.args.length, 2, 'Should have passed two arguments');
@@ -105,7 +112,9 @@ describe('remapCoverage', () => {
 	});
 
 	it('should exclude the proper files from remapping', () => {
-		return remapCoverage({})
+		return remapCoverage({
+				output: 'foo/bar'
+			})
 			.then((result: any) => {
 				const [ , options ] = remapStub.lastCall.args;
 				const { exclude } = options;
@@ -121,7 +130,8 @@ describe('remapCoverage', () => {
 
 	it('should exclude the proper files from remapping', () => {
 		return remapCoverage({
-				debug: true
+				verbose: true,
+				output: 'foo/bar'
 			})
 			.then((result: any) => {
 				const [ , options ] = remapStub.lastCall.args;
@@ -135,7 +145,9 @@ describe('remapCoverage', () => {
 	});
 
 	it('should properly map file names', () => {
-		return remapCoverage({})
+		return remapCoverage({
+				output: 'foo/bar'
+			})
 			.then((result: any) => {
 				const [ , options ] = remapStub.lastCall.args;
 				const { mapFileName } = options;
@@ -146,7 +158,8 @@ describe('remapCoverage', () => {
 
 	it('should log mapping information when debug is specified', () => {
 		return remapCoverage({
-				debug: true
+				verbose: true,
+				output: 'foo/bar'
 			})
 			.then((result: any) => {
 				const [ , options ] = remapStub.lastCall.args;
@@ -160,7 +173,9 @@ describe('remapCoverage', () => {
 
 	it('should warn properly', () => {
 		const consoleWarnStub = stub(console, 'warn');
-		return remapCoverage({})
+		return remapCoverage({
+				output: 'foo/bar'
+			})
 			.then((result: any) => {
 				const [ , options ] = remapStub.lastCall.args;
 				const { warn } = options;
@@ -179,14 +194,16 @@ describe('remapCoverage', () => {
 
 	it('should log missing coverage properly', () => {
 		const consoleWarnStub = stub(console, 'warn');
-		return remapCoverage({})
+		return remapCoverage({
+				output: 'foo/bar'
+			})
 			.then((result: any) => {
 				const [ , options ] = remapStub.lastCall.args;
 				const { warn } = options;
 
 				warn(new Error('Could not find source map for foo.js'));
 
-				assert.strictEqual(consoleLogStub.callCount, 2, 'Should have been called twice');
+				assert.strictEqual(consoleLogStub.callCount, 3, 'Should have been called three times');
 				assert.include(consoleLogStub.lastCall.args[0], 'WARN: ');
 				assert.include(consoleLogStub.lastCall.args[0], 'Could not find source map for foo.js');
 
@@ -197,13 +214,15 @@ describe('remapCoverage', () => {
 	it('should write the console report', () => {
 		const collector = {};
 		remapStub.returns(collector);
-		return remapCoverage({})
+		return remapCoverage({
+				output: 'foo/bar'
+			})
 			.then((result: any) => {
-				assert.strictEqual(consoleLogStub.callCount, 1, 'console should have been called once');
-				assert.include(consoleLogStub.lastCall.args[0], '▶ Code coverage for "');
+				assert.strictEqual(consoleLogStub.callCount, 2, 'console should have been called once');
+				assert.include(consoleLogStub.firstCall.args[0], 'code coverage for "');
 
-				assert.strictEqual(writeReportStub.callCount, 1, 'should have been called once');
-				const [ coverage, reportType, options, dest, sources ] = writeReportStub.lastCall.args;
+				assert.strictEqual(writeReportStub.callCount, 4, 'should have been called once');
+				const [ coverage, reportType, options, dest, sources ] = writeReportStub.firstCall.args;
 				assert.strictEqual(collector, coverage, 'should have passed returned coverage to report');
 				assert.strictEqual(reportType, 'text', 'should write a text report');
 				assert.deepEqual(options, {}, 'should have passed empty object to options');
@@ -214,16 +233,15 @@ describe('remapCoverage', () => {
 			});
 	});
 
-	it('should write extra reports when options coverage is true', () => {
+	it('should write out report files', () => {
 		const collector = {};
 		remapStub.returns(collector);
 		return remapCoverage({
-				coverage: true,
 				output: 'foo/bar'
 			})
 			.then((result: any) => {
 				assert.strictEqual(consoleLogStub.callCount, 2, 'console should have been called twice');
-				assert.include(consoleLogStub.lastCall.args[0], 'Additional coverage reports written to: ');
+				assert.include(consoleLogStub.lastCall.args[0], '  writing');
 
 				assert.strictEqual(writeReportStub.callCount, 4, 'there should have been four reports written');
 
@@ -259,20 +277,21 @@ describe('remapCoverage', () => {
 			});
 	});
 
-	it('should log debug information when debug and coverage is passed', () => {
+	it('should log verbose information when verbose is passed', () => {
 		return remapCoverage({
-				debug: true,
-				coverage: true,
+				verbose: true,
 				output: 'foo/bar'
 			})
 			.then(() => {
-				assert.strictEqual(consoleLogStub.callCount, 9);
+				assert.strictEqual(consoleLogStub.callCount, 8);
 			});
 	});
 
 	it('should resolve to empty array when there is no "coverage-final.json"', () => {
 		accessSyncStub.throws();
-		return remapCoverage({})
+		return remapCoverage({
+				output: 'foo/bar'
+			})
 			.then((result: any) => {
 				assert.isArray(result, 'Should be an array');
 				assert.lengthOf(result, 0, 'Should be a zero length array');

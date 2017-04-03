@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { green, red, blue } from 'chalk';
+import { blue, green, red, underline } from 'chalk';
 import dirname from './dirname';
 import { TestArgs } from './main';
 import remapCoverage from './remapCoverage';
@@ -63,24 +63,24 @@ export default async function (testArgs: TestArgs) {
 	const testRunPromise = new Promise((resolve, reject) => {
 
 		function succeed() {
-			logger(green.bold('\n▶ Testing completed successfully.'));
+			logger('\n  ' + green('testing') + ' completed successfully');
 			resolve();
 		}
 
 		function fail(err: string) {
-			logger(red.bold('\n▶ Testing failed.'));
+			logger('\n  ' + red('testing') + ' failed');
 			reject({
 				message: err,
 				exitCode: 1
 			});
 		}
 
-		logger(blue.bold(`\n▶ Testing "${projectName}":`) + `\n`);
+		logger('\n' + underline(`testing "${projectName}"...`) + `\n`);
 
-		if (testArgs.debug) {
-			logger(`${blue.bold('Parsed arguments for intern:')}`);
-			logger(blue(String(parseArguments(testArgs).join('\n'))));
-			logger(`\n${blue.bold('Should run in browser:')} ${blue(shouldRunInBrowser(testArgs).toString())}\n`);
+		if (testArgs.verbose) {
+			logger(`${blue.bold('  Parsed arguments for intern:')}`);
+			logger('    ' + blue(String(parseArguments(testArgs).join('\n    '))));
+			logger(`\n  ${blue.bold('Should run in browser:')} ${blue(shouldRunInBrowser(testArgs).toString())}\n`);
 		}
 
 		cs.spawn(path.resolve(`node_modules/.bin/${shouldRunInBrowser(testArgs) ? 'intern-runner' : 'intern-client'}`), parseArguments(testArgs), { stdio: 'inherit' })

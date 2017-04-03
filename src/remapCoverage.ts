@@ -1,4 +1,4 @@
-import { red, blue, green, yellow } from 'chalk';
+import { red, blue, green, underline, yellow } from 'chalk';
 import { accessSync, constants, unlinkSync } from 'fs';
 import * as path from 'path';
 import * as MemoryStore from 'istanbul/lib/store/memory';
@@ -28,24 +28,21 @@ export default async function remapCoverage(testArgs: TestArgs) {
 		return true;
 	}
 
-	if (testArgs.debug) {
-		console.log(blue.bold('\nRemapping coverage...\n'));
-		console.log(blue('Include Pattern: ' + REMAP_INCLUDE_PATTERN));
-		console.log(blue('Coverage File Accessible: ' + checkCoverageFinal()));
-		if (testArgs.coverage) {
-			console.log(blue('Outputting Extra Coverage Files'));
-			console.log(blue('HTML Report: ' + path.join(process.cwd(), testArgs.output, 'html-report')));
-			console.log(blue('JSON Report: ' + path.join(process.cwd(), testArgs.output, 'coverage-final.json')));
-			console.log(blue('LCOV Report: ' + path.join(process.cwd(), testArgs.output, 'coverage-final.lcov')));
-		}
+	if (testArgs.verbose) {
+		console.log('\n' + underline('remapping coverage...') + '\n');
+		console.log(blue('  Include Pattern: ' + REMAP_INCLUDE_PATTERN));
+		console.log(blue('  Coverage File Accessible: ' + checkCoverageFinal()));
+		console.log(blue('  HTML Report: ' + path.join(process.cwd(), testArgs.output, 'html-report')));
+		console.log(blue('  JSON Report: ' + path.join(process.cwd(), testArgs.output, 'coverage-final.json')));
+		console.log(blue('  LCOV Report: ' + path.join(process.cwd(), testArgs.output, 'coverage-final.lcov')));
 	}
 
 	if (checkCoverageFinal()) {
 		const sources = new MemoryStore();
 		const collector = remap(loadCoverage('coverage-final.json'), {
 			exclude(filename) {
-				if (testArgs.debug) {
-					console.log(blue(`${!REMAP_INCLUDE_PATTERN.test(filename) ? red.bold('Exclude') : green.bold('Include') }: ${filename}`));
+				if (testArgs.verbose) {
+					console.log(blue(`${!REMAP_INCLUDE_PATTERN.test(filename) ? red.bold('  excluding') : green.bold('  including') } "${filename}"`));
 				}
 				return !REMAP_INCLUDE_PATTERN.test(filename);
 			},
@@ -54,8 +51,8 @@ export default async function remapCoverage(testArgs: TestArgs) {
 				const mappedFileName = filename
 					.replace(/\?\S+$/, '')
 					.replace(/^webpack:\/{3}/, '');
-				if (testArgs.debug) {
-					console.log(blue.bold(`Mapping:`) + blue(`"${filename}" -> "${mappedFileName}"`));
+				if (testArgs.verbose) {
+					console.log(yellow(`  mapping`) + blue(` "${filename}" to "${mappedFileName}"`));
 				}
 				return mappedFileName;
 			},
@@ -64,7 +61,7 @@ export default async function remapCoverage(testArgs: TestArgs) {
 
 			warn(message, ...args) {
 				if (message instanceof Error && message.message.includes('Could not find source map for')) {
-					console.log(yellow.bold(`WARN: `) + yellow(message.message));
+					console.log(yellow.bold(`  WARN: `) + yellow(message.message));
 				}
 				else {
 					console.warn(message, ...args);
@@ -75,16 +72,14 @@ export default async function remapCoverage(testArgs: TestArgs) {
 		unlinkSync('coverage-final.json');
 
 		const reports = [ (() => {
-			console.log(blue.bold(`\n▶ Code coverage for "${projectName}":`) + '\n');
+			console.log('\n' + underline(`code coverage for "${projectName}"...`) + '\n');
 			return writeReport(collector, 'text', {}, null, sources);
 		})() ];
 
-		if (testArgs.coverage) {
-			console.log(blue.bold('Additional coverage reports written to: ') + blue(testArgs.output) + '\n');
-			reports.push(writeReport(collector, 'html', {}, path.join(process.cwd(), testArgs.output, 'html-report'), sources));
-			reports.push(writeReport(collector, 'json', {}, path.join(process.cwd(), testArgs.output, 'coverage-final.json'), sources));
-			reports.push(writeReport(collector, 'lcovonly', {}, path.join(process.cwd(), testArgs.output, 'lcov.info'), sources));
-		}
+		console.log(yellow('  writing') + ` coverage reports to: "${testArgs.output}"\n`);
+		reports.push(writeReport(collector, 'html', {}, path.join(process.cwd(), testArgs.output, 'html-report'), sources));
+		reports.push(writeReport(collector, 'json', {}, path.join(process.cwd(), testArgs.output, 'coverage-final.json'), sources));
+		reports.push(writeReport(collector, 'lcovonly', {}, path.join(process.cwd(), testArgs.output, 'lcov.info'), sources));
 
 		return Promise.all(reports);
 	}
