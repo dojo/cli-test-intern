@@ -7,10 +7,7 @@ import { stub, SinonStub } from 'sinon';
 const cs: any = require('cross-spawn');
 let spawnStub: SinonStub;
 let spawnOnStub: SinonStub;
-const stopAndPersistStub: SinonStub = stub();
-const startStub: SinonStub = stub().returns({
-	stopAndPersist: stopAndPersistStub
-});
+let consoleStub: SinonStub;
 let runTests: any;
 
 describe('runTests', () => {
@@ -19,10 +16,10 @@ describe('runTests', () => {
 			warnOnUnregistered: false
 		});
 
-		mockery.registerMock('ora', () => {
-			return {
-				start: startStub
-			};
+		mockery.registerMock('./remapCoverage', {
+			default() {
+				return Promise.resolve([]);
+			}
 		});
 
 		runTests = require('intern/dojo/node!./../../src/runTests');
@@ -37,13 +34,26 @@ describe('runTests', () => {
 			'on': spawnOnStub
 		};
 
-		startStub.reset();
-		stopAndPersistStub.reset();
 		spawnOnStub.returns(spawnOnResponse);
 		spawnStub = stub(cs, 'spawn').returns(spawnOnResponse);
+
+		consoleStub = stub();
+		runTests.setLogger(consoleStub);
 	});
 	afterEach(() => {
 		spawnStub.restore();
+	});
+	it('Should support logging verbose information', async () => {
+		spawnOnStub.onFirstCall().callsArg(1);
+		await runTests.default({
+			verbose: true
+		});
+		assert.strictEqual(consoleStub.callCount, 5);
+		assert.include(consoleStub.getCall(0).args[0], 'testing "');
+		assert.include(consoleStub.getCall(1).args[0], 'Parsed arguments for intern:');
+		assert.include(consoleStub.getCall(2).args[0], 'config=intern/intern');
+		assert.include(consoleStub.getCall(3).args[0], 'Should run in browser:');
+		assert.include(consoleStub.getCall(4).args[0], ' completed successfully');
 	});
 	it('Should call spawn to run intern', async () => {
 		spawnOnStub.onFirstCall().callsArg(1);
@@ -62,14 +72,6 @@ describe('runTests', () => {
 		});
 		assert.include(spawnStub.firstCall.args[ 0 ], 'intern-runner');
 	});
-	it('Should use a loading spinner', async () => {
-		spawnOnStub.onFirstCall().callsArg(1);
-		await runTests.default({});
-		assert.isTrue(startStub.calledOnce, 'Should call start on the spinner');
-		assert.isTrue(stopAndPersistStub.calledOnce, 'Should stop the spinner');
-		assert.isTrue(stopAndPersistStub.firstCall.calledWithMatch('completed'),
-			'Should persist completed message');
-	});
 	it('Should reject with an error when spawn throws an error in node', async () => {
 		const errorMessage = 'test error message';
 		spawnOnStub.onSecondCall().callsArgWith(1, new Error(errorMessage));
@@ -79,9 +81,6 @@ describe('runTests', () => {
 		}
 		catch (error) {
 			assert.equal(error.message, errorMessage);
-			assert.isTrue(stopAndPersistStub.calledOnce, 'Should stop the spinner');
-			assert.isTrue(stopAndPersistStub.firstCall.calledWithMatch('failed'),
-				'Should persis the failed message');
 		}
 	});
 	it('Should reject with an error when spawn exits cleanly with a non-zero status code in node', async () => {
@@ -91,9 +90,6 @@ describe('runTests', () => {
 			assert.fail(null, null, 'Should not get here');
 		}
 		catch (error) {
-			assert.isTrue(stopAndPersistStub.calledOnce, 'Should stop the spinner');
-			assert.isTrue(stopAndPersistStub.firstCall.calledWithMatch('failed'),
-				'Should persis the failed message');
 			assert.strictEqual(error.exitCode, 1);
 		}
 	});
@@ -109,9 +105,6 @@ describe('runTests', () => {
 		}
 		catch (error) {
 			assert.equal(error.message, errorMessage);
-			assert.isTrue(stopAndPersistStub.calledOnce, 'Should stop the spinner');
-			assert.isTrue(stopAndPersistStub.firstCall.calledWithMatch('failed'),
-				'Should persis the failed message');
 		}
 	});
 	it('Should reject with an error when spawn exits cleanly with a non-zero status code in a browser', async () => {
@@ -123,9 +116,6 @@ describe('runTests', () => {
 			assert.fail(null, null, 'Should not get here');
 		}
 		catch (error) {
-			assert.isTrue(stopAndPersistStub.calledOnce, 'Should stop the spinner');
-			assert.isTrue(stopAndPersistStub.firstCall.calledWithMatch('failed'),
-				'Should persis the failed message');
 			assert.strictEqual(error.exitCode, 1);
 		}
 	});
@@ -156,11 +146,6 @@ describe('runTests', () => {
 			assert.equal(args[2], 'reporters=two');
 		});
 
-		it('Should add LcovHtml reporter and console reporter if coverage argument is provided', () => {
-			assert.equal(runTests.parseArguments({ coverage: true })[1], 'reporters=Runner');
-			assert.equal(runTests.parseArguments({ coverage: true })[2], 'reporters=LcovHtml');
-		});
-
 		it('Should not duplicate the LcovHtml reporter', () => {
 			const args = runTests.parseArguments({
 				reporters: 'LcovHtml',
@@ -176,9 +161,7 @@ describe('runTests', () => {
 				coverage: true
 			});
 			assert.equal(args[1], 'reporters=Pretty');
-			assert.equal(args[2], 'reporters=LcovHtml');
-			assert.notInclude('reporters=Runner', args);
-			assert.equal(args.length, 4);
+			assert.equal(args.length, 3);
 		});
 
 		it('Should set testingbot tunnel config if provided', () => {
@@ -187,10 +170,10 @@ describe('runTests', () => {
 				testingKey: 'key',
 				secret: 'secret'
 			});
-			assert.equal(args[1], 'tunnelOptions={ "verbose": "true", "apiKey": "key", "apiSecret": "secret" }');
+			assert.equal(args[2], 'tunnelOptions={ "verbose": "true", "apiKey": "key", "apiSecret": "secret" }');
 
 			assert.equal(
-				args[2],
+				args[3],
 				'webdriver={ "host": "http://hub.testingbot.com/wd/hub", "username": "key", "accessKey": "secret" }'
 			);
 		});
@@ -200,8 +183,17 @@ describe('runTests', () => {
 				runTests.parseArguments({
 					testingKey: 'key',
 					userName: 'user'
-				})[1],
+				})[2],
 				'tunnelOptions={ "username": "user", "accessKey": "key" }');
+		});
+
+		it('Should set a specific intern config if provided', () => {
+			assert.equal(
+				runTests.parseArguments({
+					internConfig: 'foo/bar'
+				})[0],
+				'config=foo/bar'
+			);
 		});
 
 		it('Should set capabilities based on project name and according to config', () => {
@@ -209,7 +201,7 @@ describe('runTests', () => {
 			assert.equal(
 				runTests.parseArguments({
 					config: 'browserstack'
-				})[1],
+				})[2],
 				capabilitiesBase + ', "fixSessionCapabilities": "false", "browserstack.debug": "false" }',
 				'Didn\'t add browserstack config'
 			);
@@ -217,7 +209,7 @@ describe('runTests', () => {
 			assert.equal(
 				runTests.parseArguments({
 					config: 'saucelabs'
-				})[1],
+				})[2],
 				capabilitiesBase + ', "fixSessionCapabilities": "false" }',
 				'Didn\'t add saucelabs config'
 			);
@@ -226,7 +218,7 @@ describe('runTests', () => {
 				capabilitiesBase + ' }',
 				runTests.parseArguments({
 					config: 'anything else'
-				})[1],
+				})[2],
 				'Didn\'t add default config config'
 			);
 		});

@@ -1,18 +1,25 @@
-import { red, green } from 'chalk';
 import * as path from 'path';
+import { blue, green, red, underline } from 'chalk';
 import dirname from './dirname';
 import { TestArgs } from './main';
+import remapCoverage from './remapCoverage';
 
 const cs: any = require('cross-spawn');
-const ora: any = require('ora');
 const pkgDir: any = require('pkg-dir');
 const packagePath = pkgDir.sync(dirname);
-const process = require('process');
 const projectName = require(path.join(process.cwd(), './package.json')).name;
+/* Custom reporter used for reporting */
+const internReporter = path.join(packagePath, 'reporters', 'Reporter');
 
-export function parseArguments({ all, unit, functional, config, coverage, reporters, testingKey, secret, userName }: TestArgs) {
+let logger = console.log;
+
+export function parseArguments({ all, config, functional, internConfig, reporters, secret, testingKey, unit, userName }: TestArgs) {
 	const configArg = config ? `-${config}` : '';
-	const args = [ `config=${path.relative('.', path.join(packagePath, 'intern', 'intern' + configArg))}` ];
+	const args = [
+		internConfig
+			? `config=${path.relative(process.cwd(), internConfig)}`
+			: `config=${path.relative(process.cwd(), path.join(packagePath, 'intern', 'intern' + configArg))}`
+	];
 
 	if (!all && unit) {
 		args.push('functionalSuites=');
@@ -21,15 +28,7 @@ export function parseArguments({ all, unit, functional, config, coverage, report
 		args.push('suites=');
 	}
 
-	args.push(...(reporters ? reporters.split(',').map((reporter) => `reporters=${reporter}`) : []));
-	if (coverage) {
-		if (args.every((reporter) => reporter.indexOf('reporters=') < 0)) {
-			args.push('reporters=Runner');
-		}
-		if (args.every((reporter) => reporter.indexOf('reporters=LcovHtml') < 0)) {
-			args.push('reporters=LcovHtml');
-		}
-	}
+	args.push(...(reporters ? reporters.split(',').map((reporter) => `reporters=${reporter}`) : [ `reporters=${internReporter}` ]));
 
 	if (config === 'testingbot' && testingKey && secret) {
 		args.push(`tunnelOptions={ "verbose": "true", "apiKey": "${testingKey}", "apiSecret": "${secret}" }`);
@@ -52,29 +51,36 @@ export function parseArguments({ all, unit, functional, config, coverage, report
 	return [ ...args ];
 }
 
+export function setLogger(value: (message: any, ...optionalParams: any[]) => void) {
+	logger = value;
+};
+
 function shouldRunInBrowser(args: TestArgs) {
-	return args.browser || args.functional || args.all;
+	return Boolean(args.browser || args.functional || args.all);
 }
 
 export default async function (testArgs: TestArgs) {
-	return new Promise((resolve, reject) => {
-		const spinner = ora({
-			spinner: 'dots',
-			color: 'white',
-			text: 'Running tests'
-		}).start();
+	const testRunPromise = new Promise((resolve, reject) => {
 
 		function succeed() {
-			spinner.stopAndPersist(green.bold(' completed'));
+			logger('\n  ' + green('testing') + ' completed successfully');
 			resolve();
 		}
 
 		function fail(err: string) {
-			spinner.stopAndPersist(red.bold(' failed'));
+			logger('\n  ' + red('testing') + ' failed');
 			reject({
 				message: err,
 				exitCode: 1
 			});
+		}
+
+		logger('\n' + underline(`testing "${projectName}"...`) + `\n`);
+
+		if (testArgs.verbose) {
+			logger(`${blue.bold('  Parsed arguments for intern:')}`);
+			logger('    ' + blue(String(parseArguments(testArgs).join('\n    '))));
+			logger(`\n  ${blue.bold('Should run in browser:')} ${blue(shouldRunInBrowser(testArgs).toString())}\n`);
 		}
 
 		cs.spawn(path.resolve(`node_modules/.bin/${shouldRunInBrowser(testArgs) ? 'intern-runner' : 'intern-client'}`), parseArguments(testArgs), { stdio: 'inherit' })
@@ -90,4 +96,15 @@ export default async function (testArgs: TestArgs) {
 				fail(err.message);
 			});
 	});
+
+	return testRunPromise
+		.then(
+			() => remapCoverage(testArgs),
+			(reason) => {
+				return remapCoverage(testArgs)
+					.then(() => {
+						throw reason;
+					});
+			}
+		);
 }

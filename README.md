@@ -1,10 +1,8 @@
 # cli-test-intern
 
-<!-- TODO: change and uncomment
 [![Build Status](https://travis-ci.org/dojo/cli-test-intern.svg?branch=master)](https://travis-ci.org/dojo/cli-test-intern)
 [![codecov](https://codecov.io/gh/dojo/cli-test-intern/branch/master/graph/badge.svg)](https://codecov.io/gh/dojo/cli-test-intern)
-[![npm version](https://badge.fury.io/js/dojo-cli-test-intern.svg)](http://badge.fury.io/js/dojo-cli-test-intern)
--->
+[![npm version](https://badge.fury.io/js/%40dojo%2Fcli-test-intern.svg)](https://badge.fury.io/js/%40dojo%2Fcli-test-intern)
 
 The official Dojo 2 test command.
 

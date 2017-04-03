@@ -1,20 +1,26 @@
 import { Command, Helper, OptionsHelper } from '@dojo/cli/interfaces';
+import { underline } from 'chalk';
 import * as path from 'path';
 import { Argv } from 'yargs';
 import runTests from './runTests';
+
 const pkgDir = require('pkg-dir');
+
+const CLI_BUILD_PACKAGE = '@dojo/cli-build-webpack';
 
 export interface TestArgs extends Argv {
 	all: boolean;
-	browser: boolean;
-	config: string;
-	unit: boolean;
+	browser?: boolean;
+	config?: string;
+	coverage?: boolean;
 	functional: boolean;
-	reporters: string;
-	coverage: boolean;
-	testingKey: string;
-	secret: string;
-	userName: string;
+	output: string;
+	reporters?: string;
+	testingKey?: string;
+	secret?: string;
+	userName?: string;
+	unit: boolean;
+	verbose: boolean;
 }
 
 function buildNpmDependencies(): any {
@@ -31,7 +37,7 @@ function buildNpmDependencies(): any {
 }
 
 const command: Command = {
-	description: 'test your application',
+	description: 'this command will implicitly build your application and then run tests against that build',
 	register(options: OptionsHelper) {
 		options('a', {
 			alias: 'all',
@@ -47,13 +53,13 @@ const command: Command = {
 
 		options('c', {
 			alias: 'config',
-			describe: 'Specifies what configuration to test with: \'local\'(default), \'browserstack\', \'testingbot\', or \'saucelabs\'.',
+			describe: `Specifies what configuration to test with: 'local'(default), 'browserstack', 'testingbot', or 'saucelabs'.`,
 			type: 'string'
 		});
 
 		options('cov', {
 			alias: 'coverage',
-			describe: 'If specified coverage will be included. This is the same as adding the LcovHtml reporter'
+			describe: `If specified, additional coverage reports will be written.  The will be output to the path specified in argument '-o'/'--output'.`
 		});
 
 		options('f', {
@@ -74,6 +80,13 @@ const command: Command = {
 			type: 'string'
 		});
 
+		options('o', {
+			alias: 'output',
+			describe: `The path to output any test output to (e.g. coverage information). Defaults to './output/tests'`,
+			type: 'string',
+			default: './output/tests'
+		});
+
 		options('r', {
 			alias: 'reporters',
 			describe: 'Comma separated list of reporters to use, defaults to Console',
@@ -91,16 +104,40 @@ const command: Command = {
 			describe: 'Indicates that only unit tests should be run. This is the default.',
 			default: true
 		});
+
+		options('v', {
+			alias: 'verbose',
+			describe: 'Produce diagnostic messages to the console.',
+			default: false
+		});
 	},
 	run(helper: Helper, args: TestArgs) {
-		return new Promise((resolve, reject) => {
+		function unhandledRejection(reason: any) {
+			console.log('Unhandled Promise Rejection: ');
+			console.log(reason);
+		}
+
+		process.on('unhandledRejection', unhandledRejection);
+
+		return new Promise<void>((resolve, reject) => {
 			if (!helper.command.exists('build')) {
-				reject(Error('Required command: \'build\', does not exist. Have you run npm install @dojo/cli-build?'));
+				reject(Error(`Required command: 'build', does not exist. Have you run 'npm install ${CLI_BUILD_PACKAGE}'?`));
+			}
+			try {
+				const projectName = require(path.join(process.cwd(), './package.json')).name;
+				console.log('\n' + underline(`building "${projectName}"...`));
+			}
+			catch (e) {
+				console.log('\n' + underline(`building project...`));
 			}
 			const result = helper.command.run('build', '', <any> { withTests: true, disableLazyWidgetDetection: true });
 			result.then(
 				() => {
-					runTests(args).then(resolve, reject);
+					runTests(args)
+						.then(() => {
+							process.removeListener('unhandledRejection', unhandledRejection);
+						})
+						.then(resolve, reject);
 				},
 				reject
 			);
