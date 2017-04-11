@@ -165,15 +165,16 @@ describe('main', () => {
 				exists: sandbox.stub().returns(true),
 				run() {
 					Promise.reject(new Error('foo'));
-					return Promise.resolve();
 				}
 			}
 		};
 
-		const count = consoleStub.callCount;
+		moduleUnderTest.run(<any> helper, <any> {});
 
-		return moduleUnderTest.run(<any> helper, <any> {}).then(() => {
-			assert.strictEqual(consoleStub.callCount, count + 1, 'call count');
+		return new Promise((resolve) => {
+			setTimeout(resolve, 10);
+		}).then(() => {
+			assert.isTrue(consoleStub.calledWith('Unhandled Promise Rejection: '));
 		});
 	});
 });
