@@ -135,6 +135,7 @@ const command: Command = {
 				() => {
 					runTests(args)
 						.then(() => {
+							console.log('\n to run in browser: ' + underline('./node_modules/intern/client.html?config=node_modules/@dojo/cli-test-intern/intern/intern'));
 							process.removeListener('unhandledRejection', unhandledRejection);
 						})
 						.then(resolve, reject);
