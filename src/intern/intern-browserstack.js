@@ -1,7 +1,7 @@
 define([
 	'./intern'
 ], function (intern) {
-	intern.tunnel = 'BrowserstackTunnel';
+	intern.tunnel = 'BrowserStackTunnel';
 	intern.tunnelOptions = {};
 	intern.maxConcurrency = 2;
 
