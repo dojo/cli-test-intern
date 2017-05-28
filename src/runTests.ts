@@ -1,13 +1,12 @@
 import * as path from 'path';
 import { blue, green, red, underline } from 'chalk';
-import dirname from './dirname';
+import dirname, { projectName } from './dirname';
 import { TestArgs } from './main';
 import remapCoverage from './remapCoverage';
 
 const cs: any = require('cross-spawn');
 const pkgDir: any = require('pkg-dir');
 const packagePath = pkgDir.sync(dirname);
-const projectName = require(path.join(process.cwd(), './package.json')).name;
 /* Custom reporter used for reporting */
 const internReporter = path.join(packagePath, 'reporters', 'Reporter');
 
@@ -38,7 +37,7 @@ export function parseArguments({ all, config, functional, internConfig, reporter
 		args.push(`tunnelOptions={ "username": "${userName}", "accessKey": "${testingKey}" }`);
 	}
 
-	const capabilitiesBase = `capabilities={ "name": "${projectName}", "project": "${projectName}"`;
+	const capabilitiesBase = `capabilities={ "name": "${projectName()}", "project": "${projectName()}"`;
 	if (config === 'browserstack') {
 		args.push(capabilitiesBase + ', "fixSessionCapabilities": "false", "browserstack.debug": "false" }');
 	}
@@ -75,7 +74,7 @@ export default async function (testArgs: TestArgs) {
 			});
 		}
 
-		logger('\n' + underline(`testing "${projectName}"...`) + `\n`);
+		logger('\n' + underline(`testing "${projectName()}"...`) + `\n`);
 
 		if (testArgs.verbose) {
 			logger(`${blue.bold('  Parsed arguments for intern:')}`);
