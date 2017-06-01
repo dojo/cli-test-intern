@@ -154,7 +154,7 @@ const command: Command = {
 			copy: {
 				path: __dirname + '/intern',
 				files: [
-					'./intern.js',
+					'./intern-local.js',
 					'./intern-browserstack.js',
 					'./intern-saucelabs.js',
 					'./intern-testingbot.js'
