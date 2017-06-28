@@ -9,7 +9,7 @@ const pkgDir: any = require('pkg-dir');
 const packagePath = pkgDir.sync(dirname);
 const projectName = require(path.join(process.cwd(), './package.json')).name;
 /* Custom reporter used for reporting */
-const internReporter = path.join(packagePath, 'reporters', 'Reporter');
+const internReporter = `${packagePath.substr(process.cwd().length + 1)}/reporters/Reporter`;
 
 let logger = console.log;
 
