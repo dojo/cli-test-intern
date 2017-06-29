@@ -137,6 +137,11 @@ describe('runTests', () => {
 			assert.equal(runTests.parseArguments({ functional: true })[1], 'suites=');
 		});
 
+		it('Should add the default Reporter if none are provided', () => {
+			const args = runTests.parseArguments({});
+			assert.equal(args[1], 'reporters=/reporters/Reporter');
+		});
+
 		it('Should add reporters if provided', () => {
 			const args = runTests.parseArguments({
 				reporters: 'one,two'
