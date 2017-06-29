@@ -51,7 +51,7 @@ describe('runTests', () => {
 		assert.strictEqual(consoleStub.callCount, 5);
 		assert.include(consoleStub.getCall(0).args[0], 'testing "');
 		assert.include(consoleStub.getCall(1).args[0], 'Parsed arguments for intern:');
-		assert.include(consoleStub.getCall(2).args[0], 'config=intern/intern');
+		assert.include(consoleStub.getCall(2).args[0], `config=${path.join('intern', 'intern')}`);
 		assert.include(consoleStub.getCall(3).args[0], 'Should run in browser:');
 		assert.include(consoleStub.getCall(4).args[0], ' completed successfully');
 	});
@@ -197,7 +197,7 @@ describe('runTests', () => {
 				runTests.parseArguments({
 					internConfig: 'foo/bar'
 				})[0],
-				'config=foo/bar'
+				`config=${path.join('foo', 'bar')}`
 			);
 		});
 
