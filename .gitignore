@@ -10,4 +10,5 @@
 .baseDir.ts
 .tscache
 coverage-unmapped.json
+coverage-final.json
 npm-debug.log
