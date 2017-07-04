@@ -3,13 +3,11 @@
 		"declaration": false,
 		"module": "umd",
 		"moduleResolution": "node",
-		"noImplicitAny": true,
-		"noImplicitThis": true,
 		"outDir": "_build/",
 		"removeComments": false,
 		"sourceMap": true,
-		"strictNullChecks": true,
-		"target": "es6",
+		"strict": true,
+		"target": "es2016",
 		"types": [ "intern" ]
 	},
 	"include": [

@@ -46,6 +46,6 @@
     "pkg-dir": "^1.0.0",
     "remap-istanbul": "^0.9.5",
     "sinon": "^1.17.5",
-    "typescript": "~2.2.1"
+    "typescript": "~2.4.1"
   }
 }
