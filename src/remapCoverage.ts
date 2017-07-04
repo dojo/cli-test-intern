@@ -4,9 +4,9 @@ import * as path from 'path';
 import * as MemoryStore from 'istanbul/lib/store/memory';
 import { loadCoverage, remap, writeReport } from 'remap-istanbul/lib/main';
 import { TestArgs } from './main';
+import { projectName } from './dirname';
 
 const process: NodeJS.Process = require('process');
-const projectName = require(path.join(process.cwd(), './package.json')).name;
 
 /**
  * Returns true for files that should be remapped.
@@ -72,7 +72,7 @@ export default async function remapCoverage(testArgs: TestArgs) {
 		unlinkSync('coverage-final.json');
 
 		const reports = [ (() => {
-			console.log('\n' + underline(`code coverage for "${projectName}"...`) + '\n');
+			console.log('\n' + underline(`code coverage for "${projectName()}"...`) + '\n');
 			return writeReport(collector, 'text', {}, null, sources);
 		})() ];
 
