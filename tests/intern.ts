@@ -44,4 +44,4 @@ export const loaderOptions = {
 export const suites = [ 'tests/unit/all' ];
 
 // A regular expression matching URLs to files that should not be included in code coverage analysis
-export const excludeInstrumentation = /(?:node_modules|bower_components|tests)[\/\\]|intern\.js|intern-browserstack\.js|intern-saucelabs\.js|intern-testingbot\.js|dirname/;
+export const excludeInstrumentation = /(?:node_modules|bower_components|tests)[\/\\]|intern-local\.js|intern-browserstack\.js|intern-saucelabs\.js|intern-testingbot\.js|dirname/;
