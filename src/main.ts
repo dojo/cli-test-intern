@@ -54,7 +54,8 @@ const command: Command = {
 		options('c', {
 			alias: 'config',
 			describe: `Specifies what configuration to test with: 'local'(default), 'browserstack', 'testingbot', or 'saucelabs'.`,
-			type: 'string'
+			type: 'string',
+			default: 'local'
 		});
 
 		options('cov', {
