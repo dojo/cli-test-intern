@@ -13,7 +13,7 @@ const internReporter = `${path.relative(process.cwd(), packagePath)}/reporters/R
 let logger = console.log;
 
 export function parseArguments({ all, config, functional, internConfig, reporters, secret, testingKey, unit, userName }: TestArgs) {
-	const configArg = config ? `-${config}` : '';
+	const configArg = config ? `-${config}` : '-local';
 	const args = [
 		internConfig
 			? `config=${path.relative(process.cwd(), internConfig)}`

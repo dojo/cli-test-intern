@@ -126,7 +126,7 @@ describe('runTests', () => {
 		});
 
 		it('Should have a default for intern config', () => {
-			assert.equal(runTests.parseArguments({})[0], path.join('config=intern', 'intern'));
+			assert.equal(runTests.parseArguments({})[0], path.join('config=intern', 'intern-local'));
 		});
 
 		it('Should push an empty functionalSuites arg if unit is provided', () => {
