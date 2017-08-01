@@ -1,5 +1,5 @@
 define([
-	'./intern'
+	'./intern-local'
 ], function (intern) {
 	intern.tunnel = 'BrowserStackTunnel';
 	intern.tunnelOptions = {};
