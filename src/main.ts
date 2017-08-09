@@ -1,14 +1,13 @@
-import { Command, Helper, OptionsHelper } from '@dojo/cli/interfaces';
+import { Command, Helper, OptionsHelper } from '@dojo/interfaces/cli';
 import { underline } from 'chalk';
 import * as path from 'path';
-import { Argv } from 'yargs';
 import runTests from './runTests';
 
 const pkgDir = require('pkg-dir');
 
 const CLI_BUILD_PACKAGE = '@dojo/cli-build-webpack';
 
-export interface TestArgs extends Argv {
+export interface TestArgs {
 	all: boolean;
 	browser?: boolean;
 	config?: string;
@@ -21,6 +20,7 @@ export interface TestArgs extends Argv {
 	userName?: string;
 	unit: boolean;
 	verbose: boolean;
+	internConfig: string;
 }
 
 function buildNpmDependencies(): any {
@@ -36,7 +36,7 @@ function buildNpmDependencies(): any {
 	}
 }
 
-const command: Command = {
+const command: Command<TestArgs> = {
 	description: 'this command will implicitly build your application and then run tests against that build',
 	register(options: OptionsHelper) {
 		options('a', {
