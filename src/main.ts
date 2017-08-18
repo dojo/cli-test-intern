@@ -154,10 +154,7 @@ const command: Command<TestArgs> = {
 			copy: {
 				path: __dirname + '/intern',
 				files: [
-					'./intern-local.js',
-					'./intern-browserstack.js',
-					'./intern-saucelabs.js',
-					'./intern-testingbot.js'
+					'./intern.json'
 				]
 			}
 		};

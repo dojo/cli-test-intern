@@ -1,11 +1,12 @@
 import * as fs from 'fs';
-import { beforeEach, afterEach, describe, it } from 'intern!bdd';
-import * as assert from 'intern/chai!assert';
 import * as mockery from 'mockery';
 import * as sinon from 'sinon';
 import MockModule from '../support/MockModule';
 import { throwImmediatly } from '../support/util';
 import { Command } from '@dojo/interfaces/cli';
+
+const { beforeEach, afterEach, describe, it } = intern.getInterface('bdd');
+const { assert } = intern.getPlugin('chai');
 
 describe('main', () => {
 
@@ -154,27 +155,43 @@ describe('main', () => {
 		}
 	});
 
-	it('should log unhandled promise rejections', () => {
-		mockReadFile.returns(`{
+	describe('promise rejections', () => {
+		let originalListeners: ((reason: Error, promise: Promise<any>) => void)[] = [];
+
+		beforeEach(() => {
+			originalListeners = process.listeners('unhandledRejection');
+			process.removeAllListeners('unhandledRejection');
+		});
+
+		it('should log unhandled promise rejections', () => {
+			mockReadFile.returns(`{
 				"name": "@dojo/cli-test-intern",
 				"version": "test-version"
 			}`);
 
-		const helper = {
-			command: {
-				exists: sandbox.stub().returns(true),
-				run() {
-					Promise.reject(new Error('foo'));
+			const helper = {
+				command: {
+					exists: sandbox.stub().returns(true),
+					run() {
+						Promise.reject(new Error('foo'));
+					}
 				}
-			}
-		};
+			};
 
-		moduleUnderTest.run(<any> helper, <any> {});
+			moduleUnderTest.run(<any> helper, <any> {});
 
-		return new Promise((resolve) => {
-			setTimeout(resolve, 10);
-		}).then(() => {
-			assert.isTrue(consoleStub.calledWith('Unhandled Promise Rejection: '));
+			return new Promise((resolve) => {
+				setTimeout(resolve, 10);
+			}).then(() => {
+				assert.isTrue(consoleStub.calledWith('Unhandled Promise Rejection: '));
+			});
+		});
+
+		afterEach(() => {
+			process.removeAllListeners('unhandledRejection');
+			originalListeners.forEach(listener => {
+				process.on('unhandledRejection', listener);
+			});
 		});
 	});
 });

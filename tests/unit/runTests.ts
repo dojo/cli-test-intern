@@ -1,7 +1,8 @@
-import { before, beforeEach, after, afterEach, describe, it } from 'intern!bdd';
-import * as assert from 'intern/chai!assert';
 import * as mockery from 'mockery';
 import * as path from 'path';
+
+const { before, beforeEach, after, afterEach, describe, it } = intern.getInterface('bdd');
+const { assert } = intern.getPlugin('chai');
 
 import { stub, SinonStub } from 'sinon';
 const cs: any = require('cross-spawn');
@@ -16,13 +17,7 @@ describe('runTests', () => {
 			warnOnUnregistered: false
 		});
 
-		mockery.registerMock('./remapCoverage', {
-			default() {
-				return Promise.resolve([]);
-			}
-		});
-
-		runTests = require('intern/dojo/node!./../../src/runTests');
+		runTests = require('../../src/runTests');
 	});
 	after(() => {
 		mockery.deregisterAll();
@@ -59,18 +54,7 @@ describe('runTests', () => {
 		spawnOnStub.onFirstCall().callsArg(1);
 		await runTests.default({});
 		assert.isTrue(spawnStub.calledOnce);
-	});
-	it('Should run intern-client by default', async () => {
-		spawnOnStub.onFirstCall().callsArg(1);
-		await runTests.default({});
-		assert.include(spawnStub.firstCall.args[ 0 ], 'intern-client');
-	});
-	it('Should run intern-runner if running in browser', async () => {
-		spawnOnStub.onFirstCall().callsArg(1);
-		await runTests.default({
-			browser: true
-		});
-		assert.include(spawnStub.firstCall.args[ 0 ], 'intern-runner');
+		assert.include(spawnStub.firstCall.args[ 0 ], 'intern');
 	});
 	it('Should reject with an error when spawn throws an error in node', async () => {
 		const errorMessage = 'test error message';
@@ -122,11 +106,11 @@ describe('runTests', () => {
 
 	describe('Should parse arguments', () => {
 		it('Should use config to set intern file if provided', () => {
-			assert.equal(runTests.parseArguments({config: 'test'})[0], path.join('config=intern', 'intern-test'));
+			assert.equal(runTests.parseArguments({config: 'test'})[0], path.join('config=intern', 'intern.json@test'));
 		});
 
 		it('Should have a default for intern config', () => {
-			assert.equal(runTests.parseArguments({})[0], path.join('config=intern', 'intern-local'));
+			assert.equal(runTests.parseArguments({})[0], path.join('config=intern', 'intern.json'));
 		});
 
 		it('Should push an empty functionalSuites arg if unit is provided', () => {
@@ -135,11 +119,6 @@ describe('runTests', () => {
 
 		it('Should push an empty suites arg if functional is provided', () => {
 			assert.equal(runTests.parseArguments({ functional: true })[1], 'suites=');
-		});
-
-		it('Should add the default Reporter if none are provided', () => {
-			const args = runTests.parseArguments({});
-			assert.equal(args[1], 'reporters=/reporters/Reporter');
 		});
 
 		it('Should add reporters if provided', () => {
@@ -175,12 +154,7 @@ describe('runTests', () => {
 				testingKey: 'key',
 				secret: 'secret'
 			});
-			assert.equal(args[2], 'tunnelOptions={ "verbose": "true", "apiKey": "key", "apiSecret": "secret" }');
-
-			assert.equal(
-				args[3],
-				'webdriver={ "host": "http://hub.testingbot.com/wd/hub", "username": "key", "accessKey": "secret" }'
-			);
+			assert.equal(args[1], 'tunnelOptions={ "verbose": "true", "hostname": "hub.testingbot.com", "apiKey": "key", "apiSecret": "secret" }');
 		});
 
 		it('Should set normal tunnel config if provided', () => {
@@ -188,8 +162,8 @@ describe('runTests', () => {
 				runTests.parseArguments({
 					testingKey: 'key',
 					userName: 'user'
-				})[2],
-				'tunnelOptions={ "username": "user", "accessKey": "key" }');
+				})[1],
+				'tunnelOptions={ "username": "user", "apiKey": "key" }');
 		});
 
 		it('Should set a specific intern config if provided', () => {
@@ -206,7 +180,7 @@ describe('runTests', () => {
 			assert.equal(
 				runTests.parseArguments({
 					config: 'browserstack'
-				})[2],
+				})[1],
 				capabilitiesBase + ', "fixSessionCapabilities": "false", "browserstack.debug": "false" }',
 				'Didn\'t add browserstack config'
 			);
@@ -214,7 +188,7 @@ describe('runTests', () => {
 			assert.equal(
 				runTests.parseArguments({
 					config: 'saucelabs'
-				})[2],
+				})[1],
 				capabilitiesBase + ', "fixSessionCapabilities": "false" }',
 				'Didn\'t add saucelabs config'
 			);
@@ -223,7 +197,7 @@ describe('runTests', () => {
 				capabilitiesBase + ' }',
 				runTests.parseArguments({
 					config: 'anything else'
-				})[2],
+				})[1],
 				'Didn\'t add default config config'
 			);
 		});

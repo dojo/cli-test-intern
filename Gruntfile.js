@@ -22,6 +22,9 @@ module.exports = function (grunt) {
 				src: staticFiles,
 				dest: '<%= devDirectory %>/src'
 			}
+		},
+		intern: {
+			version: 4
 		}
 	});
 

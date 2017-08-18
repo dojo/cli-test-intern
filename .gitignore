@@ -4,7 +4,6 @@
 /_build
 /bower_components
 /dist
-/html-report
 /node_modules
 /typings
 .baseDir.ts
@@ -12,3 +11,5 @@
 coverage-unmapped.json
 coverage-final.json
 npm-debug.log
+coverage-final.lcov
+coverage/
