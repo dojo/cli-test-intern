@@ -40,12 +40,12 @@ describe('main', () => {
 
 		let untestedArguments: { [key: string]: string } = {
 			'a': 'all',
-			'b': 'browser',
 			'c': 'config',
 			'cov': 'coverage',
 			'f': 'functional',
+			'n': 'node',
 			'k': 'testingKey',
-			'n': 'userName',
+			'usr': 'userName',
 			'o': 'output',
 			'r': 'reporters',
 			's': 'secret',
@@ -92,12 +92,74 @@ describe('main', () => {
 				run: sandbox.stub().returns(Promise.resolve())
 			}
 		};
-		const runTestArgs = { testArg: 'value' };
+		const runTestArgs = { node: true };
 		return moduleUnderTest.run(<any> helper, <any> runTestArgs).then(() => {
 			assert.isTrue(helper.command.run.calledOnce, 'Should have called run');
 			assert.deepEqual(helper.command.run.firstCall.args, [ 'build', '', { withTests: true, disableLazyWidgetDetection: true } ], 'Didn\'t call with proper arguments');
 			assert.isTrue(mockRunTests.default.calledOnce, 'Should have called the runTests module');
-			assert.deepEqual(mockRunTests.default.firstCall.args, [ runTestArgs ], 'Didn\'t run tests with provided arguments');
+		});
+	});
+
+	it('should enable all tests when all is passed', () => {
+		mockReadFile.returns(`{
+				"name": "@dojo/cli-test-intern",
+				"version": "test-version"
+			}`);
+
+		const helper = {
+			command: {
+				exists: sandbox.stub().returns(true),
+				run: sandbox.stub().returns(Promise.resolve())
+			}
+		};
+		const runTestArgs = { node: true, all: true };
+		return moduleUnderTest.run(<any> helper, <any> runTestArgs).then(() => {
+			assert.isTrue(mockRunTests.default.calledOnce, 'Should have called the runTests module');
+			assert.strictEqual(mockRunTests.default.args[0][0].nodeUnit, true);
+			assert.strictEqual(mockRunTests.default.args[0][0].remoteUnit, true);
+			assert.strictEqual(mockRunTests.default.args[0][0].remoteFunctional, true);
+		});
+	});
+
+	it('should enable node/remote tests when unit tests is passed', () => {
+		mockReadFile.returns(`{
+				"name": "@dojo/cli-test-intern",
+				"version": "test-version"
+			}`);
+
+		const helper = {
+			command: {
+				exists: sandbox.stub().returns(true),
+				run: sandbox.stub().returns(Promise.resolve())
+			}
+		};
+		const runTestArgs = { node: true, unit: true};
+		return moduleUnderTest.run(<any> helper, <any> runTestArgs).then(() => {
+			assert.isTrue(mockRunTests.default.calledOnce, 'Should have called the runTests module');
+			assert.strictEqual(mockRunTests.default.args[0][0].nodeUnit, true);
+			assert.strictEqual(mockRunTests.default.args[0][0].remoteUnit, true);
+			assert.strictEqual(mockRunTests.default.args[0][0].remoteFunctional, false);
+		});
+	});
+
+	it('should enable functional, and disable node, tests when functional tests is passed', () => {
+		mockReadFile.returns(`{
+				"name": "@dojo/cli-test-intern",
+				"version": "test-version"
+			}`);
+
+		const helper = {
+			command: {
+				exists: sandbox.stub().returns(true),
+				run: sandbox.stub().returns(Promise.resolve())
+			}
+		};
+		const runTestArgs = { node: true, functional: true};
+		return moduleUnderTest.run(<any> helper, <any> runTestArgs).then(() => {
+			assert.isTrue(mockRunTests.default.calledOnce, 'Should have called the runTests module');
+			assert.strictEqual(mockRunTests.default.args[0][0].nodeUnit, false);
+			assert.strictEqual(mockRunTests.default.args[0][0].remoteUnit, false);
+			assert.strictEqual(mockRunTests.default.args[0][0].remoteFunctional, true);
 		});
 	});
 

@@ -1,7 +1,6 @@
 import { blue, green, red, underline } from 'chalk';
 import * as path from 'path';
 import dirname, { projectName } from './dirname';
-import { TestArgs } from './main';
 
 const cs: any = require('cross-spawn');
 const pkgDir: any = require('pkg-dir');
@@ -9,25 +8,59 @@ const packagePath = pkgDir.sync(dirname);
 
 let logger = console.log;
 
-export function parseArguments(testArgs: TestArgs) {
-	const { all, config, functional, internConfig, reporters, secret, testingKey, unit, userName } = testArgs;
-	const configArg = config ? `@${config}` : '';
+export interface TestOptions {
+	nodeUnit?: boolean;
+	remoteUnit?: boolean;
+	remoteFunctional?: boolean;
+	childConfig?: string;
+	internConfig?: string;
+	reporters?: string;
+	userName?: string;
+	secret?: string;
+	testingKey?: string;
+	verbose?: boolean;
+	coverage?: boolean;
+}
+
+export function parseArguments(testArgs: TestOptions) {
+	const {
+		nodeUnit,
+		remoteUnit,
+		remoteFunctional,
+		childConfig,
+		internConfig,
+		reporters,
+		secret,
+		testingKey,
+		userName
+	} = testArgs;
+
+	const configArg = childConfig ? `@${childConfig}` : '';
 	const args = [
 		internConfig
 			? `config=${path.relative(process.cwd(), internConfig)}`
 			: `config=${path.relative(process.cwd(), path.join(packagePath, 'intern', 'intern.json' + configArg))}`
 	];
 
-	if (functional) {
-		args.push('suites=');
+	// by default, in the intern config, all tests are run. we need to
+	// disable tests that we dont want to run
+	if (!nodeUnit) {
+		args.push('node={}');
 	}
-	else if (!all && unit) {
+
+	if (!remoteUnit && !remoteFunctional) {
+		args.push('environments=');
+	}
+	else if (!remoteFunctional) {
 		args.push('functionalSuites=');
 	}
+	else if (!remoteUnit) {
+		args.push('browser={}');
+	}
 
-	args.push(...(reporters ? reporters.split(',').map((reporter) => `reporters=${reporter}`) : [ ]));
+	args.push(...(reporters ? reporters.split(',').map((reporter) => `reporters=${reporter}`) : []));
 
-	if (config === 'testingbot' && testingKey && secret) {
+	if (childConfig === 'testingbot' && testingKey && secret) {
 		args.push(`tunnelOptions={ "verbose": "true", "hostname": "hub.testingbot.com", "apiKey": "${testingKey}", "apiSecret": "${secret}" }`);
 	}
 	else if (userName && testingKey) {
@@ -35,10 +68,10 @@ export function parseArguments(testArgs: TestArgs) {
 	}
 
 	const capabilitiesBase = `capabilities={ "name": "${projectName()}", "project": "${projectName()}"`;
-	if (config === 'browserstack') {
+	if (childConfig === 'browserstack') {
 		args.push(capabilitiesBase + ', "fixSessionCapabilities": "false", "browserstack.debug": "false" }');
 	}
-	else if (config === 'saucelabs') {
+	else if (childConfig === 'saucelabs') {
 		args.push(capabilitiesBase + ', "fixSessionCapabilities": "false" }');
 	}
 	else {
@@ -52,11 +85,7 @@ export function setLogger(value: (message: any, ...optionalParams: any[]) => voi
 	logger = value;
 }
 
-function shouldRunInBrowser(args: TestArgs) {
-	return Boolean(args.browser || args.functional || args.all);
-}
-
-export default async function (testArgs: TestArgs) {
+export default async function (testArgs: TestOptions) {
 	const testRunPromise = new Promise((resolve, reject) => {
 
 		function succeed() {
@@ -77,7 +106,6 @@ export default async function (testArgs: TestArgs) {
 		if (testArgs.verbose) {
 			logger(`${blue.bold('  Parsed arguments for intern:')}`);
 			logger('    ' + blue(String(parseArguments(testArgs).join('\n    '))));
-			logger(`\n  ${blue.bold('Should run in browser:')} ${blue(shouldRunInBrowser(testArgs).toString())}\n`);
 		}
 
 		cs.spawn(path.resolve('node_modules/.bin/intern'), parseArguments(testArgs), { stdio: 'inherit' })

@@ -44,7 +44,6 @@
     "intern": "4.0.0-alpha.13",
     "mockery": "^1.7.0",
     "pkg-dir": "^1.0.0",
-    "remap-istanbul": "^0.9.5",
     "sinon": "^1.17.5",
     "typescript": "~2.4.1"
   }
