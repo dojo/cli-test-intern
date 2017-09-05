@@ -10,21 +10,21 @@
     "hostname": "localhost",
     "port": "4444"
   },
-  "reporters": [
-    {
-      "name": "runner"
-    },
-    {
-      "name": "lcov",
-      "options": {
-        "filename": "../coverage-final.lcov"
-      }
-    },
-    {
-      "name": "htmlcoverage"
-    }
-  ],
   "node": {
+    "reporters": [
+      {
+        "name": "runner"
+      },
+      {
+        "name": "lcov",
+        "options": {
+          "filename": "../coverage-final.lcov"
+        }
+      },
+      {
+        "name": "htmlcoverage"
+      }
+    ],
     "require": [
       "node_modules/@dojo/test-extras/support/loadJsdom",
       "./_build/node/src/src"
