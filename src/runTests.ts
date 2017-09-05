@@ -20,6 +20,7 @@ export interface TestOptions {
 	testingKey?: string;
 	verbose?: boolean;
 	coverage?: boolean;
+	filter?: string;
 }
 
 export function parseArguments(testArgs: TestOptions) {
@@ -32,7 +33,8 @@ export function parseArguments(testArgs: TestOptions) {
 		reporters,
 		secret,
 		testingKey,
-		userName
+		userName,
+		filter
 	} = testArgs;
 
 	const configArg = childConfig ? `@${childConfig}` : '';
@@ -56,6 +58,10 @@ export function parseArguments(testArgs: TestOptions) {
 	}
 	else if (!remoteUnit) {
 		args.push('browser={}');
+	}
+
+	if (filter) {
+		args.push('grep=' + filter);
 	}
 
 	args.push(...(reporters ? reporters.split(',').map((reporter) => `reporters=${reporter}`) : []));

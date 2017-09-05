@@ -20,6 +20,7 @@ export interface TestArgs {
 	verbose: boolean;
 	internConfig: string;
 	node: boolean;
+	filter: string;
 }
 
 function buildNpmDependencies(): any {
@@ -62,10 +63,15 @@ function transformTestArgs(args: TestArgs): TestOptions {
 		testingKey: args.testingKey,
 		verbose: args.verbose,
 		coverage: args.coverage,
+		filter: args.filter,
 		nodeUnit,
 		remoteUnit,
 		remoteFunctional
 	};
+}
+
+function printBrowserLink(args: TestArgs) {
+	console.log('\n to run in browser: ' + underline('./node_modules/intern/?config=node_modules/@dojo/cli-test-intern/intern/intern'));
 }
 
 const command: Command<TestArgs> = {
@@ -143,6 +149,11 @@ const command: Command<TestArgs> = {
 			type: 'boolean',
 			default: true
 		});
+
+		options('filter', {
+			describe: 'Run only tests whose IDs match a regular expression',
+			type: 'string'
+		});
 	},
 	run(helper: Helper, args: TestArgs) {
 		function unhandledRejection(reason: any) {
@@ -168,8 +179,13 @@ const command: Command<TestArgs> = {
 				() => {
 					runTests(transformTestArgs(args))
 						.then(() => {
-							console.log('\n to run in browser: ' + underline('./node_modules/intern/?config=node_modules/@dojo/cli-test-intern/intern/intern'));
 							process.removeListener('unhandledRejection', unhandledRejection);
+						})
+						.then(() => {
+							printBrowserLink(args);
+						}, (err) => {
+							printBrowserLink(args);
+							throw err;
 						})
 						.then(resolve, reject);
 				},
