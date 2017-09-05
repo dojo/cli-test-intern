@@ -71,7 +71,13 @@ function transformTestArgs(args: TestArgs): TestOptions {
 }
 
 function printBrowserLink(args: TestArgs) {
-	console.log('\n to run in browser: ' + underline('./node_modules/intern/?config=node_modules/@dojo/cli-test-intern/intern/intern'));
+	const browserArgs = [];
+
+	if (args.filter) {
+		browserArgs.push('grep=' + encodeURIComponent(args.filter));
+	}
+
+	console.log('\n to run in browser: ' + underline(`http://localhost:8080/node_modules/intern/?config=node_modules/@dojo/cli-test-intern/intern/intern.json${browserArgs.length ? `&${browserArgs.join('&')}` : ''}`));
 }
 
 const command: Command<TestArgs> = {
