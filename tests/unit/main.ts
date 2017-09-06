@@ -285,6 +285,22 @@ describe('main', () => {
 		});
 	});
 
+	it('should print browser link on failure', () => {
+		const helper = {
+			command: {
+				exists: sandbox.stub().returns(true),
+				run: sandbox.stub().returns(Promise.resolve())
+			}
+		};
+		const runTestArgs = { node: true, all: true };
+		mockRunTests.default.returns(Promise.reject('error'));
+		return moduleUnderTest.run(<any> helper, <any> runTestArgs).then(() => {
+			assert.fail('should have failed');
+		}, () => {
+			assertLog('to run in browser');
+		});
+	});
+
 	it('should print browser link with filter option', () => {
 		const helper = {
 			command: {
