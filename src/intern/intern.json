@@ -26,13 +26,17 @@
       }
     ],
     "require": [
-      "node_modules/@dojo/test-extras/support/loadJsdom"
+      "node_modules/@dojo/test-extras/support/loadJsdom",
+      "_build/src/src"
     ],
     "suites": [
       "./_build/tests/unit/all"
     ]
   },
   "browser": {
+    "require": [
+      "./_build/src/src.js"
+    ],
     "suites": [
       "./_build/tests/unit/all.js"
     ]
