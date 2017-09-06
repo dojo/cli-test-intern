@@ -26,23 +26,19 @@
       }
     ],
     "require": [
-      "node_modules/@dojo/test-extras/support/loadJsdom",
-      "./_build/node/src/src"
+      "node_modules/@dojo/test-extras/support/loadJsdom"
     ],
     "suites": [
-      "./_build/node/tests/unit/all"
+      "./_build/tests/unit/all"
     ]
   },
   "browser": {
-    "require": [
-      "./_build/src/src.js"
-    ],
     "suites": [
       "./_build/tests/unit/all.js"
     ]
   },
   "functionalSuites": [
-    "./_build/node/tests/functional/all"
+    "./_build/tests/functional/all"
   ],
   "leaveRemoteOpen": false,
   "coverage": [],
