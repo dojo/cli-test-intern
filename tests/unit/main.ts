@@ -38,7 +38,7 @@ describe('main', () => {
 		const options = sandbox.stub();
 		moduleUnderTest.register(options, <any> undefined);
 
-		let untestedArguments: { [key: string]: string } = {
+		let untestedArguments: { [key: string]: string | undefined } = {
 			'a': 'all',
 			'c': 'config',
 			'cov': 'coverage',
@@ -50,7 +50,8 @@ describe('main', () => {
 			'r': 'reporters',
 			's': 'secret',
 			'u': 'unit',
-			'v': 'verbose'
+			'v': 'verbose',
+			'filter': undefined
 		};
 
 		for (let i = 0; i < options.callCount; i++) {
