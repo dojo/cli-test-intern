@@ -17,6 +17,20 @@ describe('main', () => {
 	let consoleStub: sinon.SinonStub;
 	let mockReadFile: sinon.SinonStub;
 
+	function assertLog(include: string) {
+		let found = false;
+
+		consoleStub.args.forEach((call) => {
+			call.forEach((arg) => {
+				if (arg.indexOf(include) >= 0) {
+					found = true;
+				}
+			});
+		});
+
+		assert.isTrue(found, `was expecting "${include}" to be logged in the console`);
+	}
+
 	beforeEach(() => {
 		sandbox = sinon.sandbox.create();
 		consoleStub = sandbox.stub(console, 'log');
@@ -255,6 +269,33 @@ describe('main', () => {
 			originalListeners.forEach(listener => {
 				process.on('unhandledRejection', listener);
 			});
+		});
+	});
+
+	it('should print browser link on success', () => {
+		const helper = {
+			command: {
+				exists: sandbox.stub().returns(true),
+				run: sandbox.stub().returns(Promise.resolve())
+			}
+		};
+		const runTestArgs = { node: true, all: true };
+		return moduleUnderTest.run(<any> helper, <any> runTestArgs).then(() => {
+			assertLog('to run in browser');
+		});
+	});
+
+	it('should print browser link with filter option', () => {
+		const helper = {
+			command: {
+				exists: sandbox.stub().returns(true),
+				run: sandbox.stub().returns(Promise.resolve())
+			}
+		};
+		const runTestArgs = { node: true, all: true, filter: 'test' };
+		return moduleUnderTest.run(<any> helper, <any> runTestArgs).then(() => {
+			assertLog('to run in browser');
+			assertLog('grep=test');
 		});
 	});
 });

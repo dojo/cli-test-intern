@@ -203,6 +203,12 @@ describe('runTests', () => {
 			);
 		});
 
+		it('Should add grep if filter provided', () => {
+			assert.include(runTests.parseArguments({
+				filter: 'test'
+			}), 'grep=test');
+		});
+
 		it('Should set capabilities based on project name and according to config', () => {
 			const capabilitiesBase = 'capabilities={ "name": "@dojo/cli-test-intern", "project": "@dojo/cli-test-intern"';
 			assert.include(
