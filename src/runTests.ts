@@ -70,7 +70,7 @@ export function parseArguments(testArgs: TestOptions) {
 		args.push(`tunnelOptions={ "verbose": "true", "hostname": "hub.testingbot.com", "apiKey": "${testingKey}", "apiSecret": "${secret}" }`);
 	}
 	else if (userName && testingKey) {
-		args.push(`tunnelOptions={ "username": "${userName}", "apiKey": "${testingKey}" }`);
+		args.push(`tunnelOptions={ "username": "${userName}", "accessKey": "${testingKey}" }`);
 	}
 
 	const capabilitiesBase = `capabilities={ "name": "${projectName()}", "project": "${projectName()}"`;

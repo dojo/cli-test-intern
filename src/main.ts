@@ -37,9 +37,9 @@ function buildNpmDependencies(): any {
 }
 
 function transformTestArgs(args: TestArgs): TestOptions {
-	let nodeUnit = true,
-		remoteUnit = false,
-		remoteFunctional = false;
+	let nodeUnit = true;
+	let remoteUnit = false;
+	let remoteFunctional = false;
 
 	if (args.all) {
 		nodeUnit = remoteUnit = remoteFunctional = true;
@@ -139,7 +139,7 @@ const command: Command<TestArgs> = {
 
 		options('u', {
 			alias: 'unit',
-			describe: 'Indicates that only unit tests should be run. This is the default.',
+			describe: 'Indicates that only unit tests should be run.',
 			default: false
 		});
 

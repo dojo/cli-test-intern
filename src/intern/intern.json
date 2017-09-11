@@ -28,19 +28,16 @@
     "require": [
       "node_modules/@dojo/test-extras/support/loadJsdom",
       "_build/src/src"
-    ],
-    "suites": [
-      "./_build/tests/unit/all"
     ]
   },
   "browser": {
     "require": [
       "./_build/src/src.js"
-    ],
-    "suites": [
-      "./_build/tests/unit/all.js"
     ]
   },
+  "suites": [
+    "./_build/tests/unit/all"
+  ],
   "functionalSuites": [
     "./_build/tests/functional/all"
   ],
@@ -54,9 +51,7 @@
       "environments": [
         {
           "browserName": "internet explorer",
-          "version": [
-            "11"
-          ],
+          "version": "11",
           "platform": "WINDOWS"
         },
         {
@@ -75,9 +70,7 @@
       "environments": [
         {
           "browserName": "internet explorer",
-          "version": [
-            "11.0"
-          ],
+          "version": "11.0",
           "platform": "Windows 7"
         },
         {

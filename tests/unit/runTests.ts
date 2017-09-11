@@ -191,7 +191,7 @@ describe('runTests', () => {
 					testingKey: 'key',
 					userName: 'user'
 				}),
-				'tunnelOptions={ "username": "user", "apiKey": "key" }');
+				'tunnelOptions={ "username": "user", "accessKey": "key" }');
 		});
 
 		it('Should set a specific intern config if provided', () => {
