@@ -44,16 +44,16 @@ describe('runTests', () => {
 			verbose: true
 		});
 		assert.strictEqual(consoleStub.callCount, 4);
-		assert.include(consoleStub.getCall(0).args[ 0 ], 'testing "');
-		assert.include(consoleStub.getCall(1).args[ 0 ], 'Parsed arguments for intern:');
-		assert.include(consoleStub.getCall(2).args[ 0 ], `config=${path.join('intern', 'intern')}`);
-		assert.include(consoleStub.getCall(3).args[ 0 ], ' completed successfully');
+		assert.include(consoleStub.getCall(0).args[0], 'testing "');
+		assert.include(consoleStub.getCall(1).args[0], 'Parsed arguments for intern:');
+		assert.include(consoleStub.getCall(2).args[0], `config=${path.join('intern', 'intern')}`);
+		assert.include(consoleStub.getCall(3).args[0], ' completed successfully');
 	});
 	it('Should call spawn to run intern', async () => {
 		spawnOnStub.onFirstCall().callsArg(1);
 		await runTests.default({});
 		assert.isTrue(spawnStub.calledOnce);
-		assert.include(spawnStub.firstCall.args[ 0 ], 'intern');
+		assert.include(spawnStub.firstCall.args[0], 'intern');
 	});
 	it('Should reject with an error when spawn throws an error in node', async () => {
 		const errorMessage = 'test error message';
@@ -105,11 +105,11 @@ describe('runTests', () => {
 
 	describe('Should parse arguments', () => {
 		it('Should use config to set intern file if provided', () => {
-			assert.equal(runTests.parseArguments({ childConfig: 'test' })[ 0 ], path.join('config=intern', 'intern.json@test'));
+			assert.equal(runTests.parseArguments({ childConfig: 'test' })[0], path.join('config=intern', 'intern.json@test'));
 		});
 
 		it('Should have a default for intern config', () => {
-			assert.equal(runTests.parseArguments({})[ 0 ], path.join('config=intern', 'intern.json'));
+			assert.equal(runTests.parseArguments({})[0], path.join('config=intern', 'intern.json'));
 		});
 
 		it('Should push an empty environments arg if functional tests and remote unit tests are not required', () => {
@@ -174,15 +174,6 @@ describe('runTests', () => {
 			});
 			assert.include(args, 'reporters=Pretty');
 			assert.notInclude(args, 'reporters=Runner');
-		});
-
-		it('Should set testingbot tunnel config if provided', () => {
-			const args = runTests.parseArguments({
-				childConfig: 'testingbot',
-				testingKey: 'key',
-				secret: 'secret'
-			});
-			assert.include(args, 'tunnelOptions={ "verbose": "true", "hostname": "hub.testingbot.com", "apiKey": "key", "apiSecret": "secret" }');
 		});
 
 		it('Should set normal tunnel config if provided', () => {

@@ -66,10 +66,7 @@ export function parseArguments(testArgs: TestOptions) {
 
 	args.push(...(reporters ? reporters.split(',').map((reporter) => `reporters=${reporter}`) : []));
 
-	if (childConfig === 'testingbot' && testingKey && secret) {
-		args.push(`tunnelOptions={ "verbose": "true", "hostname": "hub.testingbot.com", "apiKey": "${testingKey}", "apiSecret": "${secret}" }`);
-	}
-	else if (userName && testingKey) {
+	if (userName && testingKey) {
 		args.push(`tunnelOptions={ "username": "${userName}", "accessKey": "${testingKey}" }`);
 	}
 
