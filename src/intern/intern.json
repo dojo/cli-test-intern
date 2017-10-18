@@ -1,0 +1,112 @@
+{
+  "environments": [
+    {
+      "browserName": "chrome"
+    }
+  ],
+  "maxConcurrency": 2,
+  "tunnel": "selenium",
+  "tunnelOptions": {
+    "hostname": "localhost",
+    "port": "4444"
+  },
+  "node": {
+    "reporters": [
+      {
+        "name": "runner"
+      },
+      {
+        "name": "lcov",
+        "options": {
+          "filename": "../coverage-final.lcov"
+        }
+      },
+      {
+        "name": "htmlcoverage"
+      }
+    ],
+    "plugins": [
+      "@dojo/test-extras/support/loadJsdom",
+      "./_build/src/src"
+    ]
+  },
+  "browser": {
+    "plugins": [
+      "./_build/src/src.js"
+    ]
+  },
+  "suites": [
+    "./_build/tests/unit/all.js"
+  ],
+  "functionalSuites": [
+    "./_build/tests/functional/all.js"
+  ],
+  "leaveRemoteOpen": false,
+  "coverage": [],
+  "defaultTimeout": 15000,
+  "configs": {
+    "browserstack": {
+      "maxConcurrency": 2,
+      "tunnel": "browserstack",
+      "environments": [
+        {
+          "browserName": "internet explorer",
+          "version": "11",
+          "platform": "WINDOWS"
+        },
+        {
+          "browserName": "firefox",
+          "platform": "WINDOWS"
+        },
+        {
+          "browserName": "chrome",
+          "platform": "WINDOWS"
+        }
+      ]
+    },
+    "saucelabs": {
+      "maxConcurrency": 4,
+      "tunnel": "saucelabs",
+      "environments": [
+        {
+          "browserName": "internet explorer",
+          "version": "11.0",
+          "platform": "Windows 7"
+        },
+        {
+          "browserName": "firefox",
+          "version": "49",
+          "platform": "Windows 10"
+        },
+        {
+          "browserName": "chrome",
+          "platform": "Windows 10"
+        }
+      ]
+    },
+    "testingbot": {
+      "tunnel": "testingbot",
+      "tunnelOptions": {
+        "hostname": "hub.testingbot.com"
+      },
+      "environments": [
+        {
+          "browserName": "internet explorer",
+          "version": [
+            "11"
+          ],
+          "platform": "WIN8"
+        },
+        {
+          "browserName": "firefox",
+          "version": "49",
+          "platform": "WIN10"
+        },
+        {
+          "browserName": "chrome",
+          "platform": "WIN10"
+        }
+      ]
+    }
+  }
+}

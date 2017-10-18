@@ -1,7 +1,7 @@
 import { Command, Helper, OptionsHelper } from '@dojo/interfaces/cli';
 import { underline } from 'chalk';
 import * as path from 'path';
-import runTests from './runTests';
+import runTests, { TestOptions } from './runTests';
 
 const pkgDir = require('pkg-dir');
 
@@ -9,11 +9,9 @@ const CLI_BUILD_PACKAGE = '@dojo/cli-build-webpack';
 
 export interface TestArgs {
 	all: boolean;
-	browser?: boolean;
 	config?: string;
 	coverage?: boolean;
 	functional: boolean;
-	output: string;
 	reporters?: string;
 	testingKey?: string;
 	secret?: string;
@@ -21,6 +19,8 @@ export interface TestArgs {
 	unit: boolean;
 	verbose: boolean;
 	internConfig: string;
+	node: boolean;
+	filter: string;
 }
 
 function buildNpmDependencies(): any {
@@ -36,6 +36,50 @@ function buildNpmDependencies(): any {
 	}
 }
 
+function transformTestArgs(args: TestArgs): TestOptions {
+	let nodeUnit = true;
+	let remoteUnit = false;
+	let remoteFunctional = false;
+
+	if (args.all) {
+		nodeUnit = remoteUnit = remoteFunctional = true;
+	}
+
+	if (args.unit) {
+		remoteUnit = true;
+	}
+
+	if (args.functional) {
+		nodeUnit = false;
+		remoteFunctional = true;
+	}
+
+	return {
+		childConfig: args.config,
+		internConfig: args.internConfig,
+		reporters: args.reporters,
+		userName: args.userName,
+		secret: args.secret,
+		testingKey: args.testingKey,
+		verbose: args.verbose,
+		coverage: args.coverage,
+		filter: args.filter,
+		nodeUnit,
+		remoteUnit,
+		remoteFunctional
+	};
+}
+
+function printBrowserLink(args: TestArgs) {
+	const browserArgs = [];
+
+	if (args.filter) {
+		browserArgs.push('grep=' + encodeURIComponent(args.filter));
+	}
+
+	console.log('\n to run in browser: ' + underline(`http://localhost:8080/node_modules/intern/?config=node_modules/@dojo/cli-test-intern/intern/intern.json${browserArgs.length ? `&${browserArgs.join('&')}` : ''}`));
+}
+
 const command: Command<TestArgs> = {
 	description: 'this command will implicitly build your application and then run tests against that build',
 	register(options: OptionsHelper) {
@@ -43,12 +87,6 @@ const command: Command<TestArgs> = {
 			alias: 'all',
 			describe: 'Indicates that all tests (both unit and functional) should be run. By default, only unit tests are run.',
 			default: false
-		});
-
-		options('b', {
-			alias: 'browser',
-			describe: 'Indicates that unit tests should be run in the browser (default node). Note that functional tests are always run in the browser.',
-			type: 'boolean'
 		});
 
 		options('c', {
@@ -74,7 +112,7 @@ const command: Command<TestArgs> = {
 			type: 'string'
 		});
 
-		options('n', {
+		options('usr', {
 			alias: 'userName',
 			describe: 'User name for testing platform',
 			type: 'string'
@@ -101,14 +139,26 @@ const command: Command<TestArgs> = {
 
 		options('u', {
 			alias: 'unit',
-			describe: 'Indicates that only unit tests should be run. This is the default.',
-			default: true
+			describe: 'Indicates that only unit tests should be run.',
+			default: false
 		});
 
 		options('v', {
 			alias: 'verbose',
 			describe: 'Produce diagnostic messages to the console.',
 			default: false
+		});
+
+		options('n', {
+			alias: 'node',
+			describe: 'Run unit tests via node',
+			type: 'boolean',
+			default: true
+		});
+
+		options('filter', {
+			describe: 'Run only tests whose IDs match a regular expression',
+			type: 'string'
 		});
 	},
 	run(helper: Helper, args: TestArgs) {
@@ -133,10 +183,15 @@ const command: Command<TestArgs> = {
 			const result = helper.command.run('build', '', <any> { withTests: true, disableLazyWidgetDetection: true });
 			result.then(
 				() => {
-					runTests(args)
+					runTests(transformTestArgs(args))
 						.then(() => {
-							console.log('\n to run in browser: ' + underline('./node_modules/intern/client.html?config=node_modules/@dojo/cli-test-intern/intern/intern'));
 							process.removeListener('unhandledRejection', unhandledRejection);
+						})
+						.then(() => {
+							printBrowserLink(args);
+						}, (err) => {
+							printBrowserLink(args);
+							throw err;
 						})
 						.then(resolve, reject);
 				},
@@ -154,10 +209,7 @@ const command: Command<TestArgs> = {
 			copy: {
 				path: __dirname + '/intern',
 				files: [
-					'./intern-local.js',
-					'./intern-browserstack.js',
-					'./intern-saucelabs.js',
-					'./intern-testingbot.js'
+					'./intern.json'
 				]
 			}
 		};

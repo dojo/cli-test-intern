@@ -1,11 +1,12 @@
 import * as fs from 'fs';
-import { beforeEach, afterEach, describe, it } from 'intern!bdd';
-import * as assert from 'intern/chai!assert';
 import * as mockery from 'mockery';
 import * as sinon from 'sinon';
 import MockModule from '../support/MockModule';
 import { throwImmediatly } from '../support/util';
 import { Command } from '@dojo/interfaces/cli';
+
+const { beforeEach, afterEach, describe, it } = intern.getInterface('bdd');
+const { assert } = intern.getPlugin('chai');
 
 describe('main', () => {
 
@@ -16,10 +17,24 @@ describe('main', () => {
 	let consoleStub: sinon.SinonStub;
 	let mockReadFile: sinon.SinonStub;
 
+	function assertLog(include: string) {
+		let found = false;
+
+		consoleStub.args.forEach((call) => {
+			call.forEach((arg) => {
+				if (arg.indexOf(include) >= 0) {
+					found = true;
+				}
+			});
+		});
+
+		assert.isTrue(found, `was expecting "${include}" to be logged in the console`);
+	}
+
 	beforeEach(() => {
 		sandbox = sinon.sandbox.create();
 		consoleStub = sandbox.stub(console, 'log');
-		mockModule = new MockModule('../../src/main');
+		mockModule = new MockModule('../../src/main', require);
 		mockRunTests = {
 			default: sandbox.stub().returns(Promise.resolve())
 		};
@@ -37,19 +52,20 @@ describe('main', () => {
 		const options = sandbox.stub();
 		moduleUnderTest.register(options, <any> undefined);
 
-		let untestedArguments: { [key: string]: string } = {
+		let untestedArguments: { [key: string]: string | undefined } = {
 			'a': 'all',
-			'b': 'browser',
 			'c': 'config',
 			'cov': 'coverage',
 			'f': 'functional',
+			'n': 'node',
 			'k': 'testingKey',
-			'n': 'userName',
+			'usr': 'userName',
 			'o': 'output',
 			'r': 'reporters',
 			's': 'secret',
 			'u': 'unit',
-			'v': 'verbose'
+			'v': 'verbose',
+			'filter': undefined
 		};
 
 		for (let i = 0; i < options.callCount; i++) {
@@ -91,12 +107,74 @@ describe('main', () => {
 				run: sandbox.stub().returns(Promise.resolve())
 			}
 		};
-		const runTestArgs = { testArg: 'value' };
+		const runTestArgs = { node: true };
 		return moduleUnderTest.run(<any> helper, <any> runTestArgs).then(() => {
 			assert.isTrue(helper.command.run.calledOnce, 'Should have called run');
 			assert.deepEqual(helper.command.run.firstCall.args, [ 'build', '', { withTests: true, disableLazyWidgetDetection: true } ], 'Didn\'t call with proper arguments');
 			assert.isTrue(mockRunTests.default.calledOnce, 'Should have called the runTests module');
-			assert.deepEqual(mockRunTests.default.firstCall.args, [ runTestArgs ], 'Didn\'t run tests with provided arguments');
+		});
+	});
+
+	it('should enable all tests when all is passed', () => {
+		mockReadFile.returns(`{
+				"name": "@dojo/cli-test-intern",
+				"version": "test-version"
+			}`);
+
+		const helper = {
+			command: {
+				exists: sandbox.stub().returns(true),
+				run: sandbox.stub().returns(Promise.resolve())
+			}
+		};
+		const runTestArgs = { node: true, all: true };
+		return moduleUnderTest.run(<any> helper, <any> runTestArgs).then(() => {
+			assert.isTrue(mockRunTests.default.calledOnce, 'Should have called the runTests module');
+			assert.strictEqual(mockRunTests.default.args[0][0].nodeUnit, true);
+			assert.strictEqual(mockRunTests.default.args[0][0].remoteUnit, true);
+			assert.strictEqual(mockRunTests.default.args[0][0].remoteFunctional, true);
+		});
+	});
+
+	it('should enable node/remote tests when unit tests is passed', () => {
+		mockReadFile.returns(`{
+				"name": "@dojo/cli-test-intern",
+				"version": "test-version"
+			}`);
+
+		const helper = {
+			command: {
+				exists: sandbox.stub().returns(true),
+				run: sandbox.stub().returns(Promise.resolve())
+			}
+		};
+		const runTestArgs = { node: true, unit: true};
+		return moduleUnderTest.run(<any> helper, <any> runTestArgs).then(() => {
+			assert.isTrue(mockRunTests.default.calledOnce, 'Should have called the runTests module');
+			assert.strictEqual(mockRunTests.default.args[0][0].nodeUnit, true);
+			assert.strictEqual(mockRunTests.default.args[0][0].remoteUnit, true);
+			assert.strictEqual(mockRunTests.default.args[0][0].remoteFunctional, false);
+		});
+	});
+
+	it('should enable functional, and disable node, tests when functional tests is passed', () => {
+		mockReadFile.returns(`{
+				"name": "@dojo/cli-test-intern",
+				"version": "test-version"
+			}`);
+
+		const helper = {
+			command: {
+				exists: sandbox.stub().returns(true),
+				run: sandbox.stub().returns(Promise.resolve())
+			}
+		};
+		const runTestArgs = { node: true, functional: true};
+		return moduleUnderTest.run(<any> helper, <any> runTestArgs).then(() => {
+			assert.isTrue(mockRunTests.default.calledOnce, 'Should have called the runTests module');
+			assert.strictEqual(mockRunTests.default.args[0][0].nodeUnit, false);
+			assert.strictEqual(mockRunTests.default.args[0][0].remoteUnit, false);
+			assert.strictEqual(mockRunTests.default.args[0][0].remoteFunctional, true);
 		});
 	});
 
@@ -154,27 +232,86 @@ describe('main', () => {
 		}
 	});
 
-	it('should log unhandled promise rejections', () => {
-		mockReadFile.returns(`{
+	describe('promise rejections', () => {
+		let originalListeners: ((reason: Error, promise: Promise<any>) => void)[] = [];
+
+		beforeEach(() => {
+			originalListeners = process.listeners('unhandledRejection');
+			process.removeAllListeners('unhandledRejection');
+		});
+
+		it('should log unhandled promise rejections', () => {
+			mockReadFile.returns(`{
 				"name": "@dojo/cli-test-intern",
 				"version": "test-version"
 			}`);
 
+			const helper = {
+				command: {
+					exists: sandbox.stub().returns(true),
+					run() {
+						Promise.reject(new Error('foo'));
+					}
+				}
+			};
+
+			moduleUnderTest.run(<any> helper, <any> {});
+
+			return new Promise((resolve) => {
+				setTimeout(resolve, 10);
+			}).then(() => {
+				assert.isTrue(consoleStub.calledWith('Unhandled Promise Rejection: '));
+			});
+		});
+
+		afterEach(() => {
+			process.removeAllListeners('unhandledRejection');
+			originalListeners.forEach(listener => {
+				process.on('unhandledRejection', listener);
+			});
+		});
+	});
+
+	it('should print browser link on success', () => {
 		const helper = {
 			command: {
 				exists: sandbox.stub().returns(true),
-				run() {
-					Promise.reject(new Error('foo'));
-				}
+				run: sandbox.stub().returns(Promise.resolve())
 			}
 		};
+		const runTestArgs = { node: true, all: true };
+		return moduleUnderTest.run(<any> helper, <any> runTestArgs).then(() => {
+			assertLog('to run in browser');
+		});
+	});
 
-		moduleUnderTest.run(<any> helper, <any> {});
+	it('should print browser link on failure', () => {
+		const helper = {
+			command: {
+				exists: sandbox.stub().returns(true),
+				run: sandbox.stub().returns(Promise.resolve())
+			}
+		};
+		const runTestArgs = { node: true, all: true };
+		mockRunTests.default.returns(Promise.reject('error'));
+		return moduleUnderTest.run(<any> helper, <any> runTestArgs).then(() => {
+			assert.fail('should have failed');
+		}, () => {
+			assertLog('to run in browser');
+		});
+	});
 
-		return new Promise((resolve) => {
-			setTimeout(resolve, 10);
-		}).then(() => {
-			assert.isTrue(consoleStub.calledWith('Unhandled Promise Rejection: '));
+	it('should print browser link with filter option', () => {
+		const helper = {
+			command: {
+				exists: sandbox.stub().returns(true),
+				run: sandbox.stub().returns(Promise.resolve())
+			}
+		};
+		const runTestArgs = { node: true, all: true, filter: 'test' };
+		return moduleUnderTest.run(<any> helper, <any> runTestArgs).then(() => {
+			assertLog('to run in browser');
+			assertLog('grep=test');
 		});
 	});
 });

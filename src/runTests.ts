@@ -1,64 +1,94 @@
-import * as path from 'path';
 import { blue, green, red, underline } from 'chalk';
+import * as path from 'path';
 import dirname, { projectName } from './dirname';
-import { TestArgs } from './main';
-import remapCoverage from './remapCoverage';
 
 const cs: any = require('cross-spawn');
 const pkgDir: any = require('pkg-dir');
 const packagePath = pkgDir.sync(dirname);
-/* Custom reporter used for reporting */
-const internReporter = `${path.relative(process.cwd(), packagePath)}/reporters/Reporter`;
 
 let logger = console.log;
 
-export function parseArguments({ all, config, functional, internConfig, reporters, secret, testingKey, unit, userName }: TestArgs) {
-	const configArg = config ? `-${config}` : '-local';
+export interface TestOptions {
+	nodeUnit?: boolean;
+	remoteUnit?: boolean;
+	remoteFunctional?: boolean;
+	childConfig?: string;
+	internConfig?: string;
+	reporters?: string;
+	userName?: string;
+	secret?: string;
+	testingKey?: string;
+	verbose?: boolean;
+	coverage?: boolean;
+	filter?: string;
+}
+
+export function parseArguments(testArgs: TestOptions) {
+	const {
+		nodeUnit,
+		remoteUnit,
+		remoteFunctional,
+		childConfig,
+		internConfig,
+		reporters,
+		secret,
+		testingKey,
+		userName,
+		filter
+	} = testArgs;
+
+	const configArg = childConfig ? `@${childConfig}` : '';
 	const args = [
 		internConfig
 			? `config=${path.relative(process.cwd(), internConfig)}`
-			: `config=${path.relative(process.cwd(), path.join(packagePath, 'intern', 'intern' + configArg))}`
+			: `config=${path.relative(process.cwd(), path.join(packagePath, 'intern', 'intern.json' + configArg))}`
 	];
 
-	if (!all && unit) {
+	// by default, in the intern config, all tests are run. we need to
+	// disable tests that we dont want to run
+	if (!nodeUnit) {
+		args.push('node={}');
+	}
+
+	if (!remoteUnit && !remoteFunctional) {
+		args.push('environments=');
+	}
+	else if (!remoteFunctional) {
 		args.push('functionalSuites=');
 	}
-	else if (functional) {
-		args.push('suites=');
+	else if (!remoteUnit) {
+		args.push('browser={}');
 	}
 
-	args.push(...(reporters ? reporters.split(',').map((reporter) => `reporters=${reporter}`) : [ `reporters=${internReporter}` ]));
-
-	if (config === 'testingbot' && testingKey && secret) {
-		args.push(`tunnelOptions={ "verbose": "true", "apiKey": "${testingKey}", "apiSecret": "${secret}" }`);
-		args.push(`webdriver={ "host": "http://hub.testingbot.com/wd/hub", "username": "${testingKey}", "accessKey": "${secret}" }`);
+	if (filter) {
+		args.push('grep=' + filter);
 	}
-	else if (userName && testingKey) {
+
+	args.push(...(reporters ? reporters.split(',').map((reporter) => `reporters=${reporter}`) : []));
+
+	if (userName && testingKey) {
 		args.push(`tunnelOptions={ "username": "${userName}", "accessKey": "${testingKey}" }`);
 	}
 
 	const capabilitiesBase = `capabilities={ "name": "${projectName()}", "project": "${projectName()}"`;
-	if (config === 'browserstack') {
+	if (childConfig === 'browserstack') {
 		args.push(capabilitiesBase + ', "fixSessionCapabilities": "false", "browserstack.debug": "false" }');
 	}
-	else if (config === 'saucelabs') {
+	else if (childConfig === 'saucelabs') {
 		args.push(capabilitiesBase + ', "fixSessionCapabilities": "false" }');
 	}
 	else {
 		args.push(capabilitiesBase + ' }');
 	}
+
 	return [ ...args ];
 }
 
 export function setLogger(value: (message: any, ...optionalParams: any[]) => void) {
 	logger = value;
-};
-
-function shouldRunInBrowser(args: TestArgs) {
-	return Boolean(args.browser || args.functional || args.all);
 }
 
-export default async function (testArgs: TestArgs) {
+export default async function (testArgs: TestOptions) {
 	const testRunPromise = new Promise((resolve, reject) => {
 
 		function succeed() {
@@ -79,10 +109,9 @@ export default async function (testArgs: TestArgs) {
 		if (testArgs.verbose) {
 			logger(`${blue.bold('  Parsed arguments for intern:')}`);
 			logger('    ' + blue(String(parseArguments(testArgs).join('\n    '))));
-			logger(`\n  ${blue.bold('Should run in browser:')} ${blue(shouldRunInBrowser(testArgs).toString())}\n`);
 		}
 
-		cs.spawn(path.resolve(`node_modules/.bin/${shouldRunInBrowser(testArgs) ? 'intern-runner' : 'intern-client'}`), parseArguments(testArgs), { stdio: 'inherit' })
+		cs.spawn(path.resolve('node_modules/.bin/intern'), parseArguments(testArgs), { stdio: 'inherit' })
 			.on('close', (exitCode: number) => {
 				if (exitCode) {
 					fail('Tests did not complete successfully');
@@ -96,14 +125,5 @@ export default async function (testArgs: TestArgs) {
 			});
 	});
 
-	return testRunPromise
-		.then(
-			() => remapCoverage(testArgs),
-			(reason) => {
-				return remapCoverage(testArgs)
-					.then(() => {
-						throw reason;
-					});
-			}
-		);
+	return testRunPromise;
 }

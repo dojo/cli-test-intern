@@ -22,12 +22,11 @@ module.exports = function (grunt) {
 				src: staticFiles,
 				dest: '<%= devDirectory %>/src'
 			}
+		},
+		intern: {
+			version: 4
 		}
 	});
-
-	grunt.registerTask('ci', [
-		'intern:node'
-	]);
 
 	grunt.registerTask('dist', grunt.config.get('distTasks').concat(['copy:staticDistFiles']));
 	grunt.registerTask('dev', grunt.config.get('devTasks').concat(['copy:staticDevFiles']));
