@@ -8,11 +8,7 @@
 		"sourceMap": true,
 		"strict": true,
 		"target": "es2016",
-		"types": [ "intern" ],
-		"typeRoots": [
-			"./node_modules/@types",
-			"./node_modules/intern/types"
-		]
+		"types": [ "intern" ]
 	},
 	"include": [
 		"./src/**/*.ts",
