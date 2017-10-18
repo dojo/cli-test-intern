@@ -34,7 +34,7 @@ describe('main', () => {
 	beforeEach(() => {
 		sandbox = sinon.sandbox.create();
 		consoleStub = sandbox.stub(console, 'log');
-		mockModule = new MockModule('../../src/main');
+		mockModule = new MockModule('../../src/main', require);
 		mockRunTests = {
 			default: sandbox.stub().returns(Promise.resolve())
 		};
