@@ -116,23 +116,19 @@ describe('runTests', () => {
 			assert.include(runTests.parseArguments({ remoteFunctional: false }), 'environments=');
 		});
 
-		it('Should not remove node suites if node is enabled', () => {
-			assert.notInclude(runTests.parseArguments({ nodeUnit: true }), 'node={}');
+		it('Should not remove suites if they are enabled', () => {
+			assert.notInclude(runTests.parseArguments({ nodeUnit: true }), 'suites=');
+			assert.notInclude(runTests.parseArguments({ remoteUnit: true }), 'suites=');
 		});
 
 		it('Should remove functional suites', () => {
 			assert.notInclude(runTests.parseArguments({ remoteUnit: true }), 'functionalSuites={}');
 		});
 
-		it('Should remove browser suites', () => {
-			assert.include(runTests.parseArguments({ remoteFunctional: true }), 'browser={}');
-		});
-
 		it('Should not exclude anything if its all true', () => {
-			assert.notInclude(runTests.parseArguments({ nodeUnit: true, remoteUnit: true, remoteFunctional: true }), 'browser={}');
 			assert.notInclude(runTests.parseArguments({ nodeUnit: true, remoteUnit: true, remoteFunctional: true }), 'functionalSuites=');
 			assert.notInclude(runTests.parseArguments({ nodeUnit: true, remoteUnit: true, remoteFunctional: true }), 'environments=');
-			assert.notInclude(runTests.parseArguments({ nodeUnit: true, remoteUnit: true, remoteFunctional: true }), 'node={}');
+			assert.notInclude(runTests.parseArguments({ nodeUnit: true, remoteUnit: true, remoteFunctional: true }), 'suites=');
 		});
 
 		it('Should push an empty suites arg if functional tests are added', () => {
@@ -140,12 +136,7 @@ describe('runTests', () => {
 				nodeUnit: false,
 				remoteUnit: false,
 				remoteFunctional: true
-			}), 'node={}');
-			assert.include(runTests.parseArguments({
-				nodeUnit: false,
-				remoteUnit: false,
-				remoteFunctional: true
-			}), 'browser={}');
+			}), 'suites=');
 		});
 
 		it('Should add reporters if provided', () => {
