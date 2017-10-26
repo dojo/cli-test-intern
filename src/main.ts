@@ -50,7 +50,7 @@ function transformTestArgs(args: TestArgs): TestOptions {
 	}
 
 	if (args.functional) {
-		nodeUnit = false;
+		nodeUnit = remoteUnit = false;
 		remoteFunctional = true;
 	}
 
@@ -85,7 +85,7 @@ const command: Command<TestArgs> = {
 	register(options: OptionsHelper) {
 		options('a', {
 			alias: 'all',
-			describe: 'Indicates that all tests (both unit and functional) should be run. By default, only unit tests are run.',
+			describe: 'Runs unit tests and functional tests. Unit tests are run via node and the local tunnel. Functional tests are run via the local tunnel',
 			default: false
 		});
 
@@ -102,7 +102,7 @@ const command: Command<TestArgs> = {
 
 		options('f', {
 			alias: 'functional',
-			describe: 'Indicates that only functional tests should be run. By default only unit tests are run',
+			describe: 'Runs only functional tests. Tests are run via the local tunnel',
 			default: false
 		});
 
@@ -139,7 +139,7 @@ const command: Command<TestArgs> = {
 
 		options('u', {
 			alias: 'unit',
-			describe: 'Indicates that only unit tests should be run.',
+			describe: 'Runs unit tests via node and the local tunnel',
 			default: false
 		});
 

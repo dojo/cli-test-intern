@@ -1,8 +1,7 @@
 {
   "environments": [
-    {
-      "browserName": "chrome"
-    }
+    { "browserName": "node" },
+    { "browserName": "chrome" }
   ],
   "maxConcurrency": 2,
   "tunnel": "selenium",
@@ -27,12 +26,12 @@
     ],
     "plugins": [
       "@dojo/test-extras/support/loadJsdom",
-      "./_build/src/src"
+      "./_build/src/main"
     ]
   },
   "browser": {
     "plugins": [
-      "./_build/src/src.js"
+      "./_build/src/main.js"
     ]
   },
   "suites": [

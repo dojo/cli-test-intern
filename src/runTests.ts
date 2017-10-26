@@ -46,8 +46,8 @@ export function parseArguments(testArgs: TestOptions) {
 
 	// by default, in the intern config, all tests are run. we need to
 	// disable tests that we dont want to run
-	if (!nodeUnit) {
-		args.push('node={}');
+	if (!remoteUnit && !nodeUnit) {
+		args.push('suites=');
 	}
 
 	if (!remoteUnit && !remoteFunctional) {
@@ -55,9 +55,6 @@ export function parseArguments(testArgs: TestOptions) {
 	}
 	else if (!remoteFunctional) {
 		args.push('functionalSuites=');
-	}
-	else if (!remoteUnit) {
-		args.push('browser={}');
 	}
 
 	if (filter) {
