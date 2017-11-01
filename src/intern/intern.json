@@ -26,12 +26,12 @@
     ],
     "plugins": [
       "@dojo/test-extras/support/loadJsdom",
-      "./_build/src/main"
+      "./_build/src/src"
     ]
   },
   "browser": {
     "plugins": [
-      "./_build/src/main.js"
+      "./_build/src/src.js"
     ]
   },
   "suites": [
