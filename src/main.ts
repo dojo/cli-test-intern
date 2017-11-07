@@ -77,7 +77,7 @@ function printBrowserLink(args: TestArgs) {
 		browserArgs.push('grep=' + encodeURIComponent(args.filter));
 	}
 
-	console.log('\n to run in browser: ' + underline(`http://localhost:8080/node_modules/intern/?config=node_modules/@dojo/cli-test-intern/intern/intern.json${browserArgs.length ? `&${browserArgs.join('&')}` : ''}`));
+	console.log('\n If the project directory is hosted on a local server, unit tests can also be run in browser by navigating to' + underline(`http://localhost:<port>/node_modules/intern/?config=node_modules/@dojo/cli-test-intern/intern/intern.json${browserArgs.length ? `&${browserArgs.join('&')}` : ''}`));
 }
 
 const command: Command<TestArgs> = {
