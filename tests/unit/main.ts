@@ -281,7 +281,7 @@ describe('main', () => {
 		};
 		const runTestArgs = { node: true, all: true };
 		return moduleUnderTest.run(<any> helper, <any> runTestArgs).then(() => {
-			assertLog('to run in browser');
+			assertLog('If the project directory is hosted on a local server, unit tests can also be run in browser by navigating to');
 		});
 	});
 
@@ -297,7 +297,7 @@ describe('main', () => {
 		return moduleUnderTest.run(<any> helper, <any> runTestArgs).then(() => {
 			assert.fail('should have failed');
 		}, () => {
-			assertLog('to run in browser');
+			assertLog('If the project directory is hosted on a local server, unit tests can also be run in browser by navigating to');
 		});
 	});
 
@@ -310,7 +310,7 @@ describe('main', () => {
 		};
 		const runTestArgs = { node: true, all: true, filter: 'test' };
 		return moduleUnderTest.run(<any> helper, <any> runTestArgs).then(() => {
-			assertLog('to run in browser');
+			assertLog('If the project directory is hosted on a local server, unit tests can also be run in browser by navigating to');
 			assertLog('grep=test');
 		});
 	});
