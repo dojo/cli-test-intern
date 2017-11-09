@@ -2,6 +2,7 @@ import { Command, Helper, OptionsHelper } from '@dojo/interfaces/cli';
 import { underline } from 'chalk';
 import * as path from 'path';
 import runTests, { TestOptions } from './runTests';
+import javaCheck from './javaCheck';
 
 const pkgDir = require('pkg-dir');
 
@@ -9,6 +10,7 @@ const CLI_BUILD_PACKAGE = '@dojo/cli-build-webpack';
 
 export interface TestArgs {
 	all: boolean;
+	browser: boolean;
 	config?: string;
 	coverage?: boolean;
 	functional: boolean;
@@ -77,7 +79,7 @@ function printBrowserLink(args: TestArgs) {
 		browserArgs.push('grep=' + encodeURIComponent(args.filter));
 	}
 
-	console.log('\n If the project directory is hosted on a local server, unit tests can also be run in browser by navigating to' + underline(`http://localhost:<port>/node_modules/intern/?config=node_modules/@dojo/cli-test-intern/intern/intern.json${browserArgs.length ? `&${browserArgs.join('&')}` : ''}`));
+	console.log('\n If the project directory is hosted on a local server, unit tests can also be run in browser by navigating to ' + underline(`http://localhost:<port>/node_modules/intern/?config=node_modules/@dojo/cli-test-intern/intern/intern.json${browserArgs.length ? `&${browserArgs.join('&')}` : ''}`));
 }
 
 const command: Command<TestArgs> = {
@@ -86,7 +88,7 @@ const command: Command<TestArgs> = {
 		options('a', {
 			alias: 'all',
 			describe: 'Runs unit tests and functional tests. Unit tests are run via node and the local tunnel. Functional tests are run via the local tunnel',
-			default: false
+			'default': false
 		});
 
 		options('c', {
@@ -103,7 +105,7 @@ const command: Command<TestArgs> = {
 		options('f', {
 			alias: 'functional',
 			describe: 'Runs only functional tests. Tests are run via the local tunnel',
-			default: false
+			'default': false
 		});
 
 		options('k', {
@@ -122,7 +124,7 @@ const command: Command<TestArgs> = {
 			alias: 'output',
 			describe: `The path to output any test output to (e.g. coverage information). Defaults to './output/tests'`,
 			type: 'string',
-			default: './output/tests'
+			'default': './output/tests'
 		});
 
 		options('r', {
@@ -140,20 +142,20 @@ const command: Command<TestArgs> = {
 		options('u', {
 			alias: 'unit',
 			describe: 'Runs unit tests via node and the local tunnel',
-			default: false
+			'default': false
 		});
 
 		options('v', {
 			alias: 'verbose',
 			describe: 'Produce diagnostic messages to the console.',
-			default: false
+			'default': false
 		});
 
 		options('n', {
 			alias: 'node',
 			describe: 'Run unit tests via node',
 			type: 'boolean',
-			default: true
+			'default': true
 		});
 
 		options('filter', {
@@ -169,37 +171,46 @@ const command: Command<TestArgs> = {
 
 		process.on('unhandledRejection', unhandledRejection);
 
-		return new Promise<void>((resolve, reject) => {
-			if (!helper.command.exists('build')) {
-				reject(Error(`Required command: 'build', does not exist. Have you run 'npm install ${CLI_BUILD_PACKAGE}'?`));
+		return javaCheck(args).then((javaCheckPassed) => {
+			if (javaCheckPassed) {
+				return new Promise<void>((resolve, reject) => {
+					if (!helper.command.exists('build')) {
+						reject(Error(`Required command: 'build', does not exist. Have you run 'npm install ${CLI_BUILD_PACKAGE}'?`));
+					}
+					try {
+						const projectName = require(path.join(process.cwd(), './package.json')).name;
+						console.log('\n' + underline(`building "${projectName}"...`));
+					}
+					catch (e) {
+						console.log('\n' + underline(`building project...`));
+					}
+					const result = helper.command.run('build', '',
+						<any> { withTests: true, disableLazyWidgetDetection: true });
+					result.then(
+						() => {
+							runTests(transformTestArgs(args))
+								.then(() => {
+									process.removeListener('unhandledRejection', unhandledRejection);
+								})
+								.then(() => {
+									printBrowserLink(args);
+								}, (err) => {
+									printBrowserLink(args);
+									throw err;
+								})
+								.then(resolve, reject);
+						},
+						reject
+					);
+				});
+			} else {
+				return Promise.reject(Error(underline('Error! Java VM could not be found.') +
+					'\nA Java VM needs to be installed and available from the command line to allow the ' +
+					underline('dojo test') + ' command to run tests in a browser locally or remotely.'));
 			}
-			try {
-				const projectName = require(path.join(process.cwd(), './package.json')).name;
-				console.log('\n' + underline(`building "${projectName}"...`));
-			}
-			catch (e) {
-				console.log('\n' + underline(`building project...`));
-			}
-			const result = helper.command.run('build', '', <any> { withTests: true, disableLazyWidgetDetection: true });
-			result.then(
-				() => {
-					runTests(transformTestArgs(args))
-						.then(() => {
-							process.removeListener('unhandledRejection', unhandledRejection);
-						})
-						.then(() => {
-							printBrowserLink(args);
-						}, (err) => {
-							printBrowserLink(args);
-							throw err;
-						})
-						.then(resolve, reject);
-				},
-				reject
-			);
 		});
 	},
-	eject(helper: Helper) {
+	eject() {
 		return {
 			npm: {
 				devDependencies: {
