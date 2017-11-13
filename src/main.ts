@@ -88,7 +88,7 @@ const command: Command<TestArgs> = {
 		options('a', {
 			alias: 'all',
 			describe: 'Runs unit tests and functional tests. Unit tests are run via node and the local tunnel. Functional tests are run via the local tunnel',
-			'default': false
+			default: false
 		});
 
 		options('c', {
@@ -105,7 +105,7 @@ const command: Command<TestArgs> = {
 		options('f', {
 			alias: 'functional',
 			describe: 'Runs only functional tests. Tests are run via the local tunnel',
-			'default': false
+			default: false
 		});
 
 		options('k', {
@@ -124,7 +124,7 @@ const command: Command<TestArgs> = {
 			alias: 'output',
 			describe: `The path to output any test output to (e.g. coverage information). Defaults to './output/tests'`,
 			type: 'string',
-			'default': './output/tests'
+			default: './output/tests'
 		});
 
 		options('r', {
@@ -142,20 +142,20 @@ const command: Command<TestArgs> = {
 		options('u', {
 			alias: 'unit',
 			describe: 'Runs unit tests via node and the local tunnel',
-			'default': false
+			default: false
 		});
 
 		options('v', {
 			alias: 'verbose',
 			describe: 'Produce diagnostic messages to the console.',
-			'default': false
+			default: false
 		});
 
 		options('n', {
 			alias: 'node',
 			describe: 'Run unit tests via node',
 			type: 'boolean',
-			'default': true
+			default: true
 		});
 
 		options('filter', {
