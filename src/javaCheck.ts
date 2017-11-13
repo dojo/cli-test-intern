@@ -16,7 +16,20 @@ export default function (args: TestArgs) {
 			resolve(true);
 		} else {
 			exec('java -version', (err: Error, stdout: string, stderr: string) => {
-				resolve(!err && (containsVersionString(stderr) || containsVersionString(stdout)));
+				if (!err && (containsVersionString(stderr) || containsVersionString(stdout))) {
+					resolve(true);
+				} else {
+					// De-reference the environment variables here so the exec script does not have to use
+					// an operating system specific way to dereference an environment variable.
+					const javaHome = process.env.JAVA_HOME || process.env.JDK_HOME || process.env.JRE_HOME;
+					if (javaHome) {
+						exec(`"${javaHome}/bin/java" -version`, (err: Error, stdout: string, stderr: string) => {
+							resolve(!err && (containsVersionString(stderr) || containsVersionString(stdout)));
+						});
+					} else {
+						resolve(false);
+					}
+				}
 			});
 		}
 	});
