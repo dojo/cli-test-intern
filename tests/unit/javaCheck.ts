@@ -101,6 +101,17 @@ describe('javaCheck', () => {
 		});
 	});
 
+	it('should fail if no java environment variables are set', () => {
+		args.all = true;
+		const origEnv = process.env;
+		process.env = {};
+		return javaCheck(args).then((passed: boolean) => {
+			assert.isFalse(passed);
+		}).then(() => {
+			process.env = origEnv;
+		});
+	});
+
 	it('should require java with config set to browserstack and fail when it is not available', () => {
 		args.config = 'browserstack';
 		return javaCheck(args).then((passed: boolean) => {
