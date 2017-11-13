@@ -2,17 +2,17 @@ import * as fs from 'fs';
 import * as mockery from 'mockery';
 import * as sinon from 'sinon';
 import MockModule from '../support/MockModule';
-import { throwImmediatly } from '../support/util';
+import { throwImmediately } from '../support/util';
 import { Command } from '@dojo/interfaces/cli';
 
 const { beforeEach, afterEach, describe, it } = intern.getInterface('bdd');
 const { assert } = intern.getPlugin('chai');
 
 describe('main', () => {
-
 	let moduleUnderTest: Command;
 	let mockModule: MockModule;
 	let mockRunTests: any;
+	let mockJavaCheck: any;
 	let sandbox: sinon.SinonSandbox;
 	let consoleStub: sinon.SinonStub;
 	let mockReadFile: sinon.SinonStub;
@@ -35,10 +35,17 @@ describe('main', () => {
 		sandbox = sinon.sandbox.create();
 		consoleStub = sandbox.stub(console, 'log');
 		mockModule = new MockModule('../../src/main', require);
+
 		mockRunTests = {
-			default: sandbox.stub().returns(Promise.resolve())
+			'default': sandbox.stub().returns(Promise.resolve())
 		};
 		mockery.registerMock('./runTests', mockRunTests);
+
+		mockJavaCheck = {
+			'default': sandbox.stub().returns(Promise.resolve(true))
+		};
+		mockery.registerMock('./javaCheck', mockJavaCheck);
+
 		moduleUnderTest = mockModule.getModuleUnderTest().default;
 		mockReadFile = sandbox.stub(fs, 'readFileSync');
 	});
@@ -80,6 +87,16 @@ describe('main', () => {
 		assert.isTrue(Object.keys(untestedArguments).length === 0, `Not all commands are tested: "${Object.keys(untestedArguments).join('", "')}"`);
 	});
 
+	it('should fail if the java check fails', () => {
+		mockJavaCheck['default'] = sandbox.stub().returns(Promise.resolve(false));
+		return moduleUnderTest.run(<any> {}, <any> { all: true }).then(
+			throwImmediately,
+			(e: Error) => {
+				assert.include(e.message, 'Error! Java VM could not be found.');
+			}
+		);
+	});
+
 	it('should check for build command and fail if it doesn\'t exist', () => {
 		const helper = {
 			command: {
@@ -87,7 +104,7 @@ describe('main', () => {
 			}
 		};
 		return moduleUnderTest.run(<any> helper, <any> {}).then(
-			throwImmediatly,
+			throwImmediately,
 			(e: Error) => {
 				assert.isTrue(helper.command.exists.calledOnce);
 				assert.include(e.message, `Required command: 'build', does not exist.`);
@@ -187,7 +204,7 @@ describe('main', () => {
 			}
 		};
 		return moduleUnderTest.run(<any> helper, <any> {}).then(
-			throwImmediatly,
+			throwImmediately,
 			(error: any) => {
 				assert.isTrue(helper.command.run.calledOnce, 'Should have called run');
 				assert.deepEqual(helper.command.run.firstCall.args, [ 'build', '', { withTests: true, disableLazyWidgetDetection: true } ], 'Didn\'t call with proper arguments');
