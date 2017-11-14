@@ -21,8 +21,8 @@
     "test": "grunt test"
   },
   "devDependencies": {
-    "@dojo/interfaces": "~0.1.0",
-    "@dojo/loader": "~0.1.0",
+    "@dojo/cli": "./tarballs/dojo-cli-0.1.1-beta.1.tgz",
+    "@dojo/loader": "./tarballs/dojo-loader-0.1.1-beta.1.tgz",
     "@types/chalk": "^0.4.31",
     "@types/charm": "^1.0.0",
     "@types/glob": "^5.0.30",
@@ -45,6 +45,6 @@
     "mockery": "^1.7.0",
     "pkg-dir": "^1.0.0",
     "sinon": "^1.17.5",
-    "typescript": "~2.4.1"
+    "typescript": "~2.6.1"
   }
 }
