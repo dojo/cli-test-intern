@@ -216,5 +216,10 @@ describe('runTests', () => {
 				'Didn\'t add default config config'
 			);
 		});
+
+		it('Should pass the basePath as the current working directory', async () => {
+			const args = runTests.parseArguments({});
+			assert.include(args, `basePath=${process.cwd()}`);
+		});
 	});
 });
