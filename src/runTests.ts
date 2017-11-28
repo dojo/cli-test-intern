@@ -44,6 +44,8 @@ export function parseArguments(testArgs: TestOptions) {
 			: `config=${path.relative(process.cwd(), path.join(packagePath, 'intern', 'intern.json' + configArg))}`
 	];
 
+	args.push(`basePath=${process.cwd()}`);
+
 	// by default, in the intern config, all tests are run. we need to
 	// disable tests that we dont want to run
 	if (!remoteUnit && !nodeUnit) {
