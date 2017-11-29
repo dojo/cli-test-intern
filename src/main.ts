@@ -1,4 +1,4 @@
-import { Command, Helper, OptionsHelper } from '@dojo/cli/interfaces';
+import { Command, Helper, OptionsHelper } from '@dojo/interfaces/cli';
 import { underline } from 'chalk';
 import * as path from 'path';
 import runTests, { TestOptions } from './runTests';
