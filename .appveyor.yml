@@ -9,6 +9,7 @@ install:
   # install modules
   - npm install grunt cli
   - npm install
+  - npm install
 
 # Post-install test scripts.
 test_script:
