@@ -38,13 +38,8 @@ export function parseArguments(testArgs: TestOptions) {
 	} = testArgs;
 
 	const configArg = childConfig ? `@${childConfig}` : '';
-	const args = [
-		internConfig
-			? `config=${path.relative(process.cwd(), internConfig)}`
-			: `config=${path.relative(process.cwd(), path.join(packagePath, 'intern', 'intern.json' + configArg))}`
-	];
-
-	args.push(`basePath=${process.cwd()}`);
+	const configPath = path.relative(process.cwd(), path.join(packagePath, 'intern', internConfig + configArg));
+	const args = [ `config=${configPath}`];
 
 	// by default, in the intern config, all tests are run. we need to
 	// disable tests that we dont want to run

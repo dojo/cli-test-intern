@@ -97,41 +97,6 @@ describe('main', () => {
 		);
 	});
 
-	it('should check for build command and fail if it doesn\'t exist', () => {
-		const helper = {
-			command: {
-				exists: sandbox.stub().returns(false)
-			}
-		};
-		return moduleUnderTest.run(<any> helper, <any> {}).then(
-			throwImmediately,
-			(e: Error) => {
-				assert.isTrue(helper.command.exists.calledOnce);
-				assert.include(e.message, `Required command: 'build', does not exist.`);
-			}
-		);
-	});
-
-	it('should run the build command with appropriate arguments', () => {
-		mockReadFile.returns(`{
-				"name": "@dojo/cli-test-intern",
-				"version": "test-version"
-			}`);
-
-		const helper = {
-			command: {
-				exists: sandbox.stub().returns(true),
-				run: sandbox.stub().returns(Promise.resolve())
-			}
-		};
-		const runTestArgs = { node: true };
-		return moduleUnderTest.run(<any> helper, <any> runTestArgs).then(() => {
-			assert.isTrue(helper.command.run.calledOnce, 'Should have called run');
-			assert.deepEqual(helper.command.run.firstCall.args, [ 'build', '', { withTests: true, disableLazyWidgetDetection: true } ], 'Didn\'t call with proper arguments');
-			assert.isTrue(mockRunTests.default.calledOnce, 'Should have called the runTests module');
-		});
-	});
-
 	it('should enable all tests when all is passed', () => {
 		mockReadFile.returns(`{
 				"name": "@dojo/cli-test-intern",
@@ -195,25 +160,6 @@ describe('main', () => {
 		});
 	});
 
-	it('should reject on failure', () => {
-		const buildError = Error('Failed to build');
-		const helper = {
-			command: {
-				exists: sandbox.stub().returns(true),
-				run: sandbox.stub().throws(buildError)
-			}
-		};
-		return moduleUnderTest.run(<any> helper, <any> {}).then(
-			throwImmediately,
-			(error: any) => {
-				assert.isTrue(helper.command.run.calledOnce, 'Should have called run');
-				assert.deepEqual(helper.command.run.firstCall.args, [ 'build', '', { withTests: true, disableLazyWidgetDetection: true } ], 'Didn\'t call with proper arguments');
-				assert.equal('Failed to build', error.message, 'Wrong error message');
-			}
-		);
-
-	});
-
 	it('should support eject', () => {
 		mockReadFile.returns(`{
 				"name": "@dojo/cli-test-intern",
@@ -247,46 +193,6 @@ describe('main', () => {
 		catch (e) {
 			assert.equal(e.message, 'Failed reading dependencies from package.json - test error');
 		}
-	});
-
-	describe('promise rejections', () => {
-		let originalListeners: ((reason: Error, promise: Promise<any>) => void)[] = [];
-
-		beforeEach(() => {
-			originalListeners = process.listeners('unhandledRejection');
-			process.removeAllListeners('unhandledRejection');
-		});
-
-		it('should log unhandled promise rejections', () => {
-			mockReadFile.returns(`{
-				"name": "@dojo/cli-test-intern",
-				"version": "test-version"
-			}`);
-
-			const helper = {
-				command: {
-					exists: sandbox.stub().returns(true),
-					run() {
-						Promise.reject(new Error('foo'));
-					}
-				}
-			};
-
-			moduleUnderTest.run(<any> helper, <any> {});
-
-			return new Promise((resolve) => {
-				setTimeout(resolve, 10);
-			}).then(() => {
-				assert.isTrue(consoleStub.calledWith('Unhandled Promise Rejection: '));
-			});
-		});
-
-		afterEach(() => {
-			process.removeAllListeners('unhandledRejection');
-			originalListeners.forEach(listener => {
-				process.on('unhandledRejection', listener);
-			});
-		});
 	});
 
 	it('should print browser link on success', () => {

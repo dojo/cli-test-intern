@@ -26,20 +26,14 @@
       }
     ],
     "plugins": [
-      "@dojo/test-extras/support/loadJsdom",
-      "./_build/src/src"
-    ]
-  },
-  "browser": {
-    "plugins": [
-      "./_build/src/src.js"
+      "@dojo/test-extras/support/loadJsdom"
     ]
   },
   "suites": [
-    "./_build/tests/unit/all.js"
+    "./output/test/unit.js"
   ],
   "functionalSuites": [
-    "./_build/tests/functional/all.js"
+    "./output/test/functional.js"
   ],
   "leaveRemoteOpen": false,
   "coverage": [],
