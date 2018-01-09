@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as path from 'path';
 import * as mockery from 'mockery';
 import * as sinon from 'sinon';
 import MockModule from '../support/MockModule';
@@ -241,8 +242,8 @@ describe('main', () => {
 	describe('intern config switching for forward compatibility', () => {
 
 		it('should use intern.json for legacy tests built with cli-build-webpack', async () => {
-			sandbox.stub(fs, 'existsSync', (path: string) => {
-				if (path.indexOf('_build/tests/unit/all.js') !== -1) {
+			sandbox.stub(fs, 'existsSync', (testPath: string) => {
+				if (testPath.indexOf(path.join('_build', 'tests', 'unit', 'all.js')) !== -1) {
 					return true;
 				}
 				return false;
@@ -253,8 +254,8 @@ describe('main', () => {
 		});
 
 		it('should use intern-next.json for tests built with cli-build-app', async () => {
-			sandbox.stub(fs, 'existsSync', (path: string) => {
-				if (path.indexOf('output/test/unit.js') !== -1) {
+			sandbox.stub(fs, 'existsSync', (testPath: string) => {
+				if (testPath.indexOf(path.join('output', 'test', 'unit.js')) !== -1) {
 					return true;
 				}
 				return false;
