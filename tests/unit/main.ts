@@ -237,4 +237,43 @@ describe('main', () => {
 			assertLog('grep=test');
 		});
 	});
+
+	describe('intern config switching for forward compatibility', () => {
+
+		it('should use intern.json for legacy tests built with cli-build-webpack', async () => {
+			sandbox.stub(fs, 'existsSync', (path: string) => {
+				if (path.indexOf('_build/tests/unit/all.js') !== -1) {
+					return true;
+				}
+				return false;
+			});
+			await moduleUnderTest.run({} as any, {} as any);
+			const [ testOptions ] = mockRunTests.default.firstCall.args;
+			assert.equal(testOptions.internConfig, 'intern.json');
+		});
+
+		it('should use intern-next.json for tests built with cli-build-app', async () => {
+			sandbox.stub(fs, 'existsSync', (path: string) => {
+				if (path.indexOf('output/test/unit.js') !== -1) {
+					return true;
+				}
+				return false;
+			});
+			await moduleUnderTest.run({} as any, {} as any);
+			const [ testOptions ] = mockRunTests.default.firstCall.args;
+			assert.equal(testOptions.internConfig, 'intern-next.json');
+		});
+
+		it('should throw an error if no tests are found', async () => {
+			let error: Error;
+			sandbox.stub(fs, 'existsSync', (path: string) => false);
+			try {
+				await moduleUnderTest.run({} as any, {} as any);
+			} catch (e) {
+				error = e;
+			}
+			assert.equal(error!.message, 'could not find tests, have you built the tests using dojo build?');
+		});
+
+	});
 });
