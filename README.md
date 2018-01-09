@@ -11,9 +11,8 @@ The official Dojo 2 test command.
 
 ## Features
 
-Builds and runs test cases for a Dojo 2 application. This module assumes that your project is structured
-as it would be if created by `dojo create`. Specifically, `src` and `tests` should be in the root of the project directory,
-and `tests` should have `functional` and `unit` folders with `all.ts` files in each that import other tests.
+Runs tests built using `@dojo/cli-build-webpack`, or `@dojo/cli-build-app`.
+
 
 ## How do I use this package?
 
@@ -27,7 +26,7 @@ Contributing Guidelines and Style Guide.
 
 ## Testing
 
-Test cases MUST be written using [Intern](https://theintern.github.io) using the Object test interface and Assert assertion interface.
+Test cases MUST be written using [Intern](https://theintern.github.io) using the bdd test interface and Assert assertion interface.
 
 90% branch coverage MUST be provided for all code submitted to this repository, as reported by Istanbul’s combined coverage results for all supported platforms.
 
