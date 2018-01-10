@@ -54,7 +54,7 @@ function transformTestArgs(args: TestArgs): TestOptions {
 	}
 	else if (isLegacy) {}
 	else {
-		throw new Error('could not find tests, have you built the tests using dojo build?');
+		throw new Error('Could not find tests, have you built the tests using dojo build?\n\nFor @dojo/cli-build-app run: dojo build app --mode test\nFor @dojo/cli-build-webpack run: dojo build webpack --withTests');
 	}
 
 	if (args.all) {

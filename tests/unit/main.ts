@@ -273,7 +273,7 @@ describe('main', () => {
 			} catch (e) {
 				error = e;
 			}
-			assert.equal(error!.message, 'could not find tests, have you built the tests using dojo build?');
+			assert.equal(error!.message, 'Could not find tests, have you built the tests using dojo build?\n\nFor @dojo/cli-build-app run: dojo build app --mode test\nFor @dojo/cli-build-webpack run: dojo build webpack --withTests');
 		});
 
 	});
