@@ -41,12 +41,13 @@ describe('runTests', () => {
 	it('Should support logging verbose information', async () => {
 		spawnOnStub.onFirstCall().callsArg(1);
 		await runTests.default({
+			internConfig: 'intern.json',
 			verbose: true
 		});
 		assert.strictEqual(consoleStub.callCount, 4);
 		assert.include(consoleStub.getCall(0).args[0], 'testing "');
 		assert.include(consoleStub.getCall(1).args[0], 'Parsed arguments for intern:');
-		assert.include(consoleStub.getCall(2).args[0], `config=${path.join('intern', 'intern')}`);
+		assert.include(consoleStub.getCall(2).args[0], `config=${path.join('intern', 'intern.json')}`);
 		assert.include(consoleStub.getCall(3).args[0], ' completed successfully');
 	});
 	it('Should call spawn to run intern', async () => {
@@ -104,14 +105,6 @@ describe('runTests', () => {
 	});
 
 	describe('Should parse arguments', () => {
-		it('Should use config to set intern file if provided', () => {
-			assert.equal(runTests.parseArguments({ childConfig: 'test' })[0], path.join('config=intern', 'intern.json@test'));
-		});
-
-		it('Should have a default for intern config', () => {
-			assert.equal(runTests.parseArguments({})[0], path.join('config=intern', 'intern.json'));
-		});
-
 		it('Should push an empty environments arg if functional tests and remote unit tests are not required', () => {
 			assert.include(runTests.parseArguments({ remoteFunctional: false }), 'environments=');
 		});
@@ -176,15 +169,6 @@ describe('runTests', () => {
 				'tunnelOptions={ "username": "user", "accessKey": "key" }');
 		});
 
-		it('Should set a specific intern config if provided', () => {
-			assert.include(
-				runTests.parseArguments({
-					internConfig: 'foo/bar'
-				}),
-				`config=${path.join('foo', 'bar')}`
-			);
-		});
-
 		it('Should add grep if filter provided', () => {
 			assert.include(runTests.parseArguments({
 				filter: 'test'
@@ -215,11 +199,6 @@ describe('runTests', () => {
 				}), capabilitiesBase + ' }',
 				'Didn\'t add default config config'
 			);
-		});
-
-		it('Should pass the basePath as the current working directory', async () => {
-			const args = runTests.parseArguments({});
-			assert.include(args, `basePath=${process.cwd()}`);
 		});
 	});
 });

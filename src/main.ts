@@ -1,12 +1,11 @@
 import { Command, Helper, OptionsHelper } from '@dojo/interfaces/cli';
 import { underline } from 'chalk';
 import * as path from 'path';
+import * as fs from 'fs';
 import runTests, { TestOptions } from './runTests';
 import javaCheck from './javaCheck';
 
 const pkgDir = require('pkg-dir');
-
-const CLI_BUILD_PACKAGE = '@dojo/cli-build-webpack';
 
 export interface TestArgs {
 	all: boolean;
@@ -43,6 +42,21 @@ function transformTestArgs(args: TestArgs): TestOptions {
 	let remoteUnit = false;
 	let remoteFunctional = false;
 
+	const projectRoot = pkgDir.sync(process.cwd());
+	const nextPath = path.join(projectRoot, 'output', 'test', 'unit.js');
+	const legacyPath = path.join(projectRoot, '_build', 'tests', 'unit', 'all.js');
+	const isNext = fs.existsSync(nextPath);
+	const isLegacy = fs.existsSync(legacyPath);
+	let internConfig = 'intern.json';
+
+	if (isNext) {
+		internConfig = 'intern-next.json';
+	}
+	else if (isLegacy) {}
+	else {
+		throw new Error('Could not find tests, have you built the tests using dojo build?\n\nFor @dojo/cli-build-app run: dojo build app --mode test\nFor @dojo/cli-build-webpack run: dojo build webpack --withTests');
+	}
+
 	if (args.all) {
 		nodeUnit = remoteUnit = remoteFunctional = true;
 	}
@@ -57,8 +71,8 @@ function transformTestArgs(args: TestArgs): TestOptions {
 	}
 
 	return {
+		internConfig,
 		childConfig: args.config,
-		internConfig: args.internConfig,
 		reporters: args.reporters,
 		userName: args.userName,
 		secret: args.secret,
@@ -72,18 +86,18 @@ function transformTestArgs(args: TestArgs): TestOptions {
 	};
 }
 
-function printBrowserLink(args: TestArgs) {
+function printBrowserLink(options: TestOptions) {
 	const browserArgs = [];
 
-	if (args.filter) {
-		browserArgs.push('grep=' + encodeURIComponent(args.filter));
+	if (options.filter) {
+		browserArgs.push('grep=' + encodeURIComponent(options.filter));
 	}
 
-	console.log('\n If the project directory is hosted on a local server, unit tests can also be run in browser by navigating to ' + underline(`http://localhost:<port>/node_modules/intern/?config=node_modules/@dojo/cli-test-intern/intern/intern.json${browserArgs.length ? `&${browserArgs.join('&')}` : ''}`));
+	console.log('\n If the project directory is hosted on a local server, unit tests can also be run in browser by navigating to ' + underline(`http://localhost:<port>/node_modules/intern/?config=node_modules/@dojo/cli-test-intern/intern/${options.internConfig}${browserArgs.length ? `&${browserArgs.join('&')}` : ''}`));
 }
 
 const command: Command<TestArgs> = {
-	description: 'this command will implicitly build your application and then run tests against that build',
+	description: 'run unit and/or functional tests for your application',
 	register(options: OptionsHelper) {
 		options('a', {
 			alias: 'all',
@@ -173,35 +187,19 @@ const command: Command<TestArgs> = {
 
 		return javaCheck(args).then((javaCheckPassed) => {
 			if (javaCheckPassed) {
+				const testOptions = transformTestArgs(args);
 				return new Promise<void>((resolve, reject) => {
-					if (!helper.command.exists('build')) {
-						reject(Error(`Required command: 'build', does not exist. Have you run 'npm install ${CLI_BUILD_PACKAGE}'?`));
-					}
-					try {
-						const projectName = require(path.join(process.cwd(), './package.json')).name;
-						console.log('\n' + underline(`building "${projectName}"...`));
-					}
-					catch (e) {
-						console.log('\n' + underline(`building project...`));
-					}
-					const result = helper.command.run('build', '',
-						<any> { withTests: true, disableLazyWidgetDetection: true });
-					result.then(
-						() => {
-							runTests(transformTestArgs(args))
-								.then(() => {
-									process.removeListener('unhandledRejection', unhandledRejection);
-								})
-								.then(() => {
-									printBrowserLink(args);
-								}, (err) => {
-									printBrowserLink(args);
-									throw err;
-								})
-								.then(resolve, reject);
-						},
-						reject
-					);
+					runTests(testOptions)
+						.then(() => {
+							process.removeListener('unhandledRejection', unhandledRejection);
+						})
+						.then(() => {
+							printBrowserLink(testOptions);
+						}, (err) => {
+							printBrowserLink(testOptions);
+							throw err;
+						})
+						.then(resolve, reject);
 				});
 			} else {
 				return Promise.reject(Error(underline('Error! Java VM could not be found.') +
@@ -220,7 +218,8 @@ const command: Command<TestArgs> = {
 			copy: {
 				path: __dirname + '/intern',
 				files: [
-					'./intern.json'
+					'./intern.json',
+					'./intern-next.json'
 				]
 			}
 		};
