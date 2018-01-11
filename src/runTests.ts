@@ -19,7 +19,6 @@ export interface TestOptions {
 	secret?: string;
 	testingKey?: string;
 	verbose?: boolean;
-	coverage?: boolean;
 	filter?: string;
 }
 

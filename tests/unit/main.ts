@@ -63,12 +63,10 @@ describe('main', () => {
 		let untestedArguments: { [key: string]: string | undefined } = {
 			'a': 'all',
 			'c': 'config',
-			'cov': 'coverage',
 			'f': 'functional',
 			'n': 'node',
 			'k': 'testingKey',
 			'usr': 'userName',
-			'o': 'output',
 			'r': 'reporters',
 			's': 'secret',
 			'u': 'unit',
