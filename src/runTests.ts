@@ -84,6 +84,8 @@ export function setLogger(value: (message: any, ...optionalParams: any[]) => voi
 
 export default async function (testArgs: TestOptions) {
 	const testRunPromise = new Promise((resolve, reject) => {
+		const internPath = path.resolve('node_modules/.bin/intern');
+		const internArgs = parseArguments(testArgs);
 
 		function succeed() {
 			logger('\n  ' + green('testing') + ' completed successfully');
@@ -101,11 +103,13 @@ export default async function (testArgs: TestOptions) {
 		logger('\n' + underline(`testing "${projectName()}"...`) + `\n`);
 
 		if (testArgs.verbose) {
+			logger(`${blue.bold('  Intern config:')}`);
+			logger('    ' + blue(String(cs.sync(internPath, ['showConfig', ... internArgs]).stdout)));
 			logger(`${blue.bold('  Parsed arguments for intern:')}`);
-			logger('    ' + blue(String(parseArguments(testArgs).join('\n    '))));
+			logger('    ' + blue(String(internArgs.join('\n    '))));
 		}
 
-		cs.spawn(path.resolve('node_modules/.bin/intern'), parseArguments(testArgs), { stdio: 'inherit' })
+		cs.spawn(internPath, internArgs, { stdio: 'inherit' })
 			.on('close', (exitCode: number) => {
 				if (exitCode) {
 					fail('Tests did not complete successfully');
