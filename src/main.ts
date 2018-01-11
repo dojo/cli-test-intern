@@ -11,7 +11,6 @@ export interface TestArgs {
 	all: boolean;
 	browser: boolean;
 	config?: string;
-	coverage?: boolean;
 	functional: boolean;
 	reporters?: string;
 	testingKey?: string;
@@ -78,7 +77,6 @@ function transformTestArgs(args: TestArgs): TestOptions {
 		secret: args.secret,
 		testingKey: args.testingKey,
 		verbose: args.verbose,
-		coverage: args.coverage,
 		filter: args.filter,
 		nodeUnit,
 		remoteUnit,
@@ -111,11 +109,6 @@ const command: Command<TestArgs> = {
 			type: 'string'
 		});
 
-		options('cov', {
-			alias: 'coverage',
-			describe: `If specified, additional coverage reports will be written.  The will be output to the path specified in argument '-o'/'--output'.`
-		});
-
 		options('f', {
 			alias: 'functional',
 			describe: 'Runs only functional tests. Tests are run via the local tunnel',
@@ -132,13 +125,6 @@ const command: Command<TestArgs> = {
 			alias: 'userName',
 			describe: 'User name for testing platform',
 			type: 'string'
-		});
-
-		options('o', {
-			alias: 'output',
-			describe: `The path to output any test output to (e.g. coverage information). Defaults to './output/tests'`,
-			type: 'string',
-			default: './output/tests'
 		});
 
 		options('r', {

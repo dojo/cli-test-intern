@@ -18,11 +18,15 @@
       {
         "name": "lcov",
         "options": {
-          "filename": "../coverage-final.lcov"
+          "directory": "output/coverage/lcov",
+          "filename": "coverage.lcov"
         }
       },
       {
-        "name": "htmlcoverage"
+        "name": "htmlcoverage",
+        "options": {
+            "directory": "output/coverage/html"
+        }
       }
     ],
     "plugins": [
