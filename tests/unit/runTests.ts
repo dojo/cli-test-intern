@@ -44,11 +44,12 @@ describe('runTests', () => {
 			internConfig: 'intern.json',
 			verbose: true
 		});
-		assert.strictEqual(consoleStub.callCount, 4);
+		assert.strictEqual(consoleStub.callCount, 6);
 		assert.include(consoleStub.getCall(0).args[0], 'testing "');
-		assert.include(consoleStub.getCall(1).args[0], 'Parsed arguments for intern:');
-		assert.include(consoleStub.getCall(2).args[0], `config=${path.join('intern', 'intern.json')}`);
-		assert.include(consoleStub.getCall(3).args[0], ' completed successfully');
+		assert.include(consoleStub.getCall(1).args[0], 'Intern config:');
+		assert.include(consoleStub.getCall(3).args[0], 'Parsed arguments for intern:');
+		assert.include(consoleStub.getCall(4).args[0], `config=${path.join('intern', 'intern.json')}`);
+		assert.include(consoleStub.getCall(5).args[0], ' completed successfully');
 	});
 	it('Should call spawn to run intern', async () => {
 		spawnOnStub.onFirstCall().callsArg(1);
