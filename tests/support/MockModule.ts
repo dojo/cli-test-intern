@@ -30,8 +30,7 @@ export default class MockModule {
 
 			for (let prop in dependency) {
 				if (typeof dependency[prop] === 'function') {
-					mock[prop] = function () {
-					};
+					mock[prop] = function() {};
 					this.sandbox.stub(mock, prop);
 				} else {
 					mock[prop] = dependency[prop];
@@ -48,8 +47,7 @@ export default class MockModule {
 					mockery.registerMock(dependencyName, ctor);
 					mock.ctor = ctor;
 				}
-			}
-			else {
+			} else {
 				mockery.registerMock(dependencyName, mock);
 			}
 			this.mocks[dependencyName] = mock;
@@ -74,6 +72,6 @@ export default class MockModule {
 	}
 
 	start() {
-		mockery.enable({warnOnUnregistered: false, useCleanCache: true});
+		mockery.enable({ warnOnUnregistered: false, useCleanCache: true });
 	}
 }

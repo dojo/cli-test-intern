@@ -27,11 +27,10 @@ function buildNpmDependencies(): any {
 	try {
 		const packagePath = pkgDir.sync(__dirname);
 		const packageJsonFilePath = path.join(packagePath, 'package.json');
-		const packageJson = <any> require(packageJsonFilePath);
+		const packageJson = <any>require(packageJsonFilePath);
 
 		return packageJson.dependencies;
-	}
-	catch (e) {
+	} catch (e) {
 		throw new Error('Failed reading dependencies from package.json - ' + e.message);
 	}
 }
@@ -50,10 +49,11 @@ function transformTestArgs(args: TestArgs): TestOptions {
 
 	if (isNext) {
 		internConfig = 'intern-next.json';
-	}
-	else if (isLegacy) {}
-	else {
-		throw new Error('Could not find tests, have you built the tests using dojo build?\n\nFor @dojo/cli-build-app run: dojo build app --mode test\nFor @dojo/cli-build-webpack run: dojo build webpack --withTests');
+	} else if (isLegacy) {
+	} else {
+		throw new Error(
+			'Could not find tests, have you built the tests using dojo build?\n\nFor @dojo/cli-build-app run: dojo build app --mode test\nFor @dojo/cli-build-webpack run: dojo build webpack --withTests'
+		);
 	}
 
 	if (args.all) {
@@ -91,7 +91,14 @@ function printBrowserLink(options: TestOptions) {
 		browserArgs.push('grep=' + encodeURIComponent(options.filter));
 	}
 
-	console.log('\n If the project directory is hosted on a local server, unit tests can also be run in browser by navigating to ' + underline(`http://localhost:<port>/node_modules/intern/?config=node_modules/@dojo/cli-test-intern/intern/${options.internConfig}${browserArgs.length ? `&${browserArgs.join('&')}` : ''}`));
+	console.log(
+		'\n If the project directory is hosted on a local server, unit tests can also be run in browser by navigating to ' +
+			underline(
+				`http://localhost:<port>/node_modules/intern/?config=node_modules/@dojo/cli-test-intern/intern/${
+					options.internConfig
+				}${browserArgs.length ? `&${browserArgs.join('&')}` : ''}`
+			)
+	);
 }
 
 const command: Command<TestArgs> = {
@@ -99,7 +106,8 @@ const command: Command<TestArgs> = {
 	register(options: OptionsHelper) {
 		options('a', {
 			alias: 'all',
-			describe: 'Runs unit tests and functional tests. Unit tests are run via node and the local tunnel. Functional tests are run via the local tunnel',
+			describe:
+				'Runs unit tests and functional tests. Unit tests are run via node and the local tunnel. Functional tests are run via the local tunnel',
 			default: false
 		});
 
@@ -179,18 +187,26 @@ const command: Command<TestArgs> = {
 						.then(() => {
 							process.removeListener('unhandledRejection', unhandledRejection);
 						})
-						.then(() => {
-							printBrowserLink(testOptions);
-						}, (err) => {
-							printBrowserLink(testOptions);
-							throw err;
-						})
+						.then(
+							() => {
+								printBrowserLink(testOptions);
+							},
+							(err) => {
+								printBrowserLink(testOptions);
+								throw err;
+							}
+						)
 						.then(resolve, reject);
 				});
 			} else {
-				return Promise.reject(Error(underline('Error! Java VM could not be found.') +
-					'\nA Java VM needs to be installed and available from the command line to allow the ' +
-					underline('dojo test') + ' command to run tests in a browser locally or remotely.'));
+				return Promise.reject(
+					Error(
+						underline('Error! Java VM could not be found.') +
+							'\nA Java VM needs to be installed and available from the command line to allow the ' +
+							underline('dojo test') +
+							' command to run tests in a browser locally or remotely.'
+					)
+				);
 			}
 		});
 	},
@@ -203,10 +219,7 @@ const command: Command<TestArgs> = {
 			},
 			copy: {
 				path: __dirname + '/intern',
-				files: [
-					'./intern.json',
-					'./intern-next.json'
-				]
+				files: ['./intern.json', './intern-next.json']
 			}
 		};
 	}
