@@ -30,7 +30,6 @@ export function parseArguments(testArgs: TestOptions) {
 		childConfig,
 		internConfig,
 		reporters,
-		secret,
 		testingKey,
 		userName,
 		filter
