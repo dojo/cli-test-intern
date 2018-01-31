@@ -30,7 +30,6 @@ export function parseArguments(testArgs: TestOptions) {
 		childConfig,
 		internConfig,
 		reporters,
-		secret,
 		testingKey,
 		userName,
 		filter
@@ -38,7 +37,7 @@ export function parseArguments(testArgs: TestOptions) {
 
 	const configArg = childConfig ? `@${childConfig}` : '';
 	const configPath = path.relative(process.cwd(), path.join(packagePath, 'intern', internConfig + configArg));
-	const args = [ `config=${configPath}`];
+	const args = [`config=${configPath}`];
 
 	// by default, in the intern config, all tests are run. we need to
 	// disable tests that we dont want to run
@@ -48,8 +47,7 @@ export function parseArguments(testArgs: TestOptions) {
 
 	if (!remoteUnit && !remoteFunctional) {
 		args.push('environments=');
-	}
-	else if (!remoteFunctional) {
+	} else if (!remoteFunctional) {
 		args.push('functionalSuites=');
 	}
 
@@ -66,22 +64,20 @@ export function parseArguments(testArgs: TestOptions) {
 	const capabilitiesBase = `capabilities={ "name": "${projectName()}", "project": "${projectName()}"`;
 	if (childConfig === 'browserstack') {
 		args.push(capabilitiesBase + ', "fixSessionCapabilities": "false", "browserstack.debug": "false" }');
-	}
-	else if (childConfig === 'saucelabs') {
+	} else if (childConfig === 'saucelabs') {
 		args.push(capabilitiesBase + ', "fixSessionCapabilities": "false" }');
-	}
-	else {
+	} else {
 		args.push(capabilitiesBase + ' }');
 	}
 
-	return [ ...args ];
+	return [...args];
 }
 
 export function setLogger(value: (message: any, ...optionalParams: any[]) => void) {
 	logger = value;
 }
 
-export default async function (testArgs: TestOptions) {
+export default async function(testArgs: TestOptions) {
 	const testRunPromise = new Promise((resolve, reject) => {
 		const internPath = path.resolve('node_modules/.bin/intern');
 		const internArgs = parseArguments(testArgs);
@@ -103,17 +99,17 @@ export default async function (testArgs: TestOptions) {
 
 		if (testArgs.verbose) {
 			logger(`${blue.bold('  Intern config:')}`);
-			logger('    ' + blue(String(cs.sync(internPath, ['showConfig', ... internArgs]).stdout)));
+			logger('    ' + blue(String(cs.sync(internPath, ['showConfig', ...internArgs]).stdout)));
 			logger(`${blue.bold('  Parsed arguments for intern:')}`);
 			logger('    ' + blue(String(internArgs.join('\n    '))));
 		}
 
-		cs.spawn(internPath, internArgs, { stdio: 'inherit' })
+		cs
+			.spawn(internPath, internArgs, { stdio: 'inherit' })
 			.on('close', (exitCode: number) => {
 				if (exitCode) {
 					fail('Tests did not complete successfully');
-				}
-				else {
+				} else {
 					succeed();
 				}
 			})

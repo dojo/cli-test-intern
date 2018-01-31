@@ -26,7 +26,7 @@ describe('runTests', () => {
 	beforeEach(() => {
 		spawnOnStub = stub();
 		const spawnOnResponse = {
-			'on': spawnOnStub
+			on: spawnOnStub
 		};
 
 		spawnOnStub.returns(spawnOnResponse);
@@ -63,8 +63,7 @@ describe('runTests', () => {
 		try {
 			await runTests.default({});
 			assert.fail(null, null, 'Should not get here');
-		}
-		catch (error) {
+		} catch (error) {
 			assert.equal(error.message, errorMessage);
 		}
 	});
@@ -73,8 +72,7 @@ describe('runTests', () => {
 		try {
 			await runTests.default({});
 			assert.fail(null, null, 'Should not get here');
-		}
-		catch (error) {
+		} catch (error) {
 			assert.strictEqual(error.exitCode, 1);
 		}
 	});
@@ -87,8 +85,7 @@ describe('runTests', () => {
 				browser: true
 			});
 			assert.fail(null, null, 'Should not get here');
-		}
-		catch (error) {
+		} catch (error) {
 			assert.equal(error.message, errorMessage);
 		}
 	});
@@ -99,8 +96,7 @@ describe('runTests', () => {
 				browser: true
 			});
 			assert.fail(null, null, 'Should not get here');
-		}
-		catch (error) {
+		} catch (error) {
 			assert.strictEqual(error.exitCode, 1);
 		}
 	});
@@ -120,17 +116,29 @@ describe('runTests', () => {
 		});
 
 		it('Should not exclude anything if its all true', () => {
-			assert.notInclude(runTests.parseArguments({ nodeUnit: true, remoteUnit: true, remoteFunctional: true }), 'functionalSuites=');
-			assert.notInclude(runTests.parseArguments({ nodeUnit: true, remoteUnit: true, remoteFunctional: true }), 'environments=');
-			assert.notInclude(runTests.parseArguments({ nodeUnit: true, remoteUnit: true, remoteFunctional: true }), 'suites=');
+			assert.notInclude(
+				runTests.parseArguments({ nodeUnit: true, remoteUnit: true, remoteFunctional: true }),
+				'functionalSuites='
+			);
+			assert.notInclude(
+				runTests.parseArguments({ nodeUnit: true, remoteUnit: true, remoteFunctional: true }),
+				'environments='
+			);
+			assert.notInclude(
+				runTests.parseArguments({ nodeUnit: true, remoteUnit: true, remoteFunctional: true }),
+				'suites='
+			);
 		});
 
 		it('Should push an empty suites arg if functional tests are added', () => {
-			assert.include(runTests.parseArguments({
-				nodeUnit: false,
-				remoteUnit: false,
-				remoteFunctional: true
-			}), 'suites=');
+			assert.include(
+				runTests.parseArguments({
+					nodeUnit: false,
+					remoteUnit: false,
+					remoteFunctional: true
+				}),
+				'suites='
+			);
 		});
 
 		it('Should add reporters if provided', () => {
@@ -147,9 +155,12 @@ describe('runTests', () => {
 				reporters: 'LcovHtml',
 				coverage: true
 			});
-			assert.strictEqual(args.reduce((count: number, arg: string) => {
-				return count + (arg === 'reporters=LcovHtml' ? 1 : 0);
-			}, 0), 1);
+			assert.strictEqual(
+				args.reduce((count: number, arg: string) => {
+					return count + (arg === 'reporters=LcovHtml' ? 1 : 0);
+				}, 0),
+				1
+			);
 		});
 
 		it('Should not add Runner reporter if other reporters are specified', () => {
@@ -167,23 +178,28 @@ describe('runTests', () => {
 					testingKey: 'key',
 					userName: 'user'
 				}),
-				'tunnelOptions={ "username": "user", "accessKey": "key" }');
+				'tunnelOptions={ "username": "user", "accessKey": "key" }'
+			);
 		});
 
 		it('Should add grep if filter provided', () => {
-			assert.include(runTests.parseArguments({
-				filter: 'test'
-			}), 'grep=test');
+			assert.include(
+				runTests.parseArguments({
+					filter: 'test'
+				}),
+				'grep=test'
+			);
 		});
 
 		it('Should set capabilities based on project name and according to config', () => {
-			const capabilitiesBase = 'capabilities={ "name": "@dojo/cli-test-intern", "project": "@dojo/cli-test-intern"';
+			const capabilitiesBase =
+				'capabilities={ "name": "@dojo/cli-test-intern", "project": "@dojo/cli-test-intern"';
 			assert.include(
 				runTests.parseArguments({
 					childConfig: 'browserstack'
 				}),
 				capabilitiesBase + ', "fixSessionCapabilities": "false", "browserstack.debug": "false" }',
-				'Didn\'t add browserstack config'
+				"Didn't add browserstack config"
 			);
 
 			assert.include(
@@ -191,14 +207,15 @@ describe('runTests', () => {
 					childConfig: 'saucelabs'
 				}),
 				capabilitiesBase + ', "fixSessionCapabilities": "false" }',
-				'Didn\'t add saucelabs config'
+				"Didn't add saucelabs config"
 			);
 
 			assert.include(
 				runTests.parseArguments({
 					childConfig: 'anything else'
-				}), capabilitiesBase + ' }',
-				'Didn\'t add default config config'
+				}),
+				capabilitiesBase + ' }',
+				"Didn't add default config config"
 			);
 		});
 	});

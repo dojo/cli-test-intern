@@ -22,7 +22,7 @@ describe('javaCheck', () => {
 			useCleanCache: true
 		});
 		mockery.registerMock('child_process', {
-			exec: function (command: string, callback: (err?: Error, stdout?: string, stderr?: string) => void) {
+			exec: function(command: string, callback: (err?: Error, stdout?: string, stderr?: string) => void) {
 				callback(execError, execStdout, execStderr);
 			}
 		});
@@ -48,21 +48,21 @@ describe('javaCheck', () => {
 		execStderr = undefined;
 	});
 
-	const javaNeeded = [ 'all', 'functional' ];
-	const javaNotNeeded = [ 'browser', 'unit', 'node' ];
+	const javaNeeded = ['all', 'functional'];
+	const javaNotNeeded = ['browser', 'unit', 'node'];
 
-	javaNeeded.forEach(function (property) {
+	javaNeeded.forEach(function(property) {
 		it(`should require java with "${property}" and fail when there is none`, () => {
-			(<any> args)[ property ] = true;
+			(<any>args)[property] = true;
 			return javaCheck(args).then((passed: boolean) => {
 				assert.isFalse(passed, `"${property}" failed`);
 			});
 		});
 	});
 
-	javaNeeded.forEach(function (property) {
+	javaNeeded.forEach(function(property) {
 		it(`should require java with "${property}" and fail when an error occurs`, () => {
-			(<any> args)[ property ] = true;
+			(<any>args)[property] = true;
 			execStderr = javaVersionString;
 			execStdout = javaVersionString;
 			execError = new Error('something bad');
@@ -72,18 +72,18 @@ describe('javaCheck', () => {
 		});
 	});
 
-	javaNotNeeded.forEach(function (property) {
+	javaNotNeeded.forEach(function(property) {
 		it(`should not require java with "${property}"`, () => {
-			(<any> args)[ property ] = true;
+			(<any>args)[property] = true;
 			return javaCheck(args).then((passed: boolean) => {
 				assert.isTrue(passed, `"${property}" failed`);
 			});
 		});
 	});
 
-	javaNeeded.forEach(function (property) {
+	javaNeeded.forEach(function(property) {
 		it(`should require java with "${property}" and pass when stderr contains the version`, () => {
-			(<any> args)[ property ] = true;
+			(<any>args)[property] = true;
 			execStderr = javaVersionString;
 			return javaCheck(args).then((passed: boolean) => {
 				assert.isTrue(passed, `"${property}" failed`);
@@ -91,9 +91,9 @@ describe('javaCheck', () => {
 		});
 	});
 
-	javaNeeded.forEach(function (property) {
+	javaNeeded.forEach(function(property) {
 		it(`should require java with "${property}" and pass when stdout contains the version`, () => {
-			(<any> args)[ property ] = true;
+			(<any>args)[property] = true;
 			execStdout = javaVersionString;
 			return javaCheck(args).then((passed: boolean) => {
 				assert.isTrue(passed, `"${property}" failed`);
@@ -105,11 +105,13 @@ describe('javaCheck', () => {
 		args.all = true;
 		const origEnv = process.env;
 		process.env = {};
-		return javaCheck(args).then((passed: boolean) => {
-			assert.isFalse(passed);
-		}).then(() => {
-			process.env = origEnv;
-		});
+		return javaCheck(args)
+			.then((passed: boolean) => {
+				assert.isFalse(passed);
+			})
+			.then(() => {
+				process.env = origEnv;
+			});
 	});
 
 	it('should require java with config set to browserstack and fail when it is not available', () => {
