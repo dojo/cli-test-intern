@@ -1,8 +1,7 @@
 {
   "basePath": "../../../../",
   "environments": [
-    { "browserName": "node" },
-    { "browserName": "chrome" }
+    { "browserName": "node" }
   ],
   "maxConcurrency": 2,
   "tunnel": "selenium",
@@ -25,25 +24,50 @@
       {
         "name": "htmlcoverage",
         "options": {
-            "directory": "output/coverage/html"
+          "directory": "output/coverage/html"
         }
       }
     ],
     "plugins": [
-      "@dojo/cli-test-intern/support/loadJsdom"
+      "@dojo/cli-test-intern/plugins/postcssRequire",
+      "@dojo/cli-test-intern/plugins/tsnode",
+      {
+        "script": "@dojo/cli-test-intern/plugins/jsdom",
+        "options": {
+          "global": true
+        }
+      },
+      {
+        "script": "@dojo/cli-test-intern/plugins/registerExtension",
+        "options": {
+          "extensions": [ ".gif", ".png" ,".jpg", ".jpeg", ".svg", ".eot", ".ttf", ".woff", ".woff2" ]
+        }
+      }
+    ],
+    "suites": [
+      "./tests/unit/all.ts"
     ]
   },
-  "suites": [
-    "./output/test/unit.js"
-  ],
-  "functionalSuites": [
-    "./output/test/functional.js"
-  ],
-  "leaveRemoteOpen": false,
   "coverage": [],
   "defaultTimeout": 15000,
   "configs": {
+    "built": {
+      "functionalSuites": [
+        "./output/test/functional.js"
+      ],
+      "suites": [
+        "./output/test/unit.js"
+      ]
+    },
+    "local": {
+      "extends": "built",
+      "environments": [
+        { "browserName": "node" },
+        { "browserName": "chrome" }
+      ]
+    },
     "browserstack": {
+      "extends": "built",
       "maxConcurrency": 2,
       "tunnel": "browserstack",
       "environments": [
@@ -63,6 +87,7 @@
       ]
     },
     "saucelabs": {
+      "extends": "built",
       "maxConcurrency": 4,
       "tunnel": "saucelabs",
       "environments": [
@@ -83,6 +108,7 @@
       ]
     },
     "testingbot": {
+      "extends": "built",
       "tunnel": "testingbot",
       "tunnelOptions": {
         "hostname": "hub.testingbot.com"

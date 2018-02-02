@@ -35,20 +35,32 @@ function buildNpmDependencies(): any {
 	}
 }
 
+/**
+ * Compiled unit tests should exist when testing against a built application
+ */
+export function assertCompiledUnitTests(verbose: boolean) {
+	const projectRoot = pkgDir.sync(process.cwd());
+	const unitsPath = path.join(projectRoot, 'output', 'test', 'unit.js');
+	const hasUnits = fs.existsSync(unitsPath);
+
+	if (!hasUnits) {
+		throw new Error(
+			`Could not find tests${
+				verbose ? ` in ${unitsPath}.\nH` : ', h'
+			}ave you built the tests using dojo build?\n\nFor @dojo/cli-build-app run: dojo build app --mode test`
+		);
+	}
+}
+
 function transformTestArgs(args: TestArgs): TestOptions {
 	let nodeUnit = true;
 	let remoteUnit = false;
 	let remoteFunctional = false;
 
-	const projectRoot = pkgDir.sync(process.cwd());
-	const unitsPath = path.join(projectRoot, 'output', 'test', 'unit.js');
-	const hasUnits = fs.existsSync(unitsPath);
 	const internConfig = 'intern.json';
 
-	if (!hasUnits) {
-		throw new Error(
-			'Could not find tests, have you built the tests using dojo build?\n\nFor @dojo/cli-build-app run: dojo build app --mode test'
-		);
+	if (args.config) {
+		assertCompiledUnitTests(args.verbose);
 	}
 
 	if (args.all) {
@@ -89,10 +101,25 @@ function printBrowserLink(options: TestOptions) {
 	console.log(
 		'\n If the project directory is hosted on a local server, unit tests can also be run in browser by navigating to ' +
 			underline(
-				`http://localhost:<port>/node_modules/intern/?config=node_modules/@dojo/cli-test-intern/intern/intern.json${
-					browserArgs.length ? `&${browserArgs.join('&')}` : ''
-				}`
+				`http://localhost/node_modules/intern/?config=node_modules/@dojo/cli-test-intern/intern/intern.json${
+					options.childConfig ? `@${options.childConfig}` : ''
+				}${browserArgs.length ? `&${browserArgs.join('&')}` : ''}`
 			)
+	);
+}
+
+function printGoodbye(options: TestOptions) {
+	if (options.childConfig) {
+		printBrowserLink(options);
+	} else {
+		printLocalTest();
+	}
+}
+
+function printLocalTest() {
+	console.log(
+		'\n These tests were run using Dojo JIT compilation. The test suite may also be run against the built application with ' +
+			underline('dojo test -c local')
 	);
 }
 
@@ -184,10 +211,10 @@ const command: Command<TestArgs> = {
 						})
 						.then(
 							() => {
-								printBrowserLink(testOptions);
+								printGoodbye(testOptions);
 							},
 							(err) => {
-								printBrowserLink(testOptions);
+								printGoodbye(testOptions);
 								throw err;
 							}
 						)

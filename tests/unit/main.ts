@@ -198,72 +198,135 @@ describe('main', () => {
 		}
 	});
 
-	it('should print browser link on success', () => {
-		sandbox.stub(fs, 'existsSync', (path: string) => true);
-		const helper = {
-			command: {
-				exists: sandbox.stub().returns(true),
-				run: sandbox.stub().returns(Promise.resolve())
-			}
-		};
-		const runTestArgs = { node: true, all: true };
-		return moduleUnderTest.run(<any>helper, <any>runTestArgs).then(() => {
-			assertLog(
-				'If the project directory is hosted on a local server, unit tests can also be run in browser by navigating to'
+	describe('JIT tests', () => {
+		it('should print JIT information on success', () => {
+			sandbox.stub(fs, 'existsSync', (path: string) => true);
+			const helper = {
+				command: {
+					exists: sandbox.stub().returns(true),
+					run: sandbox.stub().returns(Promise.resolve())
+				}
+			};
+			const runTestArgs = { node: true, all: true };
+			return moduleUnderTest.run(<any>helper, <any>runTestArgs).then(() => {
+				assertLog('These tests were run using Dojo JIT compilation.');
+			});
+		});
+
+		it('should print JIT information on failure', () => {
+			sandbox.stub(fs, 'existsSync', (path: string) => true);
+			const helper = {
+				command: {
+					exists: sandbox.stub().returns(true),
+					run: sandbox.stub().returns(Promise.resolve())
+				}
+			};
+			const runTestArgs = { node: true, all: true };
+			mockRunTests.default.returns(Promise.reject('error'));
+			return moduleUnderTest.run(<any>helper, <any>runTestArgs).then(
+				() => {
+					assert.fail('should have failed');
+				},
+				() => {
+					assertLog('These tests were run using Dojo JIT compilation.');
+				}
 			);
 		});
 	});
 
-	it('should print browser link on failure', () => {
-		sandbox.stub(fs, 'existsSync', (path: string) => true);
-		const helper = {
-			command: {
-				exists: sandbox.stub().returns(true),
-				run: sandbox.stub().returns(Promise.resolve())
-			}
-		};
-		const runTestArgs = { node: true, all: true };
-		mockRunTests.default.returns(Promise.reject('error'));
-		return moduleUnderTest.run(<any>helper, <any>runTestArgs).then(
-			() => {
-				assert.fail('should have failed');
-			},
-			() => {
+	describe('local tests', () => {
+		it('should print browser link on success', () => {
+			sandbox.stub(fs, 'existsSync', (path: string) => true);
+			const helper = {
+				command: {
+					exists: sandbox.stub().returns(true),
+					run: sandbox.stub().returns(Promise.resolve())
+				}
+			};
+			const runTestArgs = { node: true, all: true, config: 'local' };
+			return moduleUnderTest.run(<any>helper, <any>runTestArgs).then(() => {
 				assertLog(
 					'If the project directory is hosted on a local server, unit tests can also be run in browser by navigating to'
 				);
-			}
-		);
-	});
-
-	it('should print browser link with filter option', () => {
-		sandbox.stub(fs, 'existsSync', (path: string) => true);
-		const helper = {
-			command: {
-				exists: sandbox.stub().returns(true),
-				run: sandbox.stub().returns(Promise.resolve())
-			}
-		};
-		const runTestArgs = { node: true, all: true, filter: 'test' };
-		return moduleUnderTest.run(<any>helper, <any>runTestArgs).then(() => {
-			assertLog(
-				'If the project directory is hosted on a local server, unit tests can also be run in browser by navigating to'
-			);
-			assertLog('grep=test');
+			});
 		});
-	});
 
-	it('should throw an error if no tests are found', async () => {
-		let error: Error;
-		sandbox.stub(fs, 'existsSync', (path: string) => false);
-		try {
-			await moduleUnderTest.run({} as any, {} as any);
-		} catch (e) {
-			error = e;
-		}
-		assert.equal(
-			error!.message,
-			'Could not find tests, have you built the tests using dojo build?\n\nFor @dojo/cli-build-app run: dojo build app --mode test'
-		);
+		it('should print browser link on failure', () => {
+			sandbox.stub(fs, 'existsSync', (path: string) => true);
+			const helper = {
+				command: {
+					exists: sandbox.stub().returns(true),
+					run: sandbox.stub().returns(Promise.resolve())
+				}
+			};
+			const runTestArgs = { node: true, all: true, config: 'local' };
+			mockRunTests.default.returns(Promise.reject('error'));
+			return moduleUnderTest.run(<any>helper, <any>runTestArgs).then(
+				() => {
+					assert.fail('should have failed');
+				},
+				() => {
+					assertLog(
+						'If the project directory is hosted on a local server, unit tests can also be run in browser by navigating to'
+					);
+				}
+			);
+		});
+
+		it('should print browser link with filter option', () => {
+			sandbox.stub(fs, 'existsSync', (path: string) => true);
+			const helper = {
+				command: {
+					exists: sandbox.stub().returns(true),
+					run: sandbox.stub().returns(Promise.resolve())
+				}
+			};
+			const runTestArgs = { node: true, all: true, filter: 'test', config: 'local' };
+			return moduleUnderTest.run(<any>helper, <any>runTestArgs).then(() => {
+				assertLog(
+					'If the project directory is hosted on a local server, unit tests can also be run in browser by navigating to'
+				);
+				assertLog('grep=test');
+			});
+		});
+
+		it('should throw an error if no tests are found', async () => {
+			let error: Error;
+			sandbox.stub(fs, 'existsSync', (path: string) => false);
+			try {
+				await moduleUnderTest.run(
+					{} as any,
+					{
+						config: 'local'
+					} as any
+				);
+			} catch (e) {
+				error = e;
+			}
+			assert.equal(
+				error!.message,
+				'Could not find tests, have you built the tests using dojo build?\n\nFor @dojo/cli-build-app run: dojo build app --mode test'
+			);
+		});
+
+		it('should throw an error with file if no tests are found when using --verbose flag', async () => {
+			let error: Error;
+			sandbox.stub(fs, 'existsSync', (path: string) => false);
+			try {
+				await moduleUnderTest.run(
+					{} as any,
+					{
+						config: 'local',
+						verbose: true
+					} as any
+				);
+			} catch (e) {
+				error = e;
+			}
+			assert.include(
+				error!.message,
+				'Have you built the tests using dojo build?\n\nFor @dojo/cli-build-app run: dojo build app --mode test'
+			);
+		});
 	});
 });
