@@ -41,18 +41,13 @@ function transformTestArgs(args: TestArgs): TestOptions {
 	let remoteFunctional = false;
 
 	const projectRoot = pkgDir.sync(process.cwd());
-	const nextPath = path.join(projectRoot, 'output', 'test', 'unit.js');
-	const legacyPath = path.join(projectRoot, '_build', 'tests', 'unit', 'all.js');
-	const isNext = fs.existsSync(nextPath);
-	const isLegacy = fs.existsSync(legacyPath);
-	let internConfig = 'intern.json';
+	const unitsPath = path.join(projectRoot, 'output', 'test', 'unit.js');
+	const hasUnits = fs.existsSync(unitsPath);
+	const internConfig = 'intern.json';
 
-	if (isNext) {
-		internConfig = 'intern-next.json';
-	} else if (isLegacy) {
-	} else {
+	if (!hasUnits) {
 		throw new Error(
-			'Could not find tests, have you built the tests using dojo build?\n\nFor @dojo/cli-build-app run: dojo build app --mode test\nFor @dojo/cli-build-webpack run: dojo build webpack --withTests'
+			'Could not find tests, have you built the tests using dojo build?\n\nFor @dojo/cli-build-app run: dojo build app --mode test'
 		);
 	}
 
@@ -94,9 +89,9 @@ function printBrowserLink(options: TestOptions) {
 	console.log(
 		'\n If the project directory is hosted on a local server, unit tests can also be run in browser by navigating to ' +
 			underline(
-				`http://localhost:<port>/node_modules/intern/?config=node_modules/@dojo/cli-test-intern/intern/${
-					options.internConfig
-				}${browserArgs.length ? `&${browserArgs.join('&')}` : ''}`
+				`http://localhost:<port>/node_modules/intern/?config=node_modules/@dojo/cli-test-intern/intern/intern.json${
+					browserArgs.length ? `&${browserArgs.join('&')}` : ''
+				}`
 			)
 	);
 }
