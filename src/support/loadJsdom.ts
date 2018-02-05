@@ -1,5 +1,5 @@
 import * as jsdom from 'jsdom';
-import { readFileSync, existsSync } from 'fs';
+import { readFileSync } from 'fs';
 import * as path from 'path';
 
 const units = readFileSync(path.join('output', 'test', 'unit.js'), 'utf-8');
