@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import * as path from 'path';
 import * as mockery from 'mockery';
 import * as sinon from 'sinon';
 import MockModule from '../support/MockModule';
@@ -17,7 +16,6 @@ describe('main', () => {
 	let sandbox: sinon.SinonSandbox;
 	let consoleStub: sinon.SinonStub;
 	let mockReadFile: sinon.SinonStub;
-	let mockFileExists: sinon.SinonStub;
 
 	function assertLog(include: string) {
 		let found = false;
