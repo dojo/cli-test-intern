@@ -29,21 +29,17 @@
         }
       }
     ],
-    "plugins": [
-      "@dojo/test-extras/support/loadJsdom",
-      "./_build/src/src"
+    "suites": [
+      "@dojo/cli-test-intern/support/loadJsdom"
     ]
   },
   "browser": {
-    "plugins": [
-      "./_build/src/src.js"
+    "suites": [
+      "./output/test/unit.js"
     ]
   },
-  "suites": [
-    "./_build/tests/unit/all.js"
-  ],
   "functionalSuites": [
-    "./_build/tests/functional/all.js"
+    "./output/test/functional.js"
   ],
   "leaveRemoteOpen": false,
   "coverage": [],

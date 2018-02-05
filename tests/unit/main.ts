@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import * as path from 'path';
 import * as mockery from 'mockery';
 import * as sinon from 'sinon';
 import MockModule from '../support/MockModule';
@@ -100,6 +99,7 @@ describe('main', () => {
 	});
 
 	it('should enable all tests when all is passed', () => {
+		sandbox.stub(fs, 'existsSync', (path: string) => true);
 		mockReadFile.returns(`{
 				"name": "@dojo/cli-test-intern",
 				"version": "test-version"
@@ -121,6 +121,7 @@ describe('main', () => {
 	});
 
 	it('should enable node/remote tests when unit tests is passed', () => {
+		sandbox.stub(fs, 'existsSync', (path: string) => true);
 		mockReadFile.returns(`{
 				"name": "@dojo/cli-test-intern",
 				"version": "test-version"
@@ -142,6 +143,7 @@ describe('main', () => {
 	});
 
 	it('should enable functional, and disable node, tests when functional tests is passed', () => {
+		sandbox.stub(fs, 'existsSync', (path: string) => true);
 		mockReadFile.returns(`{
 				"name": "@dojo/cli-test-intern",
 				"version": "test-version"
@@ -197,6 +199,7 @@ describe('main', () => {
 	});
 
 	it('should print browser link on success', () => {
+		sandbox.stub(fs, 'existsSync', (path: string) => true);
 		const helper = {
 			command: {
 				exists: sandbox.stub().returns(true),
@@ -212,6 +215,7 @@ describe('main', () => {
 	});
 
 	it('should print browser link on failure', () => {
+		sandbox.stub(fs, 'existsSync', (path: string) => true);
 		const helper = {
 			command: {
 				exists: sandbox.stub().returns(true),
@@ -233,6 +237,7 @@ describe('main', () => {
 	});
 
 	it('should print browser link with filter option', () => {
+		sandbox.stub(fs, 'existsSync', (path: string) => true);
 		const helper = {
 			command: {
 				exists: sandbox.stub().returns(true),
@@ -248,43 +253,17 @@ describe('main', () => {
 		});
 	});
 
-	describe('intern config switching for forward compatibility', () => {
-		it('should use intern.json for legacy tests built with cli-build-webpack', async () => {
-			sandbox.stub(fs, 'existsSync', (testPath: string) => {
-				if (testPath.indexOf(path.join('_build', 'tests', 'unit', 'all.js')) !== -1) {
-					return true;
-				}
-				return false;
-			});
+	it('should throw an error if no tests are found', async () => {
+		let error: Error;
+		sandbox.stub(fs, 'existsSync', (path: string) => false);
+		try {
 			await moduleUnderTest.run({} as any, {} as any);
-			const [testOptions] = mockRunTests.default.firstCall.args;
-			assert.equal(testOptions.internConfig, 'intern.json');
-		});
-
-		it('should use intern-next.json for tests built with cli-build-app', async () => {
-			sandbox.stub(fs, 'existsSync', (testPath: string) => {
-				if (testPath.indexOf(path.join('output', 'test', 'unit.js')) !== -1) {
-					return true;
-				}
-				return false;
-			});
-			await moduleUnderTest.run({} as any, {} as any);
-			const [testOptions] = mockRunTests.default.firstCall.args;
-			assert.equal(testOptions.internConfig, 'intern-next.json');
-		});
-
-		it('should throw an error if no tests are found', async () => {
-			let error: Error;
-			sandbox.stub(fs, 'existsSync', (path: string) => false);
-			try {
-				await moduleUnderTest.run({} as any, {} as any);
-			} catch (e) {
-				error = e;
-			}
-			assert.equal(
-				error!.message,
-				'Could not find tests, have you built the tests using dojo build?\n\nFor @dojo/cli-build-app run: dojo build app --mode test\nFor @dojo/cli-build-webpack run: dojo build webpack --withTests'
-			);
-		});
+		} catch (e) {
+			error = e;
+		}
+		assert.equal(
+			error!.message,
+			'Could not find tests, have you built the tests using dojo build?\n\nFor @dojo/cli-build-app run: dojo build app --mode test'
+		);
 	});
 });
