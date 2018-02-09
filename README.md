@@ -11,12 +11,12 @@ The official Dojo 2 test command. This package uses Intern to run unit and funct
 
 ### Prerequisites
 
-This project is a plugin for the Dojo CLI. Please visit the [Dojo CLI] project for
+This project is a command for the [Dojo CLI]. Please visit the Dojo CLI project for
  information about the project and how to install.
 
 ### Installation
 
-The use `@dojo/cli-test-intern` in a project, install the packages:
+The use `@dojo/cli-test-intern` in a project, install the package:
 
 ```bash
 npm install @dojo/cli-test-intern
@@ -53,7 +53,7 @@ Unit tests may be run explicitly with the `-u` flag or as part of a full test ru
 dojo test -u
 ```
 
-cli-test-intern will execute tests located at `output/tests/unit.js` in node and in Chrome and provide a report 
+`@dojo/cli-test-intern` will execute tests located at `output/tests/unit.js` in node and in Chrome and provide a report 
 listing any failed tests and display a coverage report.
 
 ### Functional tests
@@ -64,7 +64,7 @@ Functional tests may be run explicitly with the `-f` flag or as part of a full t
 dojo test -f
 ```
 
-cli-test-intern will execute tests located at `./output/test/functional.js` in Chrome using Selenium and provide a
+`@dojo/cli-test-intern` will execute tests located at `./output/test/functional.js` in Chrome using Selenium and provide a
  report listing any failed tests.
 
 ### Testing services
