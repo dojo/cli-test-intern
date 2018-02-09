@@ -3,7 +3,7 @@ import * as mockery from 'mockery';
 import * as sinon from 'sinon';
 import MockModule from '../support/MockModule';
 import { throwImmediately } from '../support/util';
-import { Command } from '@dojo/interfaces/cli';
+import { Command } from '@dojo/cli/interfaces';
 
 const { beforeEach, afterEach, describe, it } = intern.getInterface('bdd');
 const { assert } = intern.getPlugin('chai');
