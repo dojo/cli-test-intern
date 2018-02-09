@@ -5,19 +5,118 @@
 [![codecov](https://codecov.io/gh/dojo/cli-test-intern/branch/master/graph/badge.svg)](https://codecov.io/gh/dojo/cli-test-intern)
 [![npm version](https://badge.fury.io/js/%40dojo%2Fcli-test-intern.svg)](https://badge.fury.io/js/%40dojo%2Fcli-test-intern)
 
-The official Dojo 2 test command.
+The official Dojo 2 test command. This package uses Intern to run unit and functional tests against your Dojo project.
 
-**WARNING** This is _beta_ software. While we do not anticipate significant changes to the API at this stage, we may feel the need to do so. This is not yet production ready, so you should use at your own risk.
+## Usage
 
-## Features
+### Prerequisites
 
-Runs tests built using `@dojo/cli-build-webpack`, or `@dojo/cli-build-app`.
+This project is a command for the [Dojo CLI]. Please visit the Dojo CLI project for
+ information about the project and how to install.
 
+### Installation
 
-## How do I use this package?
+The use `@dojo/cli-test-intern` in a project, install the package:
 
-To build and run tests locally, just execute `dojo test` in your project. There are several configuration options, to see what
-options are available run `dojo test -h`
+```bash
+npm install @dojo/cli-test-intern
+```
+
+### Basic Usage
+
+First, build your application and tests using [@dojo/cli-build-app]
+
+```bash
+dojo build app --mode dev
+dojo build app --mode test
+```
+
+Then, run your tests using @dojo/cli-test-intern
+
+```bash
+dojo test -a
+```
+
+There are several configuration options available. To list them run `dojo test -h`.
+
+## Running Tests
+
+Intern supports two types of testing approaches unit and functional. Unit tests are tests run via node and the local
+[Selenium] tunnel and test isolated blocks of code. Functional tests are run using Selenium in the browser and test
+the overall functionality of the software as a user would interact with it.
+
+### Unit tests
+
+Unit tests may be run explicitly with the `-u` flag or as part of a full test run using the `-a` flag
+
+```bash
+dojo test -u
+```
+
+`@dojo/cli-test-intern` will execute tests located at `output/tests/unit.js` in node and in Chrome and provide a report 
+listing any failed tests and display a coverage report.
+
+### Functional tests
+
+Functional tests may be run explicitly with the `-f` flag or as part of a full test run using the `-a` flag
+
+```bash
+dojo test -f
+```
+
+`@dojo/cli-test-intern` will execute tests located at `./output/test/functional.js` in Chrome using Selenium and provide a
+ report listing any failed tests.
+
+### Testing services
+
+Intern comes with support for running tests remotely on [BrowserStack], [SauceLabs], and [TestingBot]. You may use one
+ of these services by signing up for an account and providing your credentials to cli-test-intern. By default, all of
+ the testing services will run tests against IE11, Firefox, and Chrome.
+ 
+#### BrowserStack
+
+[BrowserStack] requires an access key and username to use its services. These may be provided on the command line or as 
+environment variables as described in [Intern's documentation](https://theintern.io/docs.html#Intern/4/docs/docs%2Frunning.md/cloud-service).
+
+```bash
+dojo test -a -c browserstack -k <accesskey> --userName <username>
+```
+
+or with environment variables
+
+```bash
+BROWSERSTACK_USERNAME=<username> BROWSERSTACK_ACCESS_KEY=<key> dojo test -a -c browserstack
+```
+
+#### SauceLabs
+
+[SauceLabs] requires an access key and username to use its services. These may be provided on the command line or as 
+environment variables as described in [Intern's documentation](https://theintern.io/docs.html#Intern/4/docs/docs%2Frunning.md/cloud-service).
+
+```bash
+dojo test -a -c saucelabs -k <accesskey> --userName <username>
+```
+
+or with environment variables
+
+```bash
+SAUCE_USERNAME=<username> SAUCE_ACCESS_KEY=<key> dojo test -a -c saucelabs
+```
+
+#### TestingBot
+
+[TestingBot] requires an key and a secret to use its services. These may be provided on the command line or as 
+environment variables as described in [Intern's documentation](https://theintern.io/docs.html#Intern/4/docs/docs%2Frunning.md/cloud-service).
+
+```bash
+dojo test -a -c testingbot -k <key> -s <secret>
+```
+
+or with environment variables
+
+```bash
+TESTINGBOT_SECRET=<secret> TESTINGBOT_KEY=<key> dojo test -a -c saucelabs
+```
 
 ## How do I contribute?
 
@@ -36,7 +135,7 @@ npm run prettier
 
 ## Testing
 
-Test cases MUST be written using [Intern](https://theintern.github.io) using the bdd test interface and Assert assertion interface.
+Test cases MUST be written using [Intern] using the "bdd" test interface and "assert" assertion interface.
 
 90% branch coverage MUST be provided for all code submitted to this repository, as reported by Istanbul’s combined coverage results for all supported platforms.
 
@@ -44,20 +143,13 @@ To test locally in node run:
 
 `grunt test`
 
-## Licensing information
+© 2018 [JS Foundation] & contributors. [New BSD](LICENSE) license.
 
-* [ora](https://github.com/sindresorhus/ora) ([MIT](https://opensource.org/licenses/MIT))
-* [Chalk](https://github.com/chalk/chalk)([MIT](https://opensource.org/licenses/MIT))
-* [cross-spawn](https://github.com/IndigoUnited/node-cross-spawn)([MIT](https://opensource.org/licenses/MIT))
-* [pkg-dir](https://github.com/sindresorhus/pkg-dir)([MIT](https://opensource.org/licenses/MIT))
-* [Istanbul](https://github.com/gotwarlost/istanbul)([New BSD](http://opensource.org/licenses/BSD-3-Clause))
-* [Mockery](https://github.com/mfncooper/mockery)([MIT](https://opensource.org/licenses/MIT))
-* [codecov.io](https://github.com/cainus/codecov.io)([MIT](https://opensource.org/licenses/MIT))
-* [Glob](https://github.com/isaacs/node-glob)([ISC](https://opensource.org/licenses/ISC))
-* [grunt-tslint](https://github.com/palantir/grunt-tslint)([Apache 2.0](https://opensource.org/licenses/Apache-2.0))
-* [Sinon.JS](https://github.com/sinonjs/sinon)([New BSD](http://opensource.org/licenses/BSD-3-Clause))
-* [TSLint](https://github.com/palantir/tslint)([Apache 2.0](https://opensource.org/licenses/Apache-2.0))
-* [yargs](https://github.com/yargs/yargs)([MIT](https://opensource.org/licenses/MIT))
-
-© 2004–2017 JS Foundation & contributors. [New BSD](LICENSE) license.
-
+[@dojo/cli-build-app]: https://github.com/dojo/cli-build-app
+[BrowserStack]: https://www.browserstack.com/
+[Dojo CLI]: https://github.com/dojo/cli
+[Intern]: https://theintern.io/
+[JS Foundation]: https://js.foundation/
+[SauceLabs]: https://saucelabs.com/
+[Selenium]: http://www.seleniumhq.org/
+[TestingBot]: https://testingbot.com/
