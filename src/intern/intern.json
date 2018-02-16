@@ -29,15 +29,13 @@
         }
       }
     ],
-    "suites": [
+    "plugins": [
       "@dojo/cli-test-intern/support/loadJsdom"
     ]
   },
-  "browser": {
-    "suites": [
-      "./output/test/unit.js"
-    ]
-  },
+  "suites": [
+    "./output/test/unit.js"
+  ],
   "functionalSuites": [
     "./output/test/functional.js"
   ],

@@ -1,23 +1,49 @@
-import * as jsdom from 'jsdom';
-import { readFileSync } from 'fs';
-import * as path from 'path';
+import global from '@dojo/shim/global';
+import { add as hasAdd, exists } from '@dojo/has/has';
 
-const units = readFileSync(path.join('output', 'test', 'unit.js'), 'utf-8');
+declare global {
+	interface Window {
+		CustomEvent: typeof CustomEvent;
+		CSSStyleDeclaration: typeof CSSStyleDeclaration;
+	}
+}
 
-const window: any = new jsdom.JSDOM(
-	`
-<!DOCTYPE html>
-<html>
-<head></head>
-<body></body>
-<html>
-`,
-	{
-		runScripts: 'outside-only',
-		pretendToBeVisual: true,
-		beforeParse(window: any) {
-			window.intern = intern;
+let doc: Document;
+
+if (!('document' in global)) {
+	const jsdom = require('jsdom');
+	const dom = new jsdom.JSDOM(
+		`
+		<!DOCTYPE html>
+		<html>
+		<head></head>
+		<body></body>
+		<html>
+	`,
+		{
+			pretendToBeVisual: true,
+			runScripts: 'dangerously'
 		}
-	} as any
-).window;
-window.eval(units);
+	);
+
+	global.window = dom.window;
+	doc = global.document = global.window.document;
+	global.DOMParser = global.window.DOMParser;
+	global.Element = global.window.Element;
+
+	Object.defineProperty(
+		window.CSSStyleDeclaration.prototype,
+		'transition',
+		Object.getOwnPropertyDescriptor((<any>window).CSSStyleDeclaration.prototype, 'webkitTransition')!
+	);
+
+	hasAdd('jsdom', true);
+} else {
+	doc = document;
+	/* istanbul ignore else */
+	if (!exists('jsdom')) {
+		hasAdd('jsdom', false);
+	}
+}
+
+export default doc;
