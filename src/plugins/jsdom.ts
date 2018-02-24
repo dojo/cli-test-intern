@@ -18,39 +18,6 @@ declare global {
 	}
 }
 
-function createDom(Jsdom: typeof JSDOM) {
-	return new Jsdom(
-		`
-		<!DOCTYPE html>
-		<html>
-		<head></head>
-		<body></body>
-		<html>
-	`,
-		<any>{
-			pretendToBeVisual: true,
-			runScripts: 'dangerously'
-		}
-	);
-}
-
-function globalizeDom(dom: JSDOM) {
-	global.window = dom.window;
-	const doc = (global.document = global.window.document);
-	global.DOMParser = global.window.DOMParser;
-	global.Element = global.window.Element;
-
-	Object.defineProperty(
-		window.CSSStyleDeclaration.prototype,
-		'transition',
-		Object.getOwnPropertyDescriptor((<any>window).CSSStyleDeclaration.prototype, 'webkitTransition')!
-	);
-
-	hasAdd('jsdom', true);
-
-	return doc;
-}
-
 intern.registerPlugin(PLUGIN_NAME, (options?: Options) => {
 	if (intern.environment !== 'node') {
 		intern.emit('warning', `${PLUGIN_NAME} cannot run outside of a nodejs environment`);
@@ -58,9 +25,42 @@ intern.registerPlugin(PLUGIN_NAME, (options?: Options) => {
 
 	const jsdom = require('jsdom');
 
+	function createDom() {
+		return new jsdom.JSDOM(
+			`
+		<!DOCTYPE html>
+		<html>
+		<head></head>
+		<body></body>
+		<html>
+	`,
+			<any>{
+				pretendToBeVisual: true,
+				runScripts: 'dangerously'
+			}
+		);
+	}
+
+	function globalizeDom(dom: JSDOM) {
+		global.window = dom.window;
+		const doc = (global.document = global.window.document);
+		global.DOMParser = global.window.DOMParser;
+		global.Element = global.window.Element;
+
+		Object.defineProperty(
+			window.CSSStyleDeclaration.prototype,
+			'transition',
+			Object.getOwnPropertyDescriptor((<any>window).CSSStyleDeclaration.prototype, 'webkitTransition')!
+		);
+
+		hasAdd('jsdom', true);
+
+		return doc;
+	}
+
 	if (options && options.global) {
 		if (!('document' in global)) {
-			const dom = createDom(jsdom.JSDOM);
+			const dom = createDom();
 			globalizeDom(dom);
 		} else {
 			if (!exists('jsdom')) {
