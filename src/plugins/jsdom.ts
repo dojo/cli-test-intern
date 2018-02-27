@@ -1,5 +1,5 @@
 import Node from 'intern/lib/executors/Node';
-import { JSDOM } from 'jsdom';
+import { JSDOM, Options as JSDOMOptions } from 'jsdom';
 import global from '@dojo/shim/global';
 import { add as hasAdd, exists } from '@dojo/has/has';
 
@@ -18,6 +18,10 @@ declare global {
 	}
 }
 
+interface JSDOMSecretOptions extends JSDOMOptions {
+	pretendToBeVisual: boolean;
+}
+
 intern.registerPlugin(PLUGIN_NAME, (options?: Options) => {
 	if (intern.environment !== 'node') {
 		intern.emit('warning', `${PLUGIN_NAME} cannot run outside of a nodejs environment`);
@@ -34,10 +38,10 @@ intern.registerPlugin(PLUGIN_NAME, (options?: Options) => {
 		<body></body>
 		<html>
 	`,
-			<any>{
+			{
 				pretendToBeVisual: true,
 				runScripts: 'dangerously'
-			}
+			} as JSDOMSecretOptions
 		);
 	}
 

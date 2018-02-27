@@ -45,8 +45,8 @@
     "yargs": "^5.0.0"
   },
   "dependencies": {
-    "@dojo/core": "^0.3.1",
-    "@dojo/has": "^0.1.2",
+    "@dojo/core": "~0.3.1",
+    "@dojo/has": "~0.1.2",
     "@dojo/i18n": "~0.4.0",
     "@dojo/shim": "~0.2.5",
     "@dojo/test-extras": "~0.5.0",
