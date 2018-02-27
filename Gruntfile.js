@@ -1,10 +1,10 @@
 module.exports = function (grunt) {
-	var staticFiles = [ 'intern/**' ];
+	var staticFiles = [ 'intern/**/*.json' ];
 	require('grunt-dojo2').initConfig(grunt, {
 		ts: {
 			dist: {
 				exclude: [
-					'./src/intern',
+					'./src/intern/*.json',
 					'./tests/**/*.ts'
 				]
 			}
@@ -21,6 +21,12 @@ module.exports = function (grunt) {
 				cwd: 'src',
 				src: staticFiles,
 				dest: '<%= devDirectory %>/src'
+			},
+			staticTestFiles: {
+				expand: true,
+				cwd: 'tests',
+				src: [ 'support/assets/*.test' ],
+				dest: '<%= devDirectory %>/tests'
 			}
 		},
 		intern: {
