@@ -29,14 +29,14 @@
       }
     ],
     "plugins": [
-      "@dojo/cli-test-intern/plugins/postcssRequire",
-      "@dojo/cli-test-intern/plugins/tsnode",
       {
         "script": "@dojo/cli-test-intern/plugins/jsdom",
         "options": {
           "global": true
         }
       },
+      "@dojo/cli-test-intern/plugins/postcssRequire",
+      "@dojo/cli-test-intern/plugins/tsnode",
       {
         "script": "@dojo/cli-test-intern/plugins/registerExtension",
         "options": {
@@ -52,15 +52,6 @@
   "defaultTimeout": 15000,
   "configs": {
     "built": {
-      "functionalSuites": [
-        "./output/test/functional.js"
-      ],
-      "suites": [
-        "./output/test/unit.js"
-      ]
-    },
-    "local": {
-      "extends": "built",
       "node": {
         "plugins": [
           {
@@ -70,6 +61,15 @@
         ],
         "suites": []
       },
+      "functionalSuites": [
+        "./output/test/functional.js"
+      ],
+      "suites": [
+        "./output/test/unit.js"
+      ]
+    },
+    "local": {
+      "extends": "built",
       "environments": [
         { "browserName": "node" },
         { "browserName": "chrome" }
