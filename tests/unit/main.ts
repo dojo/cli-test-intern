@@ -185,6 +185,7 @@ describe('main', () => {
 
 		assert.isTrue('copy' in result, 'Should have returned a list of files to copy');
 		assert.isTrue('files' in result.copy, 'Should have returned a list of files to copy');
+		assert.deepEqual(result.copy.files, ['./intern.json']);
 	});
 
 	it('should fail if package.json fails to be read', () => {

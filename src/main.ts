@@ -241,7 +241,7 @@ const command: Command<TestArgs> = {
 			},
 			copy: {
 				path: __dirname + '/intern',
-				files: ['./intern.json', './intern-next.json']
+				files: ['./intern.json']
 			}
 		};
 	}
