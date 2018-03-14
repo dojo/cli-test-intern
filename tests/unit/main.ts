@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as mockery from 'mockery';
 import * as sinon from 'sinon';
+import * as path from 'path';
 import MockModule from '../support/MockModule';
 import { throwImmediately } from '../support/util';
 import { Command } from '@dojo/cli/interfaces';
@@ -185,7 +186,10 @@ describe('main', () => {
 
 		assert.isTrue('copy' in result, 'Should have returned a list of files to copy');
 		assert.isTrue('files' in result.copy, 'Should have returned a list of files to copy');
-		assert.deepEqual(result.copy.files, ['./intern.json']);
+		assert.deepEqual(result.copy.files, ['intern.json']);
+		result.copy.files.forEach((file: string) => {
+			assert.isTrue(fs.existsSync(path.join(result.copy.path, 'intern.json')));
+		});
 	});
 
 	it('should fail if package.json fails to be read', () => {
