@@ -5,6 +5,7 @@ const { before, after, beforeEach, describe, it } = intern.getInterface('bdd');
 const { assert } = intern.getPlugin('chai');
 
 const javaVersionString = 'Some java version in here';
+const openjdkVersionString = 'Some openjdk version in here';
 
 describe('javaCheck', () => {
 	let javaCheck: (args: TestArgs) => Promise<boolean>;
@@ -95,6 +96,16 @@ describe('javaCheck', () => {
 		it(`should require java with "${property}" and pass when stdout contains the version`, () => {
 			(<any>args)[property] = true;
 			execStdout = javaVersionString;
+			return javaCheck(args).then((passed: boolean) => {
+				assert.isTrue(passed, `"${property}" failed`);
+			});
+		});
+	});
+
+	javaNeeded.forEach(function(property) {
+		it(`should require java (openjdk) with "${property}" and pass when stderr contains the version`, () => {
+			(<any>args)[property] = true;
+			execStderr = openjdkVersionString;
 			return javaCheck(args).then((passed: boolean) => {
 				assert.isTrue(passed, `"${property}" failed`);
 			});

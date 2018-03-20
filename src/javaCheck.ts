@@ -7,7 +7,7 @@ function requiresTunnel(args: TestArgs) {
 }
 
 function containsVersionString(str: string): boolean {
-	return str != null && str.indexOf('java version') >= 0;
+	return str != null && (str.indexOf('java version') >= 0 || str.indexOf('openjdk version') >= 0);
 }
 
 export default function(args: TestArgs) {
