@@ -33,7 +33,6 @@
     "@types/mockery": "^1.4.29",
     "@types/node": "~9.6.5",
     "@types/sinon": "^1.16.35",
-    "@types/source-map": "^0.5.0",
     "@types/yargs": "^8.0.2",
     "glob": "^7.0.3",
     "grunt": "~1.0.1",
