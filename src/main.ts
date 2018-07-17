@@ -1,5 +1,5 @@
 import { Command, Helper, OptionsHelper } from '@dojo/cli/interfaces';
-import { underline } from 'chalk';
+import chalk from 'chalk';
 import * as path from 'path';
 import * as fs from 'fs';
 import runTests, { TestOptions } from './runTests';
@@ -100,7 +100,7 @@ function printBrowserLink(options: TestOptions) {
 
 	console.log(
 		'\n If the project directory is hosted on a local server, unit tests can also be run in browser by navigating to ' +
-			underline(
+			chalk.underline(
 				`http://localhost/node_modules/intern/?config=node_modules/@dojo/cli-test-intern/intern/intern.json${
 					options.childConfig ? `@${options.childConfig}` : ''
 				}${browserArgs.length ? `&${browserArgs.join('&')}` : ''}`
@@ -119,7 +119,7 @@ function printGoodbye(options: TestOptions) {
 function printLocalTest() {
 	console.log(
 		'\n These tests were run using Dojo JIT compilation. The test suite may also be run against the built application with ' +
-			underline('dojo test -c local')
+			chalk.underline('dojo test -c local')
 	);
 }
 
@@ -223,9 +223,9 @@ const command: Command<TestArgs> = {
 			} else {
 				return Promise.reject(
 					Error(
-						underline('Error! Java VM could not be found.') +
+						chalk.underline('Error! Java VM could not be found.') +
 							'\nA Java VM needs to be installed and available from the command line to allow the ' +
-							underline('dojo test') +
+							chalk.underline('dojo test') +
 							' command to run tests in a browser locally or remotely.'
 					)
 				);

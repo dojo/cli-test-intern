@@ -1,7 +1,7 @@
 import { sandbox, SinonSandbox, SinonStub } from 'sinon';
 import MockModule from '../../support/MockModule';
 import { assertNotNodeEnvironment } from '../../support/assertions';
-import global from '@dojo/shim/global';
+import global from '@dojo/framework/shim/global';
 import * as mockery from 'mockery';
 
 const { beforeEach, afterEach, describe, it } = intern.getInterface('bdd');
@@ -37,7 +37,7 @@ describe('plugins/jsdom', () => {
 			hasAddStub = sinon.stub();
 			hasExistsStub = sinon.stub();
 			mockModule = new MockModule('../../../src/plugins/jsdom', require);
-			mockery.registerMock('@dojo/has/has', { add: hasAddStub, exists: hasExistsStub });
+			mockery.registerMock('@dojo/framework/has/has', { add: hasAddStub, exists: hasExistsStub });
 			registerPluginStub = sinon.stub(intern, 'registerPlugin');
 			mockModule.getModuleUnderTest();
 		}

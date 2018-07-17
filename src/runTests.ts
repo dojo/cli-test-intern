@@ -1,4 +1,4 @@
-import { blue, green, red, underline } from 'chalk';
+import chalk from 'chalk';
 import * as path from 'path';
 import dirname, { projectName } from './dirname';
 
@@ -83,29 +83,28 @@ export default async function(testArgs: TestOptions) {
 		const internArgs = parseArguments(testArgs);
 
 		function succeed() {
-			logger('\n  ' + green('testing') + ' completed successfully');
+			logger('\n  ' + chalk.green('testing') + ' completed successfully');
 			resolve();
 		}
 
 		function fail(err: string) {
-			logger('\n  ' + red('testing') + ' failed');
+			logger('\n  ' + chalk.red('testing') + ' failed');
 			reject({
 				message: err,
 				exitCode: 1
 			});
 		}
 
-		logger('\n' + underline(`testing "${projectName()}"...`) + `\n`);
+		logger('\n' + chalk.underline(`testing "${projectName()}"...`) + `\n`);
 
 		if (testArgs.verbose) {
-			logger(`${blue.bold('  Intern config:')}`);
-			logger('    ' + blue(String(cs.sync(internPath, ['showConfig', ...internArgs]).stdout)));
-			logger(`${blue.bold('  Parsed arguments for intern:')}`);
-			logger('    ' + blue(String(internArgs.join('\n    '))));
+			logger(`${chalk.blue.bold('  Intern config:')}`);
+			logger('    ' + chalk.blue(String(cs.sync(internPath, ['showConfig', ...internArgs]).stdout)));
+			logger(`${chalk.blue.bold('  Parsed arguments for intern:')}`);
+			logger('    ' + chalk.blue(String(internArgs.join('\n    '))));
 		}
 
-		cs
-			.spawn(internPath, internArgs, { stdio: 'inherit' })
+		cs.spawn(internPath, internArgs, { stdio: 'inherit' })
 			.on('close', (exitCode: number) => {
 				if (exitCode) {
 					fail('Tests did not complete successfully');

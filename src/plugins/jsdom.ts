@@ -1,7 +1,7 @@
 import Node from 'intern/lib/executors/Node';
 import { JSDOM, Options as JSDOMOptions } from 'jsdom';
-import global from '@dojo/shim/global';
-import { add as hasAdd, exists } from '@dojo/has/has';
+import global from '@dojo/framework/shim/global';
+import { add as hasAdd, exists } from '@dojo/framework/has/has';
 
 declare const intern: Node;
 

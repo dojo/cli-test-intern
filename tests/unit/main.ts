@@ -100,7 +100,7 @@ describe('main', () => {
 	});
 
 	it('should enable all tests when all is passed', () => {
-		sandbox.stub(fs, 'existsSync', (path: string) => true);
+		sandbox.stub(fs, 'existsSync').callsFake((path: string) => true);
 		mockReadFile.returns(`{
 				"name": "@dojo/cli-test-intern",
 				"version": "test-version"
@@ -122,7 +122,7 @@ describe('main', () => {
 	});
 
 	it('should enable node/remote tests when unit tests is passed', () => {
-		sandbox.stub(fs, 'existsSync', (path: string) => true);
+		sandbox.stub(fs, 'existsSync').callsFake((path: string) => true);
 		mockReadFile.returns(`{
 				"name": "@dojo/cli-test-intern",
 				"version": "test-version"
@@ -144,7 +144,7 @@ describe('main', () => {
 	});
 
 	it('should enable functional, and disable node, tests when functional tests is passed', () => {
-		sandbox.stub(fs, 'existsSync', (path: string) => true);
+		sandbox.stub(fs, 'existsSync').callsFake((path: string) => true);
 		mockReadFile.returns(`{
 				"name": "@dojo/cli-test-intern",
 				"version": "test-version"
@@ -205,7 +205,7 @@ describe('main', () => {
 
 	describe('JIT tests', () => {
 		it('should print JIT information on success', () => {
-			sandbox.stub(fs, 'existsSync', (path: string) => true);
+			sandbox.stub(fs, 'existsSync').callsFake((path: string) => true);
 			const helper = {
 				command: {
 					exists: sandbox.stub().returns(true),
@@ -219,7 +219,7 @@ describe('main', () => {
 		});
 
 		it('should print JIT information on failure', () => {
-			sandbox.stub(fs, 'existsSync', (path: string) => true);
+			sandbox.stub(fs, 'existsSync').callsFake((path: string) => true);
 			const helper = {
 				command: {
 					exists: sandbox.stub().returns(true),
@@ -241,7 +241,7 @@ describe('main', () => {
 
 	describe('local tests', () => {
 		it('should print browser link on success', () => {
-			sandbox.stub(fs, 'existsSync', (path: string) => true);
+			sandbox.stub(fs, 'existsSync').callsFake((path: string) => true);
 			const helper = {
 				command: {
 					exists: sandbox.stub().returns(true),
@@ -257,7 +257,7 @@ describe('main', () => {
 		});
 
 		it('should print browser link on failure', () => {
-			sandbox.stub(fs, 'existsSync', (path: string) => true);
+			sandbox.stub(fs, 'existsSync').callsFake((path: string) => true);
 			const helper = {
 				command: {
 					exists: sandbox.stub().returns(true),
@@ -279,7 +279,7 @@ describe('main', () => {
 		});
 
 		it('should print browser link with filter option', () => {
-			sandbox.stub(fs, 'existsSync', (path: string) => true);
+			sandbox.stub(fs, 'existsSync').callsFake((path: string) => true);
 			const helper = {
 				command: {
 					exists: sandbox.stub().returns(true),
@@ -297,7 +297,7 @@ describe('main', () => {
 
 		it('should throw an error if no tests are found', async () => {
 			let error: Error;
-			sandbox.stub(fs, 'existsSync', (path: string) => false);
+			sandbox.stub(fs, 'existsSync').callsFake((path: string) => false);
 			try {
 				await moduleUnderTest.run(
 					{} as any,
@@ -316,7 +316,7 @@ describe('main', () => {
 
 		it('should throw an error with file if no tests are found when using --verbose flag', async () => {
 			let error: Error;
-			sandbox.stub(fs, 'existsSync', (path: string) => false);
+			sandbox.stub(fs, 'existsSync').callsFake((path: string) => false);
 			try {
 				await moduleUnderTest.run(
 					{} as any,
