@@ -1,7 +1,3 @@
-import Node from 'intern/lib/executors/Node';
-
-declare const intern: Node;
-
 const PLUGIN_NAME = 'placeholder-node';
 
 export interface Options {
