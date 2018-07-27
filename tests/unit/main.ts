@@ -71,6 +71,7 @@ describe('main', () => {
 			s: 'secret',
 			u: 'unit',
 			v: 'verbose',
+			l: 'legacyDojo',
 			filter: undefined
 		};
 
