@@ -45,10 +45,14 @@ export function parseArguments(testArgs: TestOptions) {
 		args.push('suites=');
 	}
 
-	if (!remoteUnit && !remoteFunctional) {
-		args.push('environments=');
-	} else if (!remoteFunctional) {
+	if (!remoteFunctional) {
 		args.push('functionalSuites=');
+	}
+
+	if (!nodeUnit && (remoteUnit || remoteFunctional)) {
+		args.push('environments={ "browserName": "chrome" }');
+	} else if (!remoteUnit && !remoteFunctional) {
+		args.push('environments=');
 	}
 
 	if (filter) {

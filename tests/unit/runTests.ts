@@ -141,6 +141,25 @@ describe('runTests', () => {
 			);
 		});
 
+		it('should push a browser environment if only browser tests are run', () => {
+			const environments = 'environments={ "browserName": "chrome" }';
+			assert.include(
+				runTests.parseArguments({
+					nodeUnit: false,
+					remoteUnit: true
+				}),
+				environments
+			);
+
+			assert.include(
+				runTests.parseArguments({
+					nodeUnit: false,
+					remoteFunctional: true
+				}),
+				environments
+			);
+		});
+
 		it('Should add reporters if provided', () => {
 			const args = runTests.parseArguments({
 				reporters: 'one,two'

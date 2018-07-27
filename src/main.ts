@@ -21,6 +21,7 @@ export interface TestArgs {
 	internConfig: string;
 	node: boolean;
 	filter: string;
+	legacyDojo: boolean;
 }
 
 function buildNpmDependencies(): any {
@@ -56,11 +57,21 @@ function transformTestArgs(args: TestArgs): TestOptions {
 	let nodeUnit = true;
 	let remoteUnit = false;
 	let remoteFunctional = false;
+	let childConfig;
 
 	const internConfig = 'intern.json';
 
-	if (args.config) {
+	if (args.config || args.node === false) {
 		assertCompiledUnitTests(args.verbose);
+		childConfig = args.config || 'local';
+	}
+
+	if (args.legacyDojo) {
+		childConfig = 'legacydojo';
+		if (args.config === 'local') {
+			childConfig = 'legacydojolocal';
+			remoteUnit = true;
+		}
 	}
 
 	if (args.all) {
@@ -71,6 +82,11 @@ function transformTestArgs(args: TestArgs): TestOptions {
 		remoteUnit = true;
 	}
 
+	if (args.node === false) {
+		remoteUnit = true;
+		nodeUnit = false;
+	}
+
 	if (args.functional) {
 		nodeUnit = remoteUnit = false;
 		remoteFunctional = true;
@@ -78,7 +94,7 @@ function transformTestArgs(args: TestArgs): TestOptions {
 
 	return {
 		internConfig,
-		childConfig: args.config,
+		childConfig,
 		reporters: args.reporters,
 		userName: args.userName,
 		secret: args.secret,
@@ -191,6 +207,13 @@ const command: Command<TestArgs> = {
 		options('filter', {
 			describe: 'Run only tests whose IDs match a regular expression',
 			type: 'string'
+		});
+
+		options('l', {
+			alias: 'legacyDojo',
+			describe: 'Use the Dojo 1 loader when running tests in node',
+			type: 'boolean',
+			default: false
 		});
 	},
 	run(helper: Helper, args: TestArgs) {

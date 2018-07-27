@@ -75,6 +75,21 @@
         { "browserName": "chrome" }
       ]
     },
+    "legacydojo": {
+      "extends": "built",
+      "node": {
+        "loader": {
+          "script": "dojo"
+        }
+      }
+    },
+    "legacydojolocal": {
+      "extends": "legacydojo",
+      "environments": [
+        { "browserName": "node" },
+        { "browserName": "chrome" }
+      ]
+    },
     "browserstack": {
       "extends": "built",
       "maxConcurrency": 2,
