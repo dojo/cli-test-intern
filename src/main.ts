@@ -63,7 +63,7 @@ function transformTestArgs(args: TestArgs): TestOptions {
 
 	if (args.config || args.node === false) {
 		assertCompiledUnitTests(args.verbose);
-		childConfig = args.config;
+		childConfig = args.config || 'local';
 	}
 
 	if (args.legacyDojo) {
@@ -207,6 +207,13 @@ const command: Command<TestArgs> = {
 		options('filter', {
 			describe: 'Run only tests whose IDs match a regular expression',
 			type: 'string'
+		});
+
+		options('l', {
+			alias: 'legacyDojo',
+			describe: 'Use the Dojo 1 loader when running tests in node',
+			type: 'boolean',
+			default: false
 		});
 	},
 	run(helper: Helper, args: TestArgs) {

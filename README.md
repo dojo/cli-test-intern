@@ -67,6 +67,29 @@ dojo test -f
 `@dojo/cli-test-intern` will execute tests located at `./output/test/functional.js` in Chrome using Selenium and provide a
  report listing any failed tests.
 
+ ### Skipping the node environment
+
+ If tests should not be run in node, the `-n` flag can be set to `false` to limit tests to
+ browser environments. If using the `-n` flag and no configuration is provided the tests will
+ default to using the `local` environment configuration
+
+ ```bash
+ dojo test -n false
+ ```
+
+
+ ### Running legacy Dojo code in node
+
+ If using the `cli-build-app` support for running Dojo 1 code in a modern Dojo application, by default
+ Dojo 1 will assume a browser environment and the `-n` flag discussed above should be used to limit tests
+ to run in a browser environment. However, if the Dojo 1 build is configured to support a node environment, the
+ `-l` flag, which can also be provided as `--legacyDojo`, can be provided to indicate that the Dojo 1 loader should
+ be used to load tests.
+
+ ```bash
+ dojo test -l
+ ```
+
 ### Testing services
 
 Intern comes with support for running tests remotely on [BrowserStack], [SauceLabs], and [TestingBot]. You may use one
