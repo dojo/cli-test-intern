@@ -166,6 +166,47 @@ describe('main', () => {
 		});
 	});
 
+	it('should set the config if the legacyDojo flag is passed', () => {
+		sandbox.stub(fs, 'existsSync').callsFake((path: string) => true);
+		mockReadFile.returns(`{
+				"name": "@dojo/cli-test-intern",
+				"version": "test-version"
+			}`);
+
+		const helper = {
+			command: {
+				exists: sandbox.stub().returns(true),
+				run: sandbox.stub().returns(Promise.resolve())
+			}
+		};
+		const runTestArgs = { legacyDojo: true };
+		return moduleUnderTest.run(<any>helper, <any>runTestArgs).then(() => {
+			assert.isTrue(mockRunTests.default.calledOnce, 'Should have called the runTests module');
+			assert.strictEqual(mockRunTests.default.args[0][0].childConfig, 'legacydojo');
+		});
+	});
+
+	it('should set remoteUnit to true and override config if legacyDojo and `local` config are passed', () => {
+		sandbox.stub(fs, 'existsSync').callsFake((path: string) => true);
+		mockReadFile.returns(`{
+				"name": "@dojo/cli-test-intern",
+				"version": "test-version"
+			}`);
+
+		const helper = {
+			command: {
+				exists: sandbox.stub().returns(true),
+				run: sandbox.stub().returns(Promise.resolve())
+			}
+		};
+		const runTestArgs = { legacyDojo: true, config: 'local' };
+		return moduleUnderTest.run(<any>helper, <any>runTestArgs).then(() => {
+			assert.isTrue(mockRunTests.default.calledOnce, 'Should have called the runTests module');
+			assert.strictEqual(mockRunTests.default.args[0][0].childConfig, 'legacydojolocal');
+			assert.strictEqual(mockRunTests.default.args[0][0].remoteUnit, true);
+		});
+	});
+
 	it('should support eject', () => {
 		mockReadFile.returns(`{
 				"name": "@dojo/cli-test-intern",
