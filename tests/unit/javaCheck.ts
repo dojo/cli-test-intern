@@ -41,6 +41,7 @@ describe('javaCheck', () => {
 			verbose: false,
 			internConfig: '',
 			node: false,
+			legacyDojo: false,
 			filter: ''
 		};
 
