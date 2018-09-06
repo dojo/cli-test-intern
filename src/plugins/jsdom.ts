@@ -52,9 +52,9 @@ intern.registerPlugin(PLUGIN_NAME, (options?: Options) => {
 		global.Element = global.window.Element;
 
 		Object.defineProperty(
-			window.CSSStyleDeclaration.prototype,
+			global.window.CSSStyleDeclaration.prototype,
 			'transition',
-			Object.getOwnPropertyDescriptor((<any>window).CSSStyleDeclaration.prototype, 'webkitTransition')!
+			Object.getOwnPropertyDescriptor((<any>global.window).CSSStyleDeclaration.prototype, 'webkitTransition')!
 		);
 
 		hasAdd('jsdom', true);

@@ -8,6 +8,7 @@ const { beforeEach, afterEach, describe, it } = intern.getInterface('bdd');
 const { assert } = intern.getPlugin('chai');
 
 describe('plugins/jsdom', () => {
+	let mockGlobal: typeof global;
 	let mockModule: MockModule;
 	let registerPluginStub: SinonStub;
 	let hasAddStub: SinonStub;
@@ -23,7 +24,7 @@ describe('plugins/jsdom', () => {
 	}
 
 	function assertGlobalDom() {
-		assert.isDefined(global.document);
+		assert.isDefined(mockGlobal.document);
 		assert.strictEqual(hasAddStub.callCount, 1);
 		assert.deepEqual(hasAddStub.lastCall.args, ['jsdom', true]);
 	}
@@ -36,8 +37,10 @@ describe('plugins/jsdom', () => {
 
 			hasAddStub = sinon.stub();
 			hasExistsStub = sinon.stub();
+			mockGlobal = Object.create(global);
 			mockModule = new MockModule('../../../src/plugins/jsdom', require);
 			mockery.registerMock('@dojo/framework/has/has', { add: hasAddStub, exists: hasExistsStub });
+			mockery.registerMock('@dojo/framework/shim/global', { default: mockGlobal });
 			registerPluginStub = sinon.stub(intern, 'registerPlugin');
 			mockModule.getModuleUnderTest();
 		}
@@ -62,19 +65,8 @@ describe('plugins/jsdom', () => {
 	});
 
 	describe('options.global', () => {
-		let oldDocument: any;
-
-		beforeEach(() => {
-			oldDocument = global.document;
-		});
-
-		afterEach(() => {
-			global.document = oldDocument;
-		});
-
 		it('registers a global dom when document is not set', () => {
 			const callback = assertRegisterPlugin();
-			delete global.document;
 			hasExistsStub.returns(false);
 			callback({ global: true });
 
@@ -83,11 +75,11 @@ describe('plugins/jsdom', () => {
 
 		it('registers has test for jsdom if document exists', () => {
 			const callback = assertRegisterPlugin();
-			global.document = 'document';
+			mockGlobal.document = 'document';
 			hasExistsStub.returns(false);
 			callback({ global: true });
 
-			assert.strictEqual(global.document, 'document');
+			assert.strictEqual(mockGlobal.document, 'document');
 			assert.strictEqual(hasAddStub.callCount, 1);
 			assert.deepEqual(hasAddStub.lastCall.args, ['jsdom', false]);
 		});
