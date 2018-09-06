@@ -60,7 +60,7 @@
     "chalk": "2.4.1",
     "cross-spawn": "4.0.2",
     "css-modules-require-hook": "4.2.3",
-    "intern": "~4.2.0",
+    "intern": "~4.2.4",
     "jsdom": "11.6.2",
     "pkg-dir": "1.0.0",
     "ts-node": "4.1.0",
