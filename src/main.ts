@@ -40,14 +40,15 @@ function buildNpmDependencies(): any {
  */
 export function assertCompiledUnitTests(verbose: boolean) {
 	const projectRoot = pkgDir.sync(process.cwd());
-	const unitsPath = path.join(projectRoot, 'output', 'test', 'unit.js');
+	const unitsPath = path.join(projectRoot, 'output', 'test', 'unit', 'unit.js');
+	const funcationalsPath = path.join(projectRoot, 'output', 'test', 'functional', 'functional.js');
 	const hasUnits = fs.existsSync(unitsPath);
 
-	if (!hasUnits) {
+	if (!hasUnits || !funcationalsPath) {
 		throw new Error(
 			`Could not find tests${
-				verbose ? ` in ${unitsPath}.\nH` : ', h'
-			}ave you built the tests using dojo build?\n\nFor @dojo/cli-build-app run: dojo build app --mode test`
+				verbose ? ` in ${path.join(projectRoot, 'output', 'test')}.\nH` : ', h'
+			}ave you built the tests using dojo build?\n\nFor @dojo/cli-build-app run: dojo build app --mode unit or dojo build app --mode functional`
 		);
 	}
 }

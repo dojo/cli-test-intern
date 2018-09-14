@@ -62,10 +62,10 @@
         "suites": []
       },
       "functionalSuites": [
-        "./output/test/functional.js"
+        "./output/test/functional/functional.js"
       ],
       "suites": [
-        "./output/test/unit.js"
+        "./output/test/unit/unit.js"
       ]
     },
     "local": {
