@@ -295,14 +295,17 @@ describe('main', () => {
 			});
 		});
 
-		it('should throw an error if no tests are found', async () => {
+		it('should throw an error if running all and no unit tests are found', async () => {
 			let error: Error;
-			sandbox.stub(fs, 'existsSync').callsFake((path: string) => false);
+			sandbox.stub(fs, 'existsSync').callsFake((path: string) => {
+				return path.indexOf('unit') === -1;
+			});
 			try {
 				await moduleUnderTest.run(
 					{} as any,
 					{
-						config: 'local'
+						config: 'local',
+						all: true
 					} as any
 				);
 			} catch (e) {
@@ -310,7 +313,73 @@ describe('main', () => {
 			}
 			assert.equal(
 				error!.message,
-				'Could not find tests, have you built the tests using dojo build?\n\nFor @dojo/cli-build-app run: dojo build app --mode test'
+				'Could not find tests, have you built the tests using dojo build?\n\nFor @dojo/cli-build-app run: dojo build app --mode unit or dojo build app --mode functional'
+			);
+		});
+
+		it('should throw an error if running all and no functional tests are found', async () => {
+			let error: Error;
+			sandbox.stub(fs, 'existsSync').callsFake((path: string) => {
+				return path.indexOf('functional') === -1;
+			});
+			try {
+				await moduleUnderTest.run(
+					{} as any,
+					{
+						config: 'local',
+						all: true
+					} as any
+				);
+			} catch (e) {
+				error = e;
+			}
+			assert.equal(
+				error!.message,
+				'Could not find tests, have you built the tests using dojo build?\n\nFor @dojo/cli-build-app run: dojo build app --mode unit or dojo build app --mode functional'
+			);
+		});
+
+		it('should throw an error if running units and no tests are found', async () => {
+			let error: Error;
+			sandbox.stub(fs, 'existsSync').callsFake((path: string) => {
+				return path.indexOf('unit') === -1;
+			});
+			try {
+				await moduleUnderTest.run(
+					{} as any,
+					{
+						config: 'local',
+						unit: true
+					} as any
+				);
+			} catch (e) {
+				error = e;
+			}
+			assert.equal(
+				error!.message,
+				'Could not find tests, have you built the tests using dojo build?\n\nFor @dojo/cli-build-app run: dojo build app --mode unit or dojo build app --mode functional'
+			);
+		});
+
+		it('should throw an error if running functionals and no tests are found', async () => {
+			let error: Error;
+			sandbox.stub(fs, 'existsSync').callsFake((path: string) => {
+				return path.indexOf('functional') === -1;
+			});
+			try {
+				await moduleUnderTest.run(
+					{} as any,
+					{
+						config: 'local',
+						functional: true
+					} as any
+				);
+			} catch (e) {
+				error = e;
+			}
+			assert.equal(
+				error!.message,
+				'Could not find tests, have you built the tests using dojo build?\n\nFor @dojo/cli-build-app run: dojo build app --mode unit or dojo build app --mode functional'
 			);
 		});
 
@@ -322,7 +391,8 @@ describe('main', () => {
 					{} as any,
 					{
 						config: 'local',
-						verbose: true
+						verbose: true,
+						all: true
 					} as any
 				);
 			} catch (e) {
@@ -330,7 +400,7 @@ describe('main', () => {
 			}
 			assert.include(
 				error!.message,
-				'Have you built the tests using dojo build?\n\nFor @dojo/cli-build-app run: dojo build app --mode test'
+				'Have you built the tests using dojo build?\n\nFor @dojo/cli-build-app run: dojo build app --mode unit or dojo build app --mode functional'
 			);
 		});
 	});

@@ -42,8 +42,8 @@ export function assertCompiledTests(args: TestArgs) {
 	const projectRoot = pkgDir.sync(process.cwd());
 	const unitsPath = path.join(projectRoot, 'output', 'test', 'unit', 'unit.js');
 	const funcationalsPath = path.join(projectRoot, 'output', 'test', 'functional', 'functional.js');
-	const hasUnits = !(args.unit && args.all) || fs.existsSync(unitsPath);
-	const hasFunctionals = !(args.functional && args.all) || fs.existsSync(funcationalsPath);
+	const hasUnits = args.unit || args.all ? fs.existsSync(unitsPath) : true;
+	const hasFunctionals = args.functional || args.all ? fs.existsSync(funcationalsPath) : true;
 
 	if (!hasUnits || !hasFunctionals) {
 		throw new Error(
