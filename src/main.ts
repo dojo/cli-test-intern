@@ -38,16 +38,17 @@ function buildNpmDependencies(): any {
 /**
  * Compiled unit tests should exist when testing against a built application
  */
-export function assertCompiledUnitTests(verbose: boolean) {
+export function assertCompiledTests(args: TestArgs) {
 	const projectRoot = pkgDir.sync(process.cwd());
 	const unitsPath = path.join(projectRoot, 'output', 'test', 'unit', 'unit.js');
 	const funcationalsPath = path.join(projectRoot, 'output', 'test', 'functional', 'functional.js');
-	const hasUnits = fs.existsSync(unitsPath);
+	const hasUnits = !(args.unit && args.all) || fs.existsSync(unitsPath);
+	const hasFunctionals = !(args.functional && args.all) || fs.existsSync(funcationalsPath);
 
-	if (!hasUnits || !funcationalsPath) {
+	if (!hasUnits || !hasFunctionals) {
 		throw new Error(
 			`Could not find tests${
-				verbose ? ` in ${path.join(projectRoot, 'output', 'test')}.\nH` : ', h'
+				args.verbose ? ` in ${path.join(projectRoot, 'output', 'test')}.\nH` : ', h'
 			}ave you built the tests using dojo build?\n\nFor @dojo/cli-build-app run: dojo build app --mode unit or dojo build app --mode functional`
 		);
 	}
@@ -61,7 +62,7 @@ function transformTestArgs(args: TestArgs): TestOptions {
 	const internConfig = 'intern.json';
 
 	if (args.config) {
-		assertCompiledUnitTests(args.verbose);
+		assertCompiledTests(args);
 	}
 
 	if (args.all) {
