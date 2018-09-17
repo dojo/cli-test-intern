@@ -29,6 +29,9 @@ describe('plugins/jsdom', () => {
 	}
 
 	beforeEach((test) => {
+		if (global.window) {
+			delete global.window;
+		}
 		if (intern.environment !== 'node') {
 			test.skip('postcssRequirePlugin only runs in a node environment');
 		} else {
