@@ -63,7 +63,7 @@ export function parseArguments(testArgs: TestOptions) {
 	if (externals) {
 		args.push(
 			`loader=${JSON.stringify({
-				script: '@dojo/cli-test-intern/loaders/externals',
+				script: 'node_modules/@dojo/cli-test-intern/loaders/externals.js',
 				options: {
 					...externals,
 					config: childConfig

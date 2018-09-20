@@ -50,6 +50,13 @@ intern.registerLoader(async function(options = {}) {
 
 	if (config && globalObj.define && globalObj.define.amd) {
 		return (modules: string[]) => {
+			const paths = modules.map((module) => {
+				if (module[0] !== '/') {
+					return `${intern.config.basePath}${module}`;
+				} else {
+					return module;
+				}
+			});
 			let handle: { remove(): void };
 
 			return new Promise((resolve, reject) => {
@@ -58,8 +65,8 @@ intern.registerLoader(async function(options = {}) {
 					reject(new Error(`Dojo loader error: ${error.message}`));
 				});
 
-				intern.log('Loading modules:', modules);
-				require(modules, () => {
+				intern.log('Loading modules:', paths);
+				require(paths, () => {
 					resolve();
 				});
 			}).then<void>(
