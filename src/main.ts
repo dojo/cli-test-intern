@@ -12,6 +12,19 @@ export interface TestArgs {
 	browser: boolean;
 	config?: string;
 	functional: boolean;
+	externals?: {
+		outputPath?: string;
+		dependencies?: Array<
+			| string
+			| {
+					type?: string;
+					from: string;
+					to?: string;
+					name?: string;
+					inject?: boolean | string | string[];
+			  }
+		>;
+	};
 	reporters?: string;
 	testingKey?: string;
 	secret?: string;
@@ -87,6 +100,7 @@ function transformTestArgs(args: TestArgs): TestOptions {
 		testingKey: args.testingKey,
 		verbose: args.verbose,
 		filter: args.filter,
+		externals: args.externals,
 		nodeUnit,
 		remoteUnit,
 		remoteFunctional
