@@ -2,7 +2,7 @@ declare const define: any;
 
 intern.registerLoader(async function(options = {}) {
 	const { outputPath = 'externals', dependencies = [], config } = options;
-	const externalsPath = config ? `output/test/${outputPath}/` : '';
+	const externalsPath = config ? `output/test/unit/${outputPath}/` : '';
 	// const extensions = ['.js'];
 
 	function prefixPath(path: string) {
@@ -62,7 +62,7 @@ intern.registerLoader(async function(options = {}) {
 			return new Promise((resolve, reject) => {
 				handle = require.on('error', (error: Error) => {
 					intern.emit('error', error);
-					reject(new Error(`Dojo loader error: ${error.message}`));
+					reject(new Error(`AMD loader error: ${error.message}`));
 				});
 
 				intern.log('Loading modules:', paths);
