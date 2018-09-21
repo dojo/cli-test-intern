@@ -218,5 +218,30 @@ describe('runTests', () => {
 				"Didn't add default config config"
 			);
 		});
+
+		it('Should pass externals to a loader if provided', () => {
+			const externals = {
+				dependencies: ['foo'],
+				outputPath: 'bar'
+			};
+			assert.include(
+				runTests.parseArguments({
+					childConfig: 'config',
+					externals
+				}),
+				`loader=${JSON.stringify({
+					script: 'node_modules/@dojo/cli-test-intern/loaders/externals.js',
+					options: externals
+				})}`
+			);
+		});
+
+		it('Should throw an error if externals are passed with no config specified', () => {
+			assert.throws(
+				() => runTests.parseArguments({ externals: {} }),
+				'Dojo JIT does not currently support externals, ' +
+					'please specify a config option to run tests against the built code'
+			);
+		});
 	});
 });

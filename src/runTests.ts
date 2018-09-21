@@ -70,10 +70,7 @@ export function parseArguments(testArgs: TestOptions) {
 		args.push(
 			`loader=${JSON.stringify({
 				script: 'node_modules/@dojo/cli-test-intern/loaders/externals.js',
-				options: {
-					...externals,
-					config: childConfig
-				}
+				options: externals
 			})}`
 		);
 	}
