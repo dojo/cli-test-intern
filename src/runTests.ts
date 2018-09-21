@@ -61,6 +61,12 @@ export function parseArguments(testArgs: TestOptions) {
 	}
 
 	if (externals) {
+		if (!childConfig) {
+			throw new Error(
+				'Dojo JIT does not currently support externals, ' +
+					'please specify a config option to run tests against the built code'
+			);
+		}
 		args.push(
 			`loader=${JSON.stringify({
 				script: 'node_modules/@dojo/cli-test-intern/loaders/externals.js',

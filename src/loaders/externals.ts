@@ -1,9 +1,8 @@
 declare const define: any;
 
 intern.registerLoader(async function(options = {}) {
-	const { outputPath = 'externals', dependencies = [], config } = options;
-	const externalsPath = config ? `output/test/unit/${outputPath}/` : '';
-	// const extensions = ['.js'];
+	const { outputPath = 'externals', dependencies = [] } = options;
+	const externalsPath = `output/test/unit/${outputPath}/`;
 
 	function prefixPath(path: string) {
 		return `${externalsPath}${path}`;
@@ -30,7 +29,7 @@ intern.registerLoader(async function(options = {}) {
 				return paths;
 			}
 
-			const base = (config && to) || from;
+			const base = to || from;
 			const baseDir = base[base.length - 1] === '/' ? base : `${base}/`;
 
 			if (Array.isArray(inject)) {
@@ -42,13 +41,13 @@ intern.registerLoader(async function(options = {}) {
 		[]
 	);
 
-	console.log(`Paths: ${JSON.stringify(paths)}`);
 	await intern.loadScript(paths);
 
 	const globalObj: any = typeof window !== 'undefined' ? window : global;
-	const require: any = globalObj.require;
 
-	if (config && globalObj.define && globalObj.define.amd) {
+	if (globalObj.define && globalObj.define.amd) {
+		const require: any = globalObj.require;
+
 		return (modules: string[]) => {
 			const paths = modules.map((module) => {
 				if (module[0] !== '/') {
