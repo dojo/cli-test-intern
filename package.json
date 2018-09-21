@@ -40,7 +40,7 @@
   "devDependencies": {
     "@dojo/cli": "~3.0.0",
     "@dojo/loader": "^2.0.0",
-    "@dojo/scripts": "~3.0.1",
+    "@dojo/scripts": "~3.1.0",
     "@types/jsdom": "11.0.4",
     "@types/mockery": "^1.4.29",
     "@types/node": "~9.6.5",
@@ -56,11 +56,11 @@
     "yargs": "^5.0.0"
   },
   "dependencies": {
-    "@dojo/framework": "~3.0.0",
+    "@dojo/framework": "next",
     "chalk": "2.4.1",
     "cross-spawn": "4.0.2",
     "css-modules-require-hook": "4.2.3",
-    "intern": "~4.2.0",
+    "intern": "~4.3.0",
     "jsdom": "11.6.2",
     "pkg-dir": "1.0.0",
     "ts-node": "4.1.0",
