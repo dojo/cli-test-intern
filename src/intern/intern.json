@@ -48,7 +48,7 @@
       "./tests/unit/all.ts"
     ]
   },
-  "coverage": [],
+  "coverage": false,
   "defaultTimeout": 15000,
   "configs": {
     "built": {

@@ -15,6 +15,20 @@ export interface TestOptions {
 	childConfig?: string;
 	internConfig?: string;
 	reporters?: string;
+	externals?: {
+		outputPath?: string;
+		dependencies?: Array<
+			| string
+			| {
+					type?: string;
+					from: string;
+					to?: string;
+					name?: string;
+					inject?: boolean | string | string[];
+			  }
+		>;
+	};
+	loaderPlugins?: string[];
 	userName?: string;
 	secret?: string;
 	testingKey?: string;
@@ -29,6 +43,7 @@ export function parseArguments(testArgs: TestOptions) {
 		remoteFunctional,
 		childConfig,
 		internConfig,
+		externals,
 		reporters,
 		testingKey,
 		userName,
@@ -43,6 +58,21 @@ export function parseArguments(testArgs: TestOptions) {
 	// disable tests that we dont want to run
 	if (!remoteUnit && !nodeUnit) {
 		args.push('suites=');
+	}
+
+	if (externals) {
+		if (!childConfig) {
+			throw new Error(
+				'Dojo JIT does not currently support externals, ' +
+					'please specify a config option to run tests against the built code'
+			);
+		}
+		args.push(
+			`loader=${JSON.stringify({
+				script: 'node_modules/@dojo/cli-test-intern/loaders/externals.js',
+				options: externals
+			})}`
+		);
 	}
 
 	if (!remoteUnit && !remoteFunctional) {
