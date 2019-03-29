@@ -109,4 +109,33 @@ describe('plugins/hasTest', () => {
 			}
 		});
 	});
+
+	it('should work if self is not defined', () => {
+		if (global.self) {
+			global.self = undefined;
+		}
+
+		if (!global.window) {
+			global.window = {};
+		}
+
+		if (!global.global) {
+			global.global = {};
+		}
+
+		const callback = assertRegisterPlugin();
+		callback();
+
+		assert.deepEqual(global.global.DojoHasEnvironment, {
+			staticFeatures: {
+				test: true
+			}
+		});
+
+		assert.deepEqual(global.window.DojoHasEnvironment, {
+			staticFeatures: {
+				test: true
+			}
+		});
+	});
 });
