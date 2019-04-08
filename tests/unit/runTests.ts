@@ -146,8 +146,8 @@ describe('runTests', () => {
 				reporters: 'one,two'
 			});
 
-			assert.include(args, 'reporters=one');
-			assert.include(args, 'reporters=two');
+			assert.include(args, 'reporters={"name":"one","options":{"filename":"output/coverage/one/report"}}');
+			assert.include(args, 'reporters={"name":"two","options":{"filename":"output/coverage/two/report"}}');
 		});
 
 		it('Should not duplicate the LcovHtml reporter', () => {
@@ -157,7 +157,13 @@ describe('runTests', () => {
 			});
 			assert.strictEqual(
 				args.reduce((count: number, arg: string) => {
-					return count + (arg === 'reporters=LcovHtml' ? 1 : 0);
+					return (
+						count +
+						(arg ===
+						'reporters={"name":"LcovHtml","options":{"filename":"output/coverage/LcovHtml/report"}}'
+							? 1
+							: 0)
+					);
 				}, 0),
 				1
 			);
@@ -168,8 +174,11 @@ describe('runTests', () => {
 				reporters: 'Pretty',
 				coverage: true
 			});
-			assert.include(args, 'reporters=Pretty');
-			assert.notInclude(args, 'reporters=Runner');
+			assert.include(args, `reporters={"name":"Pretty","options":{"filename":"output/coverage/Pretty/report"}}`);
+			assert.notInclude(
+				args,
+				`reporters={"name":"Runner","options":{"filename":"output/coverage/Runner/report"}}`
+			);
 		});
 
 		it('Should set normal tunnel config if provided', () => {

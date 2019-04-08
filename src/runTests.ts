@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import * as path from 'path';
+import { ensureDirSync } from 'fs-extra';
 import dirname, { projectName } from './dirname';
 
 const cs: any = require('cross-spawn');
@@ -85,7 +86,19 @@ export function parseArguments(testArgs: TestOptions) {
 		args.push('grep=' + filter);
 	}
 
-	args.push(...(reporters ? reporters.split(',').map((reporter) => `reporters=${reporter}`) : []));
+	if (reporters) {
+		const formattedReporters = reporters.split(',').map((reporter) => {
+			const directory = path.join('output', 'coverage', reporter);
+			ensureDirSync(directory);
+			return `reporters=${JSON.stringify({
+				name: reporter,
+				options: {
+					filename: path.join(directory, 'report')
+				}
+			})}`;
+		});
+		args.push(...formattedReporters);
+	}
 
 	if (userName && testingKey) {
 		args.push(`tunnelOptions={ "username": "${userName}", "accessKey": "${testingKey}" }`);
