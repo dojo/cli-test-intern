@@ -90,12 +90,7 @@ export function parseArguments(testArgs: TestOptions) {
 		const formattedReporters = reporters.split(',').map((reporter) => {
 			const directory = path.join('output', 'coverage', reporter);
 			ensureDirSync(directory);
-			return `reporters=${JSON.stringify({
-				name: reporter,
-				options: {
-					filename: path.join(directory, 'report')
-				}
-			})}`;
+			return `reporters={"name":"${reporter}","options":{"filename":"${path.join(directory, 'report')}"}}`;
 		});
 		args.push(...formattedReporters);
 	}
