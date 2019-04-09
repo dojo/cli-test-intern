@@ -146,8 +146,6 @@ describe('runTests', () => {
 				reporters: 'one,two'
 			});
 
-			console.log(args);
-
 			assert.include(
 				args,
 				`reporters={"name":"one","options":{"filename":"${path.join('output', 'coverage', 'one', 'report')}"}}`
@@ -163,8 +161,6 @@ describe('runTests', () => {
 				reporters: 'LcovHtml',
 				coverage: true
 			});
-
-			console.log(args);
 
 			assert.strictEqual(
 				args.reduce((count: number, arg: string) => {
@@ -190,8 +186,6 @@ describe('runTests', () => {
 				reporters: 'Pretty',
 				coverage: true
 			});
-
-			console.log(args);
 
 			assert.include(
 				args,
