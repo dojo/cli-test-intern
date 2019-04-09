@@ -146,6 +146,8 @@ describe('runTests', () => {
 				reporters: 'one,two'
 			});
 
+			console.log(args);
+
 			assert.include(
 				args,
 				`reporters={"name":"one","options":{"filename":"${path.join('output', 'coverage', 'one', 'report')}"}}`
@@ -161,6 +163,9 @@ describe('runTests', () => {
 				reporters: 'LcovHtml',
 				coverage: true
 			});
+
+			console.log(args);
+
 			assert.strictEqual(
 				args.reduce((count: number, arg: string) => {
 					return (
@@ -185,6 +190,9 @@ describe('runTests', () => {
 				reporters: 'Pretty',
 				coverage: true
 			});
+
+			console.log(args);
+
 			assert.include(
 				args,
 				`reporters={"name":"Pretty","options":{"filename":"${path.join(
@@ -196,7 +204,12 @@ describe('runTests', () => {
 			);
 			assert.notInclude(
 				args,
-				`reporters={"name":"Runner","options":{"filename":"output/coverage/Runner/report"}}`
+				`reporters={"name":"Runner","options":{"filename":"${path.join(
+					'output',
+					'coverage',
+					'Runner',
+					'report'
+				)}"}}`
 			);
 		});
 
