@@ -10,22 +10,28 @@ const packagePath = pkgDir.sync(dirname);
 let logger = console.log;
 
 const reporterDir = path.join('output', 'coverage');
-const reporterConfigurations: { [index: string]: string } = {
-	benchmark: `{ "name": "benchmark", "options": { "directory": "${path.join(
-		reporterDir,
-		'benchmark'
-	)}", "filename": "coverage.xml" } }`,
-	cobertura: `{ "name": "cobertura", "options": { "directory": "${path.join(
-		reporterDir,
-		'cobertura'
-	)}", "filename": "coverage.xml" } }`,
-	htmlcoverage: `{ "name": "htmlcoverage", "options": { "directory": "${path.join(reporterDir, 'htmlcoverage')}" } }`,
-	jsoncoverage: `{ "name": "jsoncoverage", "options": { "directory": "${path.join(reporterDir, 'jsoncoverage')}" } }`,
-	junit: `{ "name": "junit", "options": { "filename": "${path.join(reporterDir, 'junit', 'coverage.xml')}" } }`,
-	lcov: `{ "name": "lcov", "options": { "directory": "${path.join(
-		reporterDir,
-		'lcov'
-	)}", "filename": "coverage.lcov" } }`,
+const reporterConfigurations: { [index: string]: any } = {
+	benchmark: {
+		directory: path.join(reporterDir, 'benchmark'),
+		filename: 'coverage.xml'
+	},
+	cobertura: {
+		directory: path.join(reporterDir, 'cobertura'),
+		filename: 'coverage.xml'
+	},
+	htmlcoverage: {
+		directory: path.join(reporterDir, 'htmlcoverage')
+	},
+	jsoncoverage: {
+		directory: path.join(reporterDir, 'jsoncoverage')
+	},
+	junit: {
+		filename: path.join(reporterDir, 'junit', 'coverage.xml')
+	},
+	lcov: {
+		directory: path.join(reporterDir, 'lcov'),
+		filename: 'coverage.lcov'
+	},
 	pretty: 'pretty',
 	runner: 'runner',
 	simple: 'simple',
@@ -116,19 +122,24 @@ export function parseArguments(testArgs: TestOptions) {
 			.filter((reporter) => reporterConfigurations[reporter.toLowerCase()] !== undefined)
 			.map((reporter) => {
 				const config = reporterConfigurations[reporter.toLowerCase()];
-				try {
-					const parsedConfig = JSON.parse(config);
-
-					if (parsedConfig.options.directory) {
-						ensureDirSync(parsedConfig.options.directory);
-					} else {
-						const directory = path.parse(parsedConfig.options.filename).dir;
-						ensureDirSync(directory);
-					}
-				} catch {
+				if (typeof config === 'string') {
 					includeRunner = false;
+					return `reporters=${config}`;
 				}
-				return `reporters=${config}`;
+				let reporterConfig = `reporters={ "name": "${reporter}", "options": `;
+				let options = '{}';
+				if (config.filename && config.directory) {
+					ensureDirSync(config.directory);
+					options = `{ "directory": "${config.directory}", "filename": "${config.filename}" }`;
+				} else if (config.directory) {
+					ensureDirSync(config.directory);
+					options = `{ "directory": "${config.directory}" }`;
+				} else if (config.filename) {
+					const directory = path.parse(config.filename).dir;
+					ensureDirSync(directory);
+					options = `{ "filename": "${config.filename}" }`;
+				}
+				return `${reporterConfig}${options} }`;
 			});
 		if (formattedReporters.length) {
 			if (includeRunner) {

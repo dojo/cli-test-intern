@@ -146,7 +146,7 @@ describe('runTests', () => {
 				reporters: 'one'
 			});
 			assert.deepEqual(args, [
-				'config=intern/undefined',
+				`config=${path.join('intern', 'undefined')}`,
 				'suites=',
 				'environments=',
 				'capabilities={ "name": "@dojo/cli-test-intern", "project": "@dojo/cli-test-intern" }'
