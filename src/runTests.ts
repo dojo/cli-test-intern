@@ -29,10 +29,7 @@ const reporterConfigurations: { [index: string]: string } = {
 	pretty: 'pretty',
 	runner: 'runner',
 	simple: 'simple',
-	teamcity: `{ "name": "teamcity", "options": { "directory": "${path.join(
-		reporterDir,
-		'teamcity'
-	)}", "filename": "coverage.xml" } }`
+	teamcity: 'teamcity'
 };
 
 export interface TestOptions {
