@@ -141,35 +141,67 @@ describe('runTests', () => {
 			);
 		});
 
-		it('Should add reporters if provided', () => {
+		it('Should ignore unsupported reporters', () => {
 			const args = runTests.parseArguments({
-				reporters: 'one,two'
+				reporters: 'one'
 			});
-
-			assert.include(args, 'reporters=one');
-			assert.include(args, 'reporters=two');
+			assert.deepEqual(args, [
+				`config=${path.join('intern', 'undefined')}`,
+				'suites=',
+				'environments=',
+				'capabilities={ "name": "@dojo/cli-test-intern", "project": "@dojo/cli-test-intern" }'
+			]);
 		});
 
-		it('Should not duplicate the LcovHtml reporter', () => {
+		it('Should not add runner if other specifie reporters output to the console', () => {
 			const args = runTests.parseArguments({
-				reporters: 'LcovHtml',
+				reporters: 'pretty',
 				coverage: true
 			});
-			assert.strictEqual(
-				args.reduce((count: number, arg: string) => {
-					return count + (arg === 'reporters=LcovHtml' ? 1 : 0);
-				}, 0),
-				1
+			assert.notInclude(args, 'reporters=runner');
+			assert.include(args, 'reporters=pretty');
+		});
+
+		it('Should add runner reporter if other specified reporters write output', () => {
+			const args = runTests.parseArguments({
+				reporters: 'junit',
+				coverage: true
+			});
+			assert.include(args, 'reporters=runner');
+			assert.include(
+				args,
+				`reporters={ "name": "junit", "options": { "filename": "${path.join(
+					'output',
+					'coverage',
+					'junit',
+					'coverage.xml'
+				)}" } }`
 			);
 		});
 
-		it('Should not add Runner reporter if other reporters are specified', () => {
+		it('should support multiple reporters', () => {
 			const args = runTests.parseArguments({
-				reporters: 'Pretty',
+				reporters: 'lcov,pretty,htmlcoverage',
 				coverage: true
 			});
-			assert.include(args, 'reporters=Pretty');
-			assert.notInclude(args, 'reporters=Runner');
+			assert.notInclude(args, 'reporters=runner');
+			assert.include(args, 'reporters=pretty');
+			assert.include(
+				args,
+				`reporters={ "name": "htmlcoverage", "options": { "directory": "${path.join(
+					'output',
+					'coverage',
+					'html'
+				)}" } }`
+			);
+			assert.include(
+				args,
+				`reporters={ "name": "lcov", "options": { "directory": "${path.join(
+					'output',
+					'coverage',
+					'lcov'
+				)}", "filename": "coverage.lcov" } }`
+			);
 		});
 
 		it('Should set normal tunnel config if provided', () => {
