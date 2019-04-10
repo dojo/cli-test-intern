@@ -141,69 +141,58 @@ describe('runTests', () => {
 			);
 		});
 
-		it('Should add reporters if provided', () => {
+		it('Should ignore unsupported reporters', () => {
 			const args = runTests.parseArguments({
-				reporters: 'one,two'
+				reporters: 'one'
 			});
+			assert.deepEqual(args, [
+				'config=intern/undefined',
+				'suites=',
+				'environments=',
+				'capabilities={ "name": "@dojo/cli-test-intern", "project": "@dojo/cli-test-intern" }'
+			]);
+		});
 
+		it('Should not add runner if other specifie reporters output to the console', () => {
+			const args = runTests.parseArguments({
+				reporters: 'pretty',
+				coverage: true
+			});
+			assert.notInclude(args, 'reporters=runner');
+			assert.include(args, 'reporters=pretty');
+		});
+
+		it('Should add runner reporter if other specified reporters write output', () => {
+			const args = runTests.parseArguments({
+				reporters: 'junit',
+				coverage: true
+			});
+			assert.include(args, 'reporters=runner');
 			assert.include(
 				args,
-				`reporters={"name":"one","options":{"filename":"${path.join('output', 'coverage', 'one', 'report')}"}}`
-			);
-			assert.include(
-				args,
-				`reporters={"name":"two","options":{"filename":"${path.join('output', 'coverage', 'two', 'report')}"}}`
+				`reporters={ "name": "junit", "options": { "filename": "${path.join(
+					'output',
+					'coverage',
+					'junit',
+					'coverage.xml'
+				)}" } }`
 			);
 		});
 
-		it('Should not duplicate the LcovHtml reporter', () => {
+		it('should support multiple reporters', () => {
 			const args = runTests.parseArguments({
-				reporters: 'LcovHtml',
+				reporters: 'lcov,pretty',
 				coverage: true
 			});
-
-			assert.strictEqual(
-				args.reduce((count: number, arg: string) => {
-					return (
-						count +
-						(arg ===
-						`reporters={"name":"LcovHtml","options":{"filename":"${path.join(
-							'output',
-							'coverage',
-							'LcovHtml',
-							'report'
-						)}"}}`
-							? 1
-							: 0)
-					);
-				}, 0),
-				1
-			);
-		});
-
-		it('Should not add Runner reporter if other reporters are specified', () => {
-			const args = runTests.parseArguments({
-				reporters: 'Pretty',
-				coverage: true
-			});
-
+			assert.notInclude(args, 'reporters=runner');
+			assert.include(args, 'reporters=pretty');
 			assert.include(
 				args,
-				`reporters={"name":"Pretty","options":{"filename":"${path.join(
+				`reporters={ "name": "lcov", "options": { "directory": "${path.join(
 					'output',
 					'coverage',
-					'Pretty',
-					'report'
-				)}"}}`
-			);
-			assert.notInclude(
-				args,
-				`reporters={"name":"Runner","options":{"filename":"${path.join(
-					'output',
-					'coverage',
-					'Runner',
-					'report'
-				)}"}}`
+					'lcov'
+				)}", "filename": "coverage.lcov" } }`
 			);
 		});
 

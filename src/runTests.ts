@@ -9,6 +9,32 @@ const packagePath = pkgDir.sync(dirname);
 
 let logger = console.log;
 
+const reporterDir = path.join('output', 'coverage');
+const reporterConfigurations: { [index: string]: string } = {
+	benchmark: `{ "name": "benchmark", "options": { "directory": "${path.join(
+		reporterDir,
+		'benchmark'
+	)}", "filename": "coverage.xml" } }`,
+	cobertura: `{ "name": "cobertura", "options": { "directory": "${path.join(
+		reporterDir,
+		'cobertura'
+	)}", "filename": "coverage.xml" } }`,
+	htmlcoverage: `{ "name": "htmlcoverage", "options": { "directory": "${path.join(reporterDir, 'htmlcoverage')}" } }`,
+	jsoncoverage: `{ "name": "jsoncoverage", "options": { "directory": "${path.join(reporterDir, 'jsoncoverage')}" } }`,
+	junit: `{ "name": "junit", "options": { "filename": "${path.join(reporterDir, 'junit', 'coverage.xml')}" } }`,
+	lcov: `{ "name": "lcov", "options": { "directory": "${path.join(
+		reporterDir,
+		'lcov'
+	)}", "filename": "coverage.lcov" } }`,
+	pretty: 'pretty',
+	runner: 'runner',
+	simple: 'simple',
+	teamcity: `{ "name": "teamcity", "options": { "directory": "${path.join(
+		reporterDir,
+		'teamcity'
+	)}", "filename": "coverage.xml" } }`
+};
+
 export interface TestOptions {
 	nodeUnit?: boolean;
 	remoteUnit?: boolean;
@@ -87,12 +113,32 @@ export function parseArguments(testArgs: TestOptions) {
 	}
 
 	if (reporters) {
-		const formattedReporters = reporters.split(',').map((reporter) => {
-			const directory = path.join('output', 'coverage', reporter);
-			ensureDirSync(directory);
-			return `reporters={"name":"${reporter}","options":{"filename":"${path.join(directory, 'report')}"}}`;
-		});
-		args.push(...formattedReporters);
+		let includeRunner = true;
+		const formattedReporters = reporters
+			.split(',')
+			.filter((reporter) => reporterConfigurations[reporter.toLowerCase()] !== undefined)
+			.map((reporter) => {
+				const config = reporterConfigurations[reporter.toLowerCase()];
+				try {
+					const parsedConfig = JSON.parse(config);
+
+					if (parsedConfig.options.directory) {
+						ensureDirSync(parsedConfig.options.directory);
+					} else {
+						const directory = path.parse(parsedConfig.options.filename).dir;
+						ensureDirSync(directory);
+					}
+				} catch {
+					includeRunner = false;
+				}
+				return `reporters=${config}`;
+			});
+		if (formattedReporters.length) {
+			if (includeRunner) {
+				args.push('reporters=runner');
+			}
+			args.push(...formattedReporters);
+		}
 	}
 
 	if (userName && testingKey) {
