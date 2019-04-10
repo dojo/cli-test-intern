@@ -181,11 +181,19 @@ describe('runTests', () => {
 
 		it('should support multiple reporters', () => {
 			const args = runTests.parseArguments({
-				reporters: 'lcov,pretty',
+				reporters: 'lcov,pretty,htmlcoverage',
 				coverage: true
 			});
 			assert.notInclude(args, 'reporters=runner');
 			assert.include(args, 'reporters=pretty');
+			assert.include(
+				args,
+				`reporters={ "name": "htmlcoverage", "options": { "directory": "${path.join(
+					'output',
+					'coverage',
+					'html'
+				)}" } }`
+			);
 			assert.include(
 				args,
 				`reporters={ "name": "lcov", "options": { "directory": "${path.join(

@@ -134,7 +134,7 @@ export function parseArguments(testArgs: TestOptions) {
 				} else if (config.directory) {
 					ensureDirSync(config.directory);
 					options = `{ "directory": "${config.directory}" }`;
-				} else if (config.filename) {
+				} else {
 					const directory = path.parse(config.filename).dir;
 					ensureDirSync(directory);
 					options = `{ "filename": "${config.filename}" }`;
