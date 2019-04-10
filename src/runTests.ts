@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import * as path from 'path';
+import { ensureDirSync } from 'fs-extra';
 import dirname, { projectName } from './dirname';
 
 const cs: any = require('cross-spawn');
@@ -7,6 +8,35 @@ const pkgDir: any = require('pkg-dir');
 const packagePath = pkgDir.sync(dirname);
 
 let logger = console.log;
+
+const reporterDir = path.join('output', 'coverage');
+const reporterConfigurations: { [index: string]: any } = {
+	benchmark: {
+		directory: path.join(reporterDir, 'benchmark'),
+		filename: 'coverage.xml'
+	},
+	cobertura: {
+		directory: path.join(reporterDir, 'cobertura'),
+		filename: 'coverage.xml'
+	},
+	htmlcoverage: {
+		directory: path.join(reporterDir, 'html')
+	},
+	jsoncoverage: {
+		directory: path.join(reporterDir, 'json')
+	},
+	junit: {
+		filename: path.join(reporterDir, 'junit', 'coverage.xml')
+	},
+	lcov: {
+		directory: path.join(reporterDir, 'lcov'),
+		filename: 'coverage.lcov'
+	},
+	pretty: 'pretty',
+	runner: 'runner',
+	simple: 'simple',
+	teamcity: 'teamcity'
+};
 
 export interface TestOptions {
 	nodeUnit?: boolean;
@@ -85,7 +115,39 @@ export function parseArguments(testArgs: TestOptions) {
 		args.push('grep=' + filter);
 	}
 
-	args.push(...(reporters ? reporters.split(',').map((reporter) => `reporters=${reporter}`) : []));
+	if (reporters) {
+		let includeRunner = true;
+		const formattedReporters = reporters
+			.split(',')
+			.filter((reporter) => reporterConfigurations[reporter.toLowerCase()] !== undefined)
+			.map((reporter) => {
+				const config = reporterConfigurations[reporter.toLowerCase()];
+				if (typeof config === 'string') {
+					includeRunner = false;
+					return `reporters=${config}`;
+				}
+				let reporterConfig = `reporters={ "name": "${reporter}", "options": `;
+				let options = '{}';
+				if (config.filename && config.directory) {
+					ensureDirSync(config.directory);
+					options = `{ "directory": "${config.directory}", "filename": "${config.filename}" }`;
+				} else if (config.directory) {
+					ensureDirSync(config.directory);
+					options = `{ "directory": "${config.directory}" }`;
+				} else {
+					const directory = path.parse(config.filename).dir;
+					ensureDirSync(directory);
+					options = `{ "filename": "${config.filename}" }`;
+				}
+				return `${reporterConfig}${options} }`;
+			});
+		if (formattedReporters.length) {
+			if (includeRunner) {
+				args.push('reporters=runner');
+			}
+			args.push(...formattedReporters);
+		}
+	}
 
 	if (userName && testingKey) {
 		args.push(`tunnelOptions={ "username": "${userName}", "accessKey": "${testingKey}" }`);

@@ -175,7 +175,8 @@ const command: Command<TestArgs> = {
 
 		options('r', {
 			alias: 'reporters',
-			describe: 'Comma separated list of reporters to use, defaults to Console',
+			describe:
+				'Comma seperated list of reporters [default: "lcov,htmlcoverage,runner"] [ choices: "benchmark", "cobertura", "htmlcoverage", "jsoncoverage", "junit", "lcov", "pretty", "runner", "simple", "teamcity"]',
 			type: 'string'
 		});
 
