@@ -20,10 +20,10 @@ const reporterConfigurations: { [index: string]: any } = {
 		filename: 'coverage.xml'
 	},
 	htmlcoverage: {
-		directory: path.join(reporterDir, 'htmlcoverage')
+		directory: path.join(reporterDir, 'html')
 	},
 	jsoncoverage: {
-		directory: path.join(reporterDir, 'jsoncoverage')
+		directory: path.join(reporterDir, 'json')
 	},
 	junit: {
 		filename: path.join(reporterDir, 'junit', 'coverage.xml')
