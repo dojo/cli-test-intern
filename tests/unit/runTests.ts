@@ -170,12 +170,7 @@ describe('runTests', () => {
 			assert.include(args, 'reporters=runner');
 			assert.include(
 				args,
-				`reporters={ "name": "junit", "options": { "filename": "${path.join(
-					'output',
-					'coverage',
-					'junit',
-					'coverage.xml'
-				)}" } }`
+				`reporters={ "name": "junit", "options": { "filename": "output/coverage/junit/coverage.xml" } }`
 			);
 		});
 
@@ -188,19 +183,11 @@ describe('runTests', () => {
 			assert.include(args, 'reporters=pretty');
 			assert.include(
 				args,
-				`reporters={ "name": "htmlcoverage", "options": { "directory": "${path.join(
-					'output',
-					'coverage',
-					'html'
-				)}" } }`
+				`reporters={ "name": "htmlcoverage", "options": { "directory": "output/coverage/html" } }`
 			);
 			assert.include(
 				args,
-				`reporters={ "name": "lcov", "options": { "directory": "${path.join(
-					'output',
-					'coverage',
-					'lcov'
-				)}", "filename": "coverage.lcov" } }`
+				`reporters={ "name": "lcov", "options": { "directory": "output/coverage/lcov", "filename": "coverage.lcov" } }`
 			);
 		});
 
