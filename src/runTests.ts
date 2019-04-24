@@ -9,27 +9,27 @@ const packagePath = pkgDir.sync(dirname);
 
 let logger = console.log;
 
-const reporterDir = path.join('output', 'coverage');
+const reporterDir = 'output/coverage';
 const reporterConfigurations: { [index: string]: any } = {
 	benchmark: {
-		directory: path.join(reporterDir, 'benchmark'),
+		directory: `${reporterDir}/benchmark`,
 		filename: 'coverage.xml'
 	},
 	cobertura: {
-		directory: path.join(reporterDir, 'cobertura'),
+		directory: `${reporterDir}/cobertura`,
 		filename: 'coverage.xml'
 	},
 	htmlcoverage: {
-		directory: path.join(reporterDir, 'html')
+		directory: `${reporterDir}/html`
 	},
 	jsoncoverage: {
-		directory: path.join(reporterDir, 'json')
+		directory: `${reporterDir}/json`
 	},
 	junit: {
-		filename: path.join(reporterDir, 'junit', 'coverage.xml')
+		filename: `${reporterDir}/junit/coverage.xml`
 	},
 	lcov: {
-		directory: path.join(reporterDir, 'lcov'),
+		directory: `${reporterDir}/lcov`,
 		filename: 'coverage.lcov'
 	},
 	pretty: 'pretty',
