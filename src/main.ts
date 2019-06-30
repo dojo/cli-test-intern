@@ -118,9 +118,11 @@ function printBrowserLink(options: TestOptions) {
 	console.log(
 		'\n If the project directory is hosted on a local server, unit tests can also be run in browser by navigating to ' +
 			chalk.underline(
-				`http://localhost/node_modules/intern/?config=node_modules/@dojo/cli-test-intern/intern/intern.json${
-					options.childConfig ? `@${options.childConfig}` : ''
-				}${browserArgs.length ? `&${browserArgs.join('&')}` : ''}`
+				`http://localhost/node_modules/intern/?config=node_modules/@dojo/cli-test-intern/intern/${
+					options.internConfig
+				}${options.childConfig ? `@${options.childConfig}` : ''}${
+					browserArgs.length ? `&${browserArgs.join('&')}` : ''
+				}`
 			)
 	);
 }

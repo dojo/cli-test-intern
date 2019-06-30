@@ -1,32 +1,150 @@
 {
-  "extends": "./intern.json",
+  "basePath": "../../../../",
+  "environments": [
+    { "browserName": "node" }
+  ],
+  "maxConcurrency": 2,
+  "tunnel": "selenium",
+  "tunnelOptions": {
+    "hostname": "localhost",
+    "port": "4444"
+  },
+  "browser": {
+    "plugins": [
+      "node_modules/@dojo/cli-test-intern/plugins/hasTest.js"
+    ]
+  },
+  "node": {
+    "reporters": [
+      {
+        "name": "runner"
+      },
+      {
+        "name": "lcov",
+        "options": {
+          "directory": "output/coverage/lcov",
+          "filename": "coverage.lcov"
+        }
+      },
+      {
+        "name": "htmlcoverage",
+        "options": {
+          "directory": "output/coverage/html"
+        }
+      }
+    ],
+    "plugins": [
+      {
+        "script": "@dojo/cli-test-intern/plugins/jsdom",
+        "options": {
+          "global": true
+        }
+      },
+      "@dojo/cli-test-intern/plugins/hasTest",
+      "@dojo/cli-test-intern/plugins/postcssRequire",
+      "@dojo/cli-test-intern/plugins/tsnode",
+      {
+        "script": "@dojo/cli-test-intern/plugins/registerExtension",
+        "options": {
+          "extensions": [ ".gif", ".png" ,".jpg", ".jpeg", ".svg", ".eot", ".ttf", ".woff", ".woff2" ]
+        }
+      }
+    ],
+    "suites": [
+      "./tests/unit/all.ts"
+    ]
+  },
+  "coverage": false,
+  "defaultTimeout": 15000,
   "configs": {
-    "browserstack+": {
-      "environments+": [
+    "built": {
+      "node": {
+        "plugins": [
+          {
+            "script": "@dojo/cli-test-intern/plugins/jsdom",
+            "options": { "global": true }
+          },
+          "@dojo/cli-test-intern/plugins/hasTest"
+        ],
+        "suites": []
+      },
+      "functionalSuites": [
+        "./output/test/functional/all.js"
+      ],
+      "suites": [
+        "./output/test/unit/all.js"
+      ]
+    },
+    "local": {
+      "extends": "built",
+      "environments": [
+        { "browserName": "node" },
+        { "browserName": "chrome" }
+      ]
+    },
+    "browserstack": {
+      "extends": "built",
+      "maxConcurrency": 2,
+      "tunnel": "browserstack",
+      "environments": [
         {
           "browserName": "internet explorer",
           "version": "11",
           "platform": "WINDOWS"
+        },
+        {
+          "browserName": "firefox",
+          "platform": "WINDOWS"
+        },
+        {
+          "browserName": "chrome",
+          "platform": "WINDOWS"
         }
       ]
     },
-    "saucelabs+": {
-      "environments+": [
+    "saucelabs": {
+      "extends": "built",
+      "maxConcurrency": 4,
+      "tunnel": "saucelabs",
+      "environments": [
         {
           "browserName": "internet explorer",
           "version": "11.0",
           "platform": "Windows 7"
+        },
+        {
+          "browserName": "firefox",
+          "version": "49",
+          "platform": "Windows 10"
+        },
+        {
+          "browserName": "chrome",
+          "platform": "Windows 10"
         }
       ]
     },
-    "testingbot+": {
-      "environments+": [
+    "testingbot": {
+      "extends": "built",
+      "tunnel": "testingbot",
+      "tunnelOptions": {
+        "hostname": "hub.testingbot.com"
+      },
+      "environments": [
         {
           "browserName": "internet explorer",
           "version": [
             "11"
           ],
           "platform": "WIN8"
+        },
+        {
+          "browserName": "firefox",
+          "version": "49",
+          "platform": "WIN10"
+        },
+        {
+          "browserName": "chrome",
+          "platform": "WIN10"
         }
       ]
     }
