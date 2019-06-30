@@ -1,5 +1,5 @@
 {
-  "extends": "./node_modules/@dojo/cli-test-intern/intern/intern.json",
+  "extends": "./intern.json",
   "configs": {
     "browserstack+": {
       "environments+": [
