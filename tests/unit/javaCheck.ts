@@ -35,6 +35,7 @@ describe('javaCheck', () => {
 	beforeEach(() => {
 		args = {
 			all: false,
+			legacy: false,
 			browser: false,
 			functional: false,
 			unit: false,

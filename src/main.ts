@@ -10,6 +10,7 @@ const pkgDir = require('pkg-dir');
 export interface TestArgs {
 	all: boolean;
 	browser: boolean;
+	legacy: boolean;
 	config?: string;
 	functional: boolean;
 	externals?: {
@@ -72,7 +73,7 @@ function transformTestArgs(args: TestArgs): TestOptions {
 	let remoteUnit = false;
 	let remoteFunctional = false;
 
-	const internConfig = 'intern.json';
+	const internConfig = args.legacy ? 'legacy.json' : 'intern.json';
 
 	if (args.config) {
 		assertCompiledTests(args);
@@ -205,6 +206,13 @@ const command: Command<TestArgs> = {
 			default: true
 		});
 
+		options('l', {
+			alias: 'legacy',
+			describe: 'Include IE11 when running functional tests',
+			type: 'boolean',
+			default: false
+		});
+
 		options('filter', {
 			describe: 'Run only tests whose IDs match a regular expression',
 			type: 'string'
@@ -258,7 +266,7 @@ const command: Command<TestArgs> = {
 			},
 			copy: {
 				path: path.join(__dirname, 'intern'),
-				files: ['intern.json']
+				files: ['intern.json', 'legacy.json']
 			}
 		};
 	}

@@ -1,0 +1,34 @@
+{
+  "extends": "./node_modules/@dojo/cli-test-intern/intern/intern.json",
+  "configs": {
+    "browserstack+": {
+      "environments+": [
+        {
+          "browserName": "internet explorer",
+          "version": "11",
+          "platform": "WINDOWS"
+        }
+      ]
+    },
+    "saucelabs+": {
+      "environments+": [
+        {
+          "browserName": "internet explorer",
+          "version": "11.0",
+          "platform": "Windows 7"
+        }
+      ]
+    },
+    "testingbot+": {
+      "environments+": [
+        {
+          "browserName": "internet explorer",
+          "version": [
+            "11"
+          ],
+          "platform": "WIN8"
+        }
+      ]
+    }
+  }
+}
