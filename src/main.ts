@@ -10,6 +10,7 @@ const pkgDir = require('pkg-dir');
 export interface TestArgs {
 	all: boolean;
 	browser: boolean;
+	legacy: boolean;
 	config?: string;
 	functional: boolean;
 	externals?: {
@@ -72,7 +73,7 @@ function transformTestArgs(args: TestArgs): TestOptions {
 	let remoteUnit = false;
 	let remoteFunctional = false;
 
-	const internConfig = 'intern.json';
+	const internConfig = args.legacy ? 'legacy.json' : 'intern.json';
 
 	if (args.config) {
 		assertCompiledTests(args);
@@ -117,9 +118,11 @@ function printBrowserLink(options: TestOptions) {
 	console.log(
 		'\n If the project directory is hosted on a local server, unit tests can also be run in browser by navigating to ' +
 			chalk.underline(
-				`http://localhost/node_modules/intern/?config=node_modules/@dojo/cli-test-intern/intern/intern.json${
-					options.childConfig ? `@${options.childConfig}` : ''
-				}${browserArgs.length ? `&${browserArgs.join('&')}` : ''}`
+				`http://localhost/node_modules/intern/?config=node_modules/@dojo/cli-test-intern/intern/${
+					options.internConfig
+				}${options.childConfig ? `@${options.childConfig}` : ''}${
+					browserArgs.length ? `&${browserArgs.join('&')}` : ''
+				}`
 			)
 	);
 }
@@ -205,6 +208,13 @@ const command: Command<TestArgs> = {
 			default: true
 		});
 
+		options('l', {
+			alias: 'legacy',
+			describe: 'Include IE11 when running functional tests',
+			type: 'boolean',
+			default: false
+		});
+
 		options('filter', {
 			describe: 'Run only tests whose IDs match a regular expression',
 			type: 'string'
@@ -258,7 +268,7 @@ const command: Command<TestArgs> = {
 			},
 			copy: {
 				path: path.join(__dirname, 'intern'),
-				files: ['intern.json']
+				files: ['intern.json', 'legacy.json']
 			}
 		};
 	}

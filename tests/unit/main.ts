@@ -71,6 +71,7 @@ describe('main', () => {
 			s: 'secret',
 			u: 'unit',
 			v: 'verbose',
+			l: 'legacy',
 			filter: undefined
 		};
 
@@ -186,7 +187,7 @@ describe('main', () => {
 
 		assert.isTrue('copy' in result, 'Should have returned a list of files to copy');
 		assert.isTrue('files' in result.copy, 'Should have returned a list of files to copy');
-		assert.deepEqual(result.copy.files, ['intern.json']);
+		assert.deepEqual(result.copy.files, ['intern.json', 'legacy.json']);
 		result.copy.files.forEach((file: string) => {
 			assert.isTrue(fs.existsSync(path.join(result.copy.path, 'intern.json')));
 		});

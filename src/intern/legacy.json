@@ -88,6 +88,11 @@
       "tunnel": "browserstack",
       "environments": [
         {
+          "browserName": "internet explorer",
+          "version": "11",
+          "platform": "WINDOWS"
+        },
+        {
           "browserName": "firefox",
           "platform": "WINDOWS"
         },
@@ -102,6 +107,11 @@
       "maxConcurrency": 4,
       "tunnel": "saucelabs",
       "environments": [
+        {
+          "browserName": "internet explorer",
+          "version": "11.0",
+          "platform": "Windows 7"
+        },
         {
           "browserName": "firefox",
           "version": "49",
@@ -120,6 +130,13 @@
         "hostname": "hub.testingbot.com"
       },
       "environments": [
+        {
+          "browserName": "internet explorer",
+          "version": [
+            "11"
+          ],
+          "platform": "WIN8"
+        },
         {
           "browserName": "firefox",
           "version": "49",
