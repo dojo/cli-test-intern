@@ -40,7 +40,7 @@ describe('plugins/jsdom', () => {
 			hasAddStub = sinon.stub();
 			hasExistsStub = sinon.stub();
 			mockModule = new MockModule('../../../src/plugins/jsdom', require);
-			mockery.registerMock('@dojo/framework/has/has', { add: hasAddStub, exists: hasExistsStub });
+			mockery.registerMock('@dojo/framework/core/has', { add: hasAddStub, exists: hasExistsStub });
 			registerPluginStub = sinon.stub(intern, 'registerPlugin');
 			mockModule.getModuleUnderTest();
 		}
