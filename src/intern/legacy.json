@@ -77,6 +77,11 @@
     },
     "local": {
       "extends": "built",
+      "tunnelOptions": {
+        "drivers": [
+          { "name": "chrome", "version": "76.0.3809.68" }
+        ]
+      },
       "environments": [
         { "browserName": "node" },
         { "browserName": "chrome" }
