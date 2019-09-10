@@ -154,7 +154,7 @@ const command: Command<TestArgs> = {
 
 		options('c', {
 			alias: 'config',
-			describe: `Specifies what configuration to test with: 'local'(default), 'browserstack', 'testingbot', or 'saucelabs'.`,
+			describe: `Specifies what configuration to test with: 'local'(default), 'headless', 'browserstack', 'testingbot', or 'saucelabs'.`,
 			type: 'string'
 		});
 
