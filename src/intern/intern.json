@@ -34,13 +34,13 @@
       }
     ],
     "plugins": [
+      "@dojo/cli-test-intern/plugins/hasTest",
       {
         "script": "@dojo/cli-test-intern/plugins/jsdom",
         "options": {
           "global": true
         }
       },
-      "@dojo/cli-test-intern/plugins/hasTest",
       "@dojo/cli-test-intern/plugins/postcssRequire",
       "@dojo/cli-test-intern/plugins/tsnode",
       {
