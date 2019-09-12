@@ -135,6 +135,25 @@
           "platform": "WIN10"
         }
       ]
+    },
+    "headless": {
+      "extends": "built",
+      "tunnelOptions": {
+        "drivers": [
+          { "name": "chrome", "version": "76.0.3809.68" }
+        ]
+      },
+      "environments": [
+        {
+          "browserName": "node"
+        },
+        { 
+          "browserName": "chrome",
+          "goog:chromeOptions": {
+            "args": ["headless", "disable-gpu", "window-size=1920,1080"]
+          } 
+        }
+      ]
     }
   }
 }
