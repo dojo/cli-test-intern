@@ -161,6 +161,9 @@
         ]
       },
       "environments": [
+        {
+          "browserName": "node"
+        },
         { 
           "browserName": "chrome",
           "goog:chromeOptions": {
