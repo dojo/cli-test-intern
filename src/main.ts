@@ -35,6 +35,7 @@ export interface TestArgs {
 	internConfig: string;
 	node: boolean;
 	filter: string;
+	watch?: boolean;
 }
 
 function buildNpmDependencies(): any {
@@ -102,6 +103,7 @@ function transformTestArgs(args: TestArgs): TestOptions {
 		verbose: args.verbose,
 		filter: args.filter,
 		externals: args.externals,
+		watch: args.watch,
 		nodeUnit,
 		remoteUnit,
 		remoteFunctional
@@ -218,6 +220,14 @@ const command: Command<TestArgs> = {
 		options('filter', {
 			describe: 'Run only tests whose IDs match a regular expression',
 			type: 'string'
+		});
+
+		options('w', {
+			alias: 'watch',
+			describe:
+				'Run node unit tests in watch mode. If one of the unit tests changes, they will be automatically rerun.',
+			type: 'boolean',
+			default: false
 		});
 	},
 	run(helper: Helper, args: TestArgs) {

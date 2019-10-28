@@ -72,6 +72,7 @@ describe('main', () => {
 			u: 'unit',
 			v: 'verbose',
 			l: 'legacy',
+			w: 'watch',
 			filter: undefined
 		};
 

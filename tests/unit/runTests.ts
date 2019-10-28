@@ -262,5 +262,15 @@ describe('runTests', () => {
 					'please specify a config option to run tests against the built code'
 			);
 		});
+
+		it('should start nodemon in watch mode', async () => {
+			spawnOnStub.onFirstCall().callsArg(1);
+			await runTests.default({
+				watch: true
+			});
+			assert.isTrue(spawnStub.calledOnce);
+			assert.include(spawnStub.firstCall.args[0], 'nodemon');
+			assert.includeMembers(spawnStub.firstCall.args[1], ['-q', '-e', '--watch', 'ts,tsx', 'src', 'tests/unit']);
+		});
 	});
 });
