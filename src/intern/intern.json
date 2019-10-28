@@ -51,7 +51,8 @@
       }
     ],
     "suites": [
-      "./tests/unit/all.ts"
+      "./src/**/*.spec.{ts,tsx}",
+      "./tests/unit/**/*.{ts,tsx}"
     ]
   },
   "coverage": false,
