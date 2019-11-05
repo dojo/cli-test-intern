@@ -35,7 +35,7 @@ export interface TestArgs {
 	internConfig: string;
 	node: boolean;
 	filter: string;
-	watch?: boolean;
+	watch: boolean;
 }
 
 function buildNpmDependencies(): any {

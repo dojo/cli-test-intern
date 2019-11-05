@@ -42,7 +42,8 @@ describe('javaCheck', () => {
 			verbose: false,
 			internConfig: '',
 			node: false,
-			filter: ''
+			filter: '',
+			watch: false
 		};
 
 		execError = undefined;
