@@ -64,6 +64,7 @@
     "fs-extra": "7.0.1",
     "intern": "~4.3.0",
     "jsdom": "11.6.2",
+    "nodemon": "1.19.4",
     "pkg-dir": "1.0.0",
     "ts-node": "4.1.0",
     "typescript": "~3.4.5"

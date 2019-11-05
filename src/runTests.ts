@@ -64,6 +64,7 @@ export interface TestOptions {
 	testingKey?: string;
 	verbose?: boolean;
 	filter?: string;
+	watch?: boolean;
 }
 
 export function parseArguments(testArgs: TestOptions) {
@@ -172,6 +173,7 @@ export function setLogger(value: (message: any, ...optionalParams: any[]) => voi
 export default async function(testArgs: TestOptions) {
 	const testRunPromise = new Promise((resolve, reject) => {
 		const internPath = path.resolve('node_modules/.bin/intern');
+		const nodemonPath = path.resolve('node_modules/.bin/nodemon');
 		const internArgs = parseArguments(testArgs);
 
 		function succeed() {
@@ -187,7 +189,9 @@ export default async function(testArgs: TestOptions) {
 			});
 		}
 
-		logger('\n' + chalk.underline(`testing "${projectName()}"...`) + `\n`);
+		logger(
+			'\n' + chalk.underline(`testing "${projectName()}"${testArgs.watch ? ' using watch mode' : ''}...`) + `\n`
+		);
 
 		if (testArgs.verbose) {
 			logger(`${chalk.blue.bold('  Intern config:')}`);
@@ -196,17 +200,33 @@ export default async function(testArgs: TestOptions) {
 			logger('    ' + chalk.blue(String(internArgs.join('\n    '))));
 		}
 
-		cs.spawn(internPath, internArgs, { stdio: 'inherit' })
-			.on('close', (exitCode: number) => {
-				if (exitCode) {
-					fail('Tests did not complete successfully');
-				} else {
-					succeed();
-				}
-			})
-			.on('error', (err: Error) => {
-				fail(err.message);
-			});
+		if (testArgs.watch) {
+			const nodemonArgs = ['-q', '-e', 'ts,tsx', '--watch', 'src', '--watch', 'tests/unit', '--delay', '1'];
+
+			cs.spawn(nodemonPath, [...nodemonArgs, internPath, ...internArgs], { stdio: 'inherit' })
+				.on('close', (exitCode: number) => {
+					if (exitCode) {
+						fail('Tests did not complete successfully');
+					} else {
+						succeed();
+					}
+				})
+				.on('error', (err: Error) => {
+					fail(err.message);
+				});
+		} else {
+			cs.spawn(internPath, internArgs, { stdio: 'inherit' })
+				.on('close', (exitCode: number) => {
+					if (exitCode) {
+						fail('Tests did not complete successfully');
+					} else {
+						succeed();
+					}
+				})
+				.on('error', (err: Error) => {
+					fail(err.message);
+				});
+		}
 	});
 
 	return testRunPromise;
