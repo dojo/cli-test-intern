@@ -37,6 +37,8 @@ describe('plugins/postcssRequire', () => {
 	afterEach(() => {
 		sinon.restore();
 		mockModule.destroy();
+
+		delete require.extensions['.css'];
 	});
 
 	it('plugin loads without options', () => {
@@ -58,5 +60,17 @@ describe('plugins/postcssRequire', () => {
 
 	it('not a node environment; warns', () => {
 		assertNotNodeEnvironment(registerPluginStub);
+	});
+
+	it('wraps the postcss extension to add a key', () => {
+		const callback = assertRegisterPlugin();
+
+		require.extensions['.css'] = () => {};
+
+		callback({});
+
+		assert.isFunction(require.extensions['.css']);
+		const result = require.extensions['.css']({ exports: {} } as any, 'test.m.css');
+		assert.deepEqual(result, { exports: { ' _key': '@dojo/cli-test-intern/test' } });
 	});
 });
