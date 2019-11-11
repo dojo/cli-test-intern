@@ -57,7 +57,7 @@
     "yargs": "^5.0.0"
   },
   "dependencies": {
-    "@dojo/framework": "7.0.0-alpha.2",
+    "@dojo/framework": "7.0.0-alpha.3",
     "chalk": "2.4.1",
     "cross-spawn": "4.0.2",
     "css-modules-require-hook": "4.2.3",
