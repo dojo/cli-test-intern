@@ -1,6 +1,6 @@
 {
   "name": "@dojo/cli-test-intern",
-  "version": "7.0.0-pre",
+  "version": "7.0.0-alpha.2",
   "description": "Test a Dojo application",
   "private": true,
   "homepage": "https://dojo.io",
