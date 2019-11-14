@@ -5,7 +5,7 @@
 [![codecov](https://codecov.io/gh/dojo/cli-test-intern/branch/master/graph/badge.svg)](https://codecov.io/gh/dojo/cli-test-intern)
 [![npm version](https://badge.fury.io/js/%40dojo%2Fcli-test-intern.svg)](https://badge.fury.io/js/%40dojo%2Fcli-test-intern)
 
-The official Dojo 2 test command. This package uses Intern to run unit and functional tests against your Dojo project.
+The official Dojo test command. This package uses Intern to run unit and functional tests against your Dojo project.
 
 ## Usage
 
