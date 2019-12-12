@@ -79,7 +79,7 @@
       "extends": "built",
       "tunnelOptions": {
         "drivers": [
-          { "name": "chrome", "version": "76.0.3809.68" }
+          { "name": "chrome", "version": "78.0.3904.105" }
         ]
       },
       "environments": [
@@ -157,7 +157,7 @@
       "extends": "built",
       "tunnelOptions": {
         "drivers": [
-          { "name": "chrome", "version": "76.0.3809.68" }
+          { "name": "chrome", "version": "78.0.3904.105" }
         ]
       },
       "environments": [
