@@ -57,6 +57,17 @@ intern.registerPlugin(PLUGIN_NAME, (options?: Options) => {
 			Object.getOwnPropertyDescriptor((<any>window).CSSStyleDeclaration.prototype, 'webkitTransition')!
 		);
 
+		global.MutationObserver = function MutationObserver() {
+			return {
+				observe: function() {
+					return [];
+				},
+				takeRecords: function() {
+					return [];
+				}
+			};
+		};
+
 		hasAdd('jsdom', true);
 
 		return doc;
