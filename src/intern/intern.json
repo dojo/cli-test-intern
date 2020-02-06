@@ -78,11 +78,6 @@
     },
     "local": {
       "extends": "built",
-      "tunnelOptions": {
-        "drivers": [
-          { "name": "chrome" }
-        ]
-      },
       "environments": [
         { "browserName": "node" },
         { "browserName": "chrome" }
@@ -139,11 +134,6 @@
     },
     "headless": {
       "extends": "built",
-      "tunnelOptions": {
-        "drivers": [
-          { "name": "chrome" }
-        ]
-      },
       "environments": [
         {
           "browserName": "node"
