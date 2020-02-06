@@ -80,7 +80,7 @@
       "extends": "built",
       "tunnelOptions": {
         "drivers": [
-          { "name": "chrome", "version": "78.0.3904.105" }
+          { "name": "chrome", "version": "79.0.3945.36" }
         ]
       },
       "environments": [
@@ -141,18 +141,18 @@
       "extends": "built",
       "tunnelOptions": {
         "drivers": [
-          { "name": "chrome", "version": "78.0.3904.105" }
+          { "name": "chrome", "version": "79.0.3945.36" }
         ]
       },
       "environments": [
         {
           "browserName": "node"
         },
-        { 
+        {
           "browserName": "chrome",
           "goog:chromeOptions": {
             "args": ["headless", "disable-gpu", "window-size=1920,1080"]
-          } 
+          }
         }
       ]
     }
