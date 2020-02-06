@@ -77,11 +77,6 @@
     },
     "local": {
       "extends": "built",
-      "tunnelOptions": {
-        "drivers": [
-          { "name": "chrome", "version": "78.0.3904.105" }
-        ]
-      },
       "environments": [
         { "browserName": "node" },
         { "browserName": "chrome" }
@@ -155,20 +150,15 @@
     },
     "headless": {
       "extends": "built",
-      "tunnelOptions": {
-        "drivers": [
-          { "name": "chrome", "version": "78.0.3904.105" }
-        ]
-      },
       "environments": [
         {
           "browserName": "node"
         },
-        { 
+        {
           "browserName": "chrome",
           "goog:chromeOptions": {
             "args": ["headless", "disable-gpu", "window-size=1920,1080"]
-          } 
+          }
         }
       ]
     }
