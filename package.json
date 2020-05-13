@@ -40,7 +40,7 @@
   "devDependencies": {
     "@dojo/cli": "7.0.0-rc.1",
     "@dojo/loader": "^2.0.0",
-    "@dojo/scripts": "~4.0.0",
+    "@dojo/scripts": "~4.0.3",
     "@types/fs-extra": "5.0.5",
     "@types/jsdom": "11.0.4",
     "@types/mockery": "^1.4.29",
@@ -62,7 +62,7 @@
     "cross-spawn": "4.0.2",
     "css-modules-require-hook": "4.2.3",
     "fs-extra": "7.0.1",
-    "intern": "~4.3.0",
+    "intern": "~4.8.0",
     "jsdom": "11.6.2",
     "nodemon": "1.19.4",
     "pkg-dir": "1.0.0",
