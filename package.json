@@ -62,7 +62,7 @@
     "chalk": "2.4.1",
     "cross-spawn": "4.0.2",
     "css-modules-require-hook": "4.2.3",
-    "fs-extra": "7.0.1",
+    "fs-extra": "^8.0.0",
     "intern": "~4.8.0",
     "jsdom": "11.6.2",
     "nodemon": "1.19.4",
